@@ -1,0 +1,39 @@
+[System]
+Name='mode'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=1
+NumRules=4
+AndMethod='min'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='tau_h'
+Range=[-1 1]
+NumMFs=2
+MF1='N':'trimf',[-2 -1 0]
+MF2='P':'trimf',[0 1 2]
+
+[Input2]
+Name='tau_e'
+Range=[-1 1]
+NumMFs=2
+MF1='N':'trimf',[-1 -1 0]
+MF2='P':'trimf',[0 1 1]
+
+[Output1]
+Name='mode'
+Range=[-1 1]
+NumMFs=2
+MF1='R':'trapmf',[-1 -1 -0.5 -0.2]
+MF2='A':'trapmf',[0.2 0.5 1 1]
+
+[Rules]
+1 1, 2 (1) : 1
+2 2, 2 (1) : 1
+1 2, 1 (1) : 1
+2 1, 1 (1) : 1
