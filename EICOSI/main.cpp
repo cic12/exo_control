@@ -158,7 +158,7 @@ int main(void){
 		time_counter += (double)(this_time - last_time);
 		last_time = this_time;
 
-		if (time_counter > (double)(P_SECONDS * CLOCKS_PER_SEC)) // MPC exectutes task every P_SECONDS seconds-----------------------------
+		if (time_counter > (double)(P_SECONDS * CLOCKS_PER_SEC))
 		{
 			xdes[0] = (cos((0.25 * 2 * M_PI * t) - M_PI)) / 2 + 0.7;
 
@@ -186,7 +186,8 @@ int main(void){
 				}
 			}
 
-			inputCurrent = *grampc->sol->unext *68 * 2.5;
+			//inputCurrent = *grampc->sol->unext *68 * 2.5;
+			inputCurrent = 0;
 
 			/* run PID */
 			//errorP = (float)xdes[0] - ((float)currentPosition / 168000.f + M_PI/2);
