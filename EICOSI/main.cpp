@@ -44,7 +44,8 @@ float64 AIm[2] = { 0 , 0 };
 void motorComms() {
 	while (!mpc_complete)
 	{
-		setCurrent(-inputCurrent); // Inverted for new connection
+		//setCurrent(-inputCurrent); // EICOSI
+		setCurrent(inputCurrent); // Mini rig
 		getCurrentPosition(currentPosition);
 		//getCurrentVelocity(currentVelocity);
 	}
@@ -62,7 +63,7 @@ int main(void){
 	long oldPosition = 0;
 
 	openDevice();
-	//definePosition(homePosition);
+	definePosition(homePosition); // Mini rig
 	currentMode();
 
 	// DAQmx init
@@ -110,12 +111,12 @@ int main(void){
 	typeRNum xdes[NX] = { 0, 0, 0, 0, 0, 0 };
 	ctypeRNum u0[NU] = { 0.0 };
 	ctypeRNum udes[NU] = { 0.0 };
-	ctypeRNum umin[NU] = { -20.0 };
+	ctypeRNum umin[NU] = { -40.0 };
 	ctypeRNum umax[NU] = { 40.0 };
 	ctypeRNum Thor = 0.2;
 	ctypeRNum dt = (typeRNum)0.002;
 	typeRNum t = (typeRNum)0.0;
-	ctypeRNum Tsim = 8;
+	ctypeRNum Tsim = 4;
 	const char* IntegralCost = "on";
 	const char* TerminalCost = "off";
 	const char* ScaleProblem = "on";
@@ -186,8 +187,7 @@ int main(void){
 				}
 			}
 
-			//inputCurrent = *grampc->sol->unext *68 * 2.5;
-			inputCurrent = 0;
+			inputCurrent = *grampc->sol->unext *68 * 2.5; // EICOSI
 
 			/* run PID */
 			//errorP = (float)xdes[0] - ((float)currentPosition / 168000.f + M_PI/2);
@@ -219,7 +219,8 @@ int main(void){
 			//	oldPosition = currentPosition;
 			//}
 				
-			grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2;
+			//grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
+			grampc->sol->xnext[0] = (float)currentPosition / 168000.f + 0.2; // Mini rig
 			//grampc->sol->xnext[1] = (float)currentVelocity / 168000.f / dt;
 
 			/* update mmg states */
