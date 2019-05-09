@@ -174,11 +174,3 @@ void definePosition(long& HomePosition) {
 		cout << " error while defining position , error code=" << errorCode << endl;
 	}
 }
-
-//void getPositionObject(int& CurrentPos) {
-//	errorCode = 0;
-//	DWORD nBytes = 4;
-//	if (!VCS_GetObject(keyHandle, nodeID, (WORD)0x6064, (BYTE)0x00, &CurrentPos, nBytes, &nBytes, &errorCode)) {
-//		cout << " error while getting position object , error code=" << errorCode << endl;
-//	}
-//}

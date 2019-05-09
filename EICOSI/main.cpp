@@ -75,7 +75,8 @@ int main(void){
 #endif
 	typeRNum CPUtime = 0;
 	typeRNum rwsReferenceIntegration[2 * NX];
-	ctypeRNum x0[NX] = { currentPosition, 0, 0, 0, 0, 0 };
+	//ctypeRNum x0[NX] = { currentPosition, 0, 0, 0, 0, 0 }; // EICOSI
+	ctypeRNum x0[NX] = { 0.2, 0, 0, 0, 0, 0 };
 	typeRNum xdes[NX] = { 0, 0, 0, 0, 0, 0 };
 	ctypeRNum u0[NU] = { 0.0 };
 	ctypeRNum udes[NU] = { 0.0 };
@@ -125,7 +126,7 @@ int main(void){
 			xdes[0] = (cos((0.25 * 2 * M_PI * t) - M_PI)) / 2 + 0.7;
 			grampc_setparam_real_vector(grampc, "xdes", xdes);
 			
-			/* run grampc */
+			// Run grampc
 			grampc_run(grampc);
 			if (grampc->sol->status > 0) {
 				if (grampc_printstatus(grampc->sol->status, STATUS_LEVEL_ERROR)) {
@@ -133,7 +134,7 @@ int main(void){
 				}
 			}
 
-			//// simulation
+			// Simulation
 			//ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
 			//for (i = 0; i < NX; i++) {
 			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * rwsReferenceIntegration[i];
@@ -143,18 +144,15 @@ int main(void){
 			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
 			//}
 
-			inputCurrent = *grampc->sol->unext *68 * 2.5; // EICOSI
-			
-
-
+			// EICOSI / Mini rig
+			inputCurrent = *grampc->sol->unext *68 * 2.5;
 			//grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
 			grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
 			grampc->sol->xnext[1] = 0;
-
 			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
 			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
 
-			/* update state and time */
+			// Update state and time
 			t = t + dt;
 			grampc_setparam_real_vector(grampc, "x0", grampc->sol->xnext);
 			iMPC++;
