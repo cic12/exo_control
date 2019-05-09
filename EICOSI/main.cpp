@@ -189,26 +189,6 @@ int main(void){
 
 			inputCurrent = *grampc->sol->unext *68 * 2.5; // EICOSI
 
-			/* run PID */
-			//errorP = (float)xdes[0] - ((float)currentPosition / 168000.f + M_PI/2);
-			//errorI += errorP;
-			//errorD = (errorP - errorBuf) / Tsim;
-			//inputCurrent = (Kp * errorP + Ki * errorI + Kd * errorD) * 68;
-			
-			//* run open loop for human-exo model ID */
-			//if (t <= 30) {
-			//	inputCurrent = -sin(0.2 * 2 * M_PI*t) * 1200 + 1000; // human-exo torques -- 400 for 
-			//}
-			//else if (t < 60) {
-			//	inputCurrent = -sin(0.5 * 2 * M_PI*t) * 1200 + 1000;
-			//}
-			//else if (t < 90) {
-			//	inputCurrent = -sin(1 * 2 * M_PI*t) * 1200 + 1000;
-			//}
-			//else {
-			//	inputCurrent = -sin(1.5 * 2 * M_PI*(t - 90)) * 1200 + 1000;
-			//}
-
 			/* manual vel update*/
 
 			//if (iMPC == 0) {
