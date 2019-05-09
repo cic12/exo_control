@@ -7,13 +7,6 @@ struct lowpass_para {
 	double y[3];
 }low_para1, low_para2;
 
-//highpass filter:
-
-struct highpass_para {
-	double x[3];
-	double y[3];
-} high_para1, high_para2;
-
 double lowpass1(double X_in)
 {
 	double a1 = -1.911197067426073203932901378720998764038;
@@ -49,6 +42,13 @@ double lowpass2(double X_in)
 	}
 	return low_para2.y[0];
 }
+
+//highpass filter:
+
+struct highpass_para {
+	double x[3];
+	double y[3];
+} high_para1, high_para2;
 
 double highpass1(double X_in)
 {
@@ -87,7 +87,7 @@ double highpass2(double X_in)
 }
 
 double hTorqueEst(double m1, double m2) {
-	return 0;
+	return 10 * (AIm[0] - AIm[1]);
 }
 
 double assistanceMode(double eTorque, double hTorque) {
@@ -100,6 +100,44 @@ double assistanceMode(double eTorque, double hTorque) {
 	//	M = 1 - p_ass;
 	//}
 	return 1;
+}
+
+TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
+
+	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
+
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "MMG1", DAQmx_Val_RSE, 0.0, 1.5, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "MMG2", DAQmx_Val_RSE, 0.0, 1.5, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
+
+	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
+	DAQmxErrChk(DAQmxRegisterDoneEvent(AItaskHandle, 0, DoneCallback, NULL));
+
+Error:
+	if (DAQmxFailed(error)) {
+		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+		DAQmxStopTask(AItaskHandle);
+		DAQmxClearTask(AItaskHandle);
+		printf("DAQmx Error: %s\n", errBuff);
+	}
+	return AItaskHandle;
+}
+
+TaskHandle DAQmxAOinit(float64 &AOdata,  int32 error, char &errBuff, TaskHandle AOtaskHandle) {
+
+	DAQmxErrChk(DAQmxCreateTask("3V3 Out", &AOtaskHandle));
+	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao1", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxWriteAnalogF64(AOtaskHandle, 1, 1, 10.0, DAQmx_Val_GroupByChannel, &AOdata, NULL, NULL));
+
+Error:
+	if (DAQmxFailed(error)) {
+		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+		DAQmxStopTask(AOtaskHandle);
+		DAQmxClearTask(AOtaskHandle);
+		printf("DAQmx Error: %s\n", errBuff);
+	}
+	return AOtaskHandle;
 }
 
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)

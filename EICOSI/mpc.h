@@ -5,7 +5,7 @@
 
 #define PRINTRES
 
-#define NX    	6
+#define NX    	4
 #define NU  	1
 
 // Exo
@@ -24,9 +24,6 @@
 #define w_theta 1000
 //#define w_tau	1 // EICOSI
 #define w_tau	0.1
-#define p_ass	1
-#define p_low	0
-#define p_stop	1	
 
 void openFile(FILE **file, const char *name);
 void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size);

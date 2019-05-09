@@ -43,24 +43,14 @@ int main(void){
 	// DAQmx init
 	int32       error = 0;
 	float64     AOdata[2] = { 3.3 , 3.3 };
-	TaskHandle  AOtaskHandle = 0;
 	int32       read = 0;
 	char        errBuff[2048] = { '\0' };
 
 	TaskHandle  AItaskHandle = 0;
+	TaskHandle  AOtaskHandle = 0;
 
-	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "MMG1", DAQmx_Val_RSE, 0.0, 1.5, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "MMG2", DAQmx_Val_RSE, 0.0, 1.5, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
-
-	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
-	DAQmxErrChk(DAQmxRegisterDoneEvent(AItaskHandle, 0, DoneCallback, NULL));
-
-	DAQmxErrChk(DAQmxCreateTask("3V3 Out", &AOtaskHandle));
-	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao1", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxWriteAnalogF64(AOtaskHandle, 1, 1, 10.0, DAQmx_Val_GroupByChannel, AOdata, NULL, NULL));
+	AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
+	AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
 
 	DAQmxErrChk(DAQmxStartTask(AOtaskHandle));
 
@@ -69,15 +59,14 @@ int main(void){
 	// GRAMPC init
 	typeGRAMPC *grampc;
 	typeInt iMPC, i;
-	typeRNum mode = 1;
 #ifdef PRINTRES
 	FILE *file_x, *file_xdes, *file_u, *file_mode, *file_t;
 #endif
 	typeRNum CPUtime = 0;
 	typeRNum rwsReferenceIntegration[2 * NX];
-	//ctypeRNum x0[NX] = { currentPosition, 0, 0, 0, 0, 0 }; // EICOSI
-	ctypeRNum x0[NX] = { 0.2, 0, 0, 0, 0, 0 };
-	typeRNum xdes[NX] = { 0, 0, 0, 0, 0, 0 };
+	//ctypeRNum x0[NX] = { currentPosition, 0, 0, 0 }; // EICOSI
+	ctypeRNum x0[NX] = { 0.2, 0, 0, 0};
+	typeRNum xdes[NX] = { 0, 0, 0, 0 };
 	ctypeRNum u0[NU] = { 0.0 };
 	ctypeRNum udes[NU] = { 0.0 };
 	ctypeRNum umin[NU] = { -40.0 };
@@ -89,7 +78,7 @@ int main(void){
 	const char* IntegralCost = "on";
 	const char* TerminalCost = "off";
 	const char* ScaleProblem = "on";
-	typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau, p_ass, p_low, p_stop }; // Update MPC without p_low
+	typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau }; // Update MPC without p_low
 	typeUSERPARAM *userparam = pSys;
 
 	mpcInit(&grampc, userparam, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
@@ -162,7 +151,6 @@ int main(void){
 			printNumVector2File(file_xdes, grampc->param->xdes, NX);
 			printNumVector2File(file_u, grampc->sol->unext, NU);
 			printNumVector2File(file_t, &t, 1);
-			printNumVector2File(file_mode, &mode, 1);
 #endif
 			time_counter -= (double)(P_SECONDS * CLOCKS_PER_SEC);
 			task_count++;
@@ -178,7 +166,6 @@ int main(void){
 Error:
 	if (DAQmxFailed(error)) {
 		DAQmxGetExtendedErrorInfo(errBuff, 2048);
-		printf("DAQmx Error: %s\n", errBuff);
 	}
 	if (AItaskHandle != 0) {
 		DAQmxStopTask(AItaskHandle);
@@ -187,6 +174,9 @@ Error:
 	if (AOtaskHandle != 0) {
 		DAQmxStopTask(AOtaskHandle);
 		DAQmxClearTask(AOtaskHandle);
+	}
+	if (DAQmxFailed(error)) {
+		printf("DAQmx Error: %s\n", errBuff);
 	}
 	
 	grampc_free(&grampc);

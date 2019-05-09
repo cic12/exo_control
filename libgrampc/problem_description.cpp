@@ -34,7 +34,7 @@ extern "C"
 {
 	void ocp_dim(typeInt *Nx, typeInt *Nu, typeInt *Np, typeInt *Ng, typeInt *Nh, typeInt *NgT, typeInt *NhT, typeUSERPARAM *userparam)
 	{
-		*Nx = 6; // 2 system states and 4 dummy states
+		*Nx = 4; // 2 system states and 4 dummy states
 		*Nu = 1;
 		*Np = 0;
 		*Nh = 0;
@@ -55,12 +55,9 @@ extern "C"
 
 		out[1] = (u[0] + x[2] - A * (-0.1e1 + 0.2e1 / (exp(-(15 * x[1])) + 0.1e1)) - (B * x[1]) - tau_g * sin(x[0])) / J;
 
-		// input states
-
 		out[2] = 0;	// human torque estimate
+
 		out[3] = 0; // M
-		out[4] = 0;
-		out[5] = 0;
 	}
 	void dfdx_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *adj, ctypeRNum *u, ctypeRNum *p, typeUSERPARAM* userparam)
 	{
@@ -74,12 +71,9 @@ extern "C"
 
 		out[1] = adj[0] + adj[1] * ((-0.30e2 * A * pow(exp(-(15 * x[1])) + 0.1e1, -0.2e1) * exp(-(15 * x[1])) - B) / J);
 
-		// input states
-
 		out[2] = adj[1] * (0.1e1 / J);
+
 		out[3] = 0;
-		out[4] = 0;
-		out[5] = 0;
 	}
 	void dfdu_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *adj, ctypeRNum *u, ctypeRNum *p, typeUSERPARAM* userparam)
 	{
@@ -98,14 +92,7 @@ extern "C"
 		ctypeRNum *pCost = (ctypeRNum*)userparam;
 		ctypeRNum w_theta = pCost[4];
 		ctypeRNum w_tau = pCost[5];
-		ctypeRNum p_ass = pCost[6];
-		ctypeRNum p_low = pCost[7];
-		ctypeRNum p_stop = pCost[8];
-
-		ctypeRNum sigm_a = 200;
-		ctypeRNum sigm_c = 0.05;
-
-		typeRNum M = 1;
+		ctypeRNum M = x[3];
 
 		out[0] = M * w_theta * POW2((x[0] - xdes[0])) +
 			w_tau * POW2((u[0] - udes[0]));
@@ -114,14 +101,7 @@ extern "C"
 	{
 		ctypeRNum *pCost = (ctypeRNum*)userparam;
 		ctypeRNum w_theta = pCost[4];
-		ctypeRNum p_ass = pCost[6];
-		ctypeRNum p_low = pCost[7];
-		ctypeRNum p_stop = pCost[8];
-
-		ctypeRNum sigm_a = 200;
-		ctypeRNum sigm_c = 0.05;
-
-		typeRNum M = 1;
+		ctypeRNum M = x[3];
 
 		out[0] = 2 * M * w_theta * (x[0] - xdes[0]);
 	}
