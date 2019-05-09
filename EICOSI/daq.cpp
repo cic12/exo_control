@@ -91,6 +91,14 @@ double hTorqueEst(double m1, double m2) {
 }
 
 double assistanceMode(double eTorque, double hTorque) {
+	//-p_ass / (1 + exp(-sigm_a * (2 / (1 + exp(-sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) - p_low * x[4] * x[5] - p_stop / (1 + exp(-sigm_a * (2 / (1 + exp(sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) + 1;
+
+	//if ((x[4] > 0.01 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
+	//	//M = 1 - p_stop;
+	//}
+	//else if ((x[4] > 0.01 && u[0] > -0.1) || (x[5] > 0.05 && u[0] < 0.1)) {
+	//	M = 1 - p_ass;
+	//}
 	return 1;
 }
 
