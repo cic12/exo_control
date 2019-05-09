@@ -116,12 +116,12 @@ extern "C"
 
 		typeRNum M = 1;//-p_ass / (1 + exp(-sigm_a * (2 / (1 + exp(-sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) - p_low * x[4] * x[5] - p_stop / (1 + exp(-sigm_a * (2 / (1 + exp(sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) + 1;
 
-		if ((x[4] > 0.05 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
+		/*if ((x[4] > 0.05 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
 			M = 1 - p_stop;
 		}
 		else if ((x[4] > 0.01 && u[0] > -0.1) || (x[5] > 0.01 && u[0] < 0.1)) {
 			M = 1 - p_ass;
-		}
+		}*/
 
 		out[0] = M * w_theta * POW2((x[0] - xdes[0])) +
 			w_tau * POW2((u[0] - udes[0]));
@@ -141,12 +141,12 @@ extern "C"
 
 		typeRNum M = 1;// -p_ass / (1 + exp(-sigm_a * (2 / (1 + exp(-sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) - p_low * x[4] * x[5] - p_stop / (1 + exp(-sigm_a * (2 / (1 + exp(sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) + 1;
 
-		if ((x[4] > 0.01 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
-			//M = 1 - p_stop;
-		}
-		else if ((x[4] > 0.01 && u[0] > -0.1) || (x[5] > 0.05 && u[0] < 0.1)) {
-			M = 1 - p_ass;
-		}
+		//if ((x[4] > 0.01 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
+		//	//M = 1 - p_stop;
+		//}
+		//else if ((x[4] > 0.01 && u[0] > -0.1) || (x[5] > 0.05 && u[0] < 0.1)) {
+		//	M = 1 - p_ass;
+		//}
 
 		out[0] = 2 * M * w_theta * (x[0] - xdes[0]);
 

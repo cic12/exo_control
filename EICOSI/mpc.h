@@ -8,13 +8,7 @@
 #define NX    	6
 #define NU  	1
 
-//// Exo 
-//#define A 		0.187f
-//#define B       0.408f
-//#define J_      0.080f
-//#define tau_g   0.415f
-
-// Exo new
+// Exo
 #define A 		0.066f
 #define B       1.926f
 #define J_      0.066f
@@ -26,8 +20,10 @@
 //#define J_      0.1744f
 //#define tau_g   6.0796f
 
-#define w_theta 1500000
-#define w_tau	1
+//#define w_theta 1500000 // EICOSI
+#define w_theta 1000
+//#define w_tau	1 // EICOSI
+#define w_tau	0.1
 #define p_ass	1
 #define p_low	0
 #define p_stop	1	

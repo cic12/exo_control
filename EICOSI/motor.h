@@ -4,28 +4,20 @@
 #include <iostream>
 #include "Definitions.h"
 
+extern bool mpc_complete;
+extern short inputCurrent;
+extern long currentPosition;
+
+void motorComms();
 void enableDevice();
-
 void disableDevice();
-
 void openDevice();
-
 void closeDevice();
-
-//void moveDevice(long TargetPosition, int absolute, int immediately);
-
 void getOperationMode();
-
 void currentMode();
-
 void setCurrent(short TargetCurrent);
-
 void getCurrentPosition(long& CurrentPosition);
-
 void getCurrentVelocity(long& CurrentVelocity);
-
 void definePosition(long& HomePosition);
-
-//void getPositionObject(int& CurrentPos);
 
 #endif

@@ -9,6 +9,15 @@ DWORD errorCode;
 WORD nodeID;
 __int8 mode;
 
+void motorComms() {
+	while (!mpc_complete)
+	{
+		//setCurrent(-inputCurrent); // EICOSI
+		setCurrent(inputCurrent); // Mini rig
+		getCurrentPosition(currentPosition);
+	}
+}
+
 void enableDevice()
 {
 	errorCode = 0;
