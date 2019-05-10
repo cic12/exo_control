@@ -9,10 +9,10 @@
 #define NU  	1
 
 // Exo
-#define A 		0.066f
-#define B       1.926f
-#define J_      0.066f
-#define tau_g   0.415f // from old
+//#define A 		0.066f
+//#define B       1.926f
+//#define J_      0.066f
+//#define tau_g   0.415f // from old
 
 // Lumped
 //#define A 		0.7129f
@@ -20,8 +20,14 @@
 //#define J_      0.1744f
 //#define tau_g   6.0796f
 
+// Mini rig
+#define A 		2.0f
+#define B       4.0f
+#define J_      0.18f
+#define tau_g   0.0f
+
 //#define w_theta 1500000 // EICOSI
-#define w_theta 10000
+#define w_theta 1000
 //#define w_tau	1 // EICOSI
 #define w_tau	0.1
 

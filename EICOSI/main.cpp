@@ -7,7 +7,6 @@
 
 #include <time.h>
 #include <math.h>
-
 #include "libgrampc.h"
 #include "Definitions.h"
 #include "NIDAQmx.h"
@@ -31,7 +30,6 @@ int main(void){
 	// Motor init
 
 	long homePosition = 0;
-	long oldPosition = 0;
 
 	openDevice();
 	definePosition(homePosition); // Mini rig
