@@ -60,7 +60,7 @@ int main(void){
 	typeGRAMPC *grampc;
 	typeInt iMPC, i;
 #ifdef PRINTRES
-	FILE *file_x, *file_xdes, *file_u, *file_mode, *file_t;
+	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct;
 #endif
 	typeRNum CPUtime = 0;
 	typeRNum rwsReferenceIntegration[2 * NX];
@@ -78,7 +78,7 @@ int main(void){
 	const char* IntegralCost = "on";
 	const char* TerminalCost = "off";
 	const char* ScaleProblem = "on";
-	typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau }; // Update MPC without p_low
+	typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
 	typeUSERPARAM *userparam = pSys;
 
 	mpcInit(&grampc, userparam, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
@@ -89,6 +89,7 @@ int main(void){
 	openFile(&file_u, "res/uvec.txt");
 	openFile(&file_mode, "res/mode.txt");
 	openFile(&file_t, "res/tvec.txt");
+	openFile(&file_Ncfct, "res/cost.txt");
 #endif
 
 	// Timed loop init
@@ -151,6 +152,8 @@ int main(void){
 			printNumVector2File(file_xdes, grampc->param->xdes, NX);
 			printNumVector2File(file_u, grampc->sol->unext, NU);
 			printNumVector2File(file_t, &t, 1);
+			printNumVector2File(file_mode, grampc->sol->xnext[3], 1)
+			printNumVector2File(file_Ncfct, grampc->sol->cfct, 1);
 #endif
 			time_counter -= (double)(P_SECONDS * CLOCKS_PER_SEC);
 			task_count++;
@@ -188,6 +191,7 @@ Error:
 	fclose(file_u);
 	fclose(file_mode);
 	fclose(file_t);
+	fclose(file_Ncfct);
 #endif
 
 	t1.join();
