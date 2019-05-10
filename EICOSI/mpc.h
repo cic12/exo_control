@@ -21,7 +21,7 @@
 //#define tau_g   6.0796f
 
 //#define w_theta 1500000 // EICOSI
-#define w_theta 1000
+#define w_theta 10000
 //#define w_tau	1 // EICOSI
 #define w_tau	0.1
 

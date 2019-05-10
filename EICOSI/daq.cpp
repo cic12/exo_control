@@ -87,12 +87,13 @@ double highpass2(double X_in)
 }
 
 double hTorqueEst(double m1, double m2) {
-	return 100 * (AIm[0] - AIm[1]);
+	double b1 = 0;
+	double b2 = 100;
+	double b3 = -100;
+	return b1 + b2*AIm[0] + b3*AIm[1];
 }
 
 double assistanceMode(double eTorque, double hTorque) {
-	//-p_ass / (1 + exp(-sigm_a * (2 / (1 + exp(-sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) - p_low * x[4] * x[5] - p_stop / (1 + exp(-sigm_a * (2 / (1 + exp(sigm_a * x[3])) - 1) * (2 / (1 + exp(-sigm_a * x[4] + sigm_a * x[5])) - 1) + sigm_c)) + 1;
-
 	//if ((x[4] > 0.01 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
 	//	//M = 1 - p_stop;
 	//}
@@ -105,11 +106,9 @@ double assistanceMode(double eTorque, double hTorque) {
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
 
 	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
-
 	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "MMG1", DAQmx_Val_RSE, 0.0, 1.5, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "MMG2", DAQmx_Val_RSE, 0.0, 1.5, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
-
 	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
 	DAQmxErrChk(DAQmxRegisterDoneEvent(AItaskHandle, 0, DoneCallback, NULL));
 
@@ -140,6 +139,20 @@ Error:
 	return AOtaskHandle;
 }
 
+TaskHandle DAQmxAstart(int32 error, char &errBuff, TaskHandle taskHandle)
+{
+	DAQmxErrChk(DAQmxStartTask(taskHandle));
+
+Error:
+	if (DAQmxFailed(error)) {
+		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+		DAQmxStopTask(taskHandle);
+		DAQmxClearTask(taskHandle);
+		printf("DAQmx Error: %s\n", errBuff);
+	}
+	return taskHandle;
+}
+
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
 {
 	int32   error = 0;
@@ -152,7 +165,6 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0] + offset[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1] + offset[1])));
-
 	if (read>0) {
 		myfile << AIdata[0] + offset[0] << "," << AIdata[1] + offset[1] << "," << AIm[0] << "," << AIm[1] << "\n";
 	}
@@ -171,7 +183,6 @@ int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callba
 {
 	int32   error = 0;
 	char    errBuff[2048] = { '\0' };
-
 	DAQmxErrChk(status);
 
 Error:
