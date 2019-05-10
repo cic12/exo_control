@@ -87,7 +87,7 @@ double highpass2(double X_in)
 }
 
 double hTorqueEst(double m1, double m2) {
-	return 10 * (AIm[0] - AIm[1]);
+	return 100 * (AIm[0] - AIm[1]);
 }
 
 double assistanceMode(double eTorque, double hTorque) {
