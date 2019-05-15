@@ -2,15 +2,12 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
-
 #define _USE_MATH_DEFINES
-
 #include <time.h>
 #include <math.h>
 #include "libgrampc.h"
 #include "Definitions.h"
 #include "NIDAQmx.h"
-
 #include "mpc.h"
 #include "motor.h"
 #include "daq.h"
@@ -18,17 +15,14 @@
 using namespace std;
 
 ofstream myfile;
-
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-
 bool mpc_complete = false;
 short inputCurrent = 0;
 long currentPosition = 0;
 
 int main(void){
 	// Motor init
-
 	long homePosition = 0;
 
 	openDevice();
@@ -43,7 +37,6 @@ int main(void){
 	float64     AOdata[2] = { 3.3 , 3.3 };
 	int32       read = 0;
 	char        errBuff[2048] = { '\0' };
-
 	TaskHandle  AItaskHandle = 0;
 	TaskHandle  AOtaskHandle = 0;
 
@@ -78,9 +71,7 @@ int main(void){
 	const char* ScaleProblem = "on";
 	typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
 	typeUSERPARAM *userparam = pSys;
-
 	mpcInit(&grampc, userparam, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
-
 #ifdef PRINTRES
 	openFile(&file_x, "res/xvec.txt");
 	openFile(&file_xdes, "res/xdesvec.txt");
@@ -89,7 +80,6 @@ int main(void){
 	openFile(&file_t, "res/tvec.txt");
 	openFile(&file_Ncfct, "res/cost.txt");
 #endif
-
 	// Timed loop init
 	ctypeRNum P_SECONDS = dt;
 	int task_count = 0;
@@ -107,7 +97,6 @@ int main(void){
 		this_time = clock();
 		time_counter += (double)(this_time - last_time);
 		last_time = this_time;
-
 		if (time_counter > (double)(P_SECONDS * CLOCKS_PER_SEC))
 		{
 			// Update setpoint
@@ -123,22 +112,22 @@ int main(void){
 			}
 
 			// Simulation
-			//ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
-			//for (i = 0; i < NX; i++) {
-			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * rwsReferenceIntegration[i];
-			//}
-			//ffct(rwsReferenceIntegration + NX, t + dt, grampc->sol->xnext, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
-			//for (i = 0; i < NX; i++) {
-			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
-			//}
+			ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
+			for (i = 0; i < NX; i++) {
+				grampc->sol->xnext[i] = grampc->param->x0[i] + dt * rwsReferenceIntegration[i];
+			}
+			ffct(rwsReferenceIntegration + NX, t + dt, grampc->sol->xnext, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
+			for (i = 0; i < NX; i++) {
+				grampc->sol->xnext[i] = grampc->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
+			}
 
 			// EICOSI / Mini rig
-			inputCurrent = *grampc->sol->unext *68 * 2.5;
-			//grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
-			grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
-			grampc->sol->xnext[1] = 0;
-			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
+			//inputCurrent = *grampc->sol->unext *68 * 2.5;
+			////grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
+			//grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
+			//grampc->sol->xnext[1] = 0;
+			//grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
+			//grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
 
 			// Update state and time
 			t = t + dt;

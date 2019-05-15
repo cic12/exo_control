@@ -20,10 +20,10 @@
 //#define J_      0.1744f
 //#define tau_g   6.0796f
 
-// Mini rig
-#define A 		2.0f
-#define B       4.0f
-#define J_      0.18f
+// Mini rig 
+#define A 		1.5f
+#define B       1.0f //4.0f
+#define J_      0.1f //0.8f
 #define tau_g   0.0f
 
 //#define w_theta 1500000 // EICOSI
