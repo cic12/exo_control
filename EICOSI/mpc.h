@@ -22,12 +22,12 @@
 
 // Mini rig 
 #define A 		1.5f
-#define B       1.0f //4.0f
-#define J_      0.1f //0.8f
+#define B       0.4f
+#define J_      0.8f
 #define tau_g   0.0f
 
 //#define w_theta 1500000 // EICOSI
-#define w_theta 1000
+#define w_theta 2000
 //#define w_tau	1 // EICOSI
 #define w_tau	0.1
 

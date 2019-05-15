@@ -62,7 +62,7 @@ int main(void){
 	ctypeRNum udes[NU] = { 0.0 };
 	ctypeRNum umin[NU] = { -20.0 };
 	ctypeRNum umax[NU] = { 20.0 };
-	ctypeRNum Thor = 0.2;
+	ctypeRNum Thor = 0.5;
 	ctypeRNum dt = (typeRNum)0.002;
 	typeRNum t = (typeRNum)0.0;
 	ctypeRNum Tsim = 4;
@@ -112,22 +112,22 @@ int main(void){
 			}
 
 			// Simulation
-			ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
-			for (i = 0; i < NX; i++) {
-				grampc->sol->xnext[i] = grampc->param->x0[i] + dt * rwsReferenceIntegration[i];
-			}
-			ffct(rwsReferenceIntegration + NX, t + dt, grampc->sol->xnext, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
-			for (i = 0; i < NX; i++) {
-				grampc->sol->xnext[i] = grampc->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
-			}
+			//ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
+			//for (i = 0; i < NX; i++) {
+			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * rwsReferenceIntegration[i];
+			//}
+			//ffct(rwsReferenceIntegration + NX, t + dt, grampc->sol->xnext, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
+			//for (i = 0; i < NX; i++) {
+			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
+			//}
 
 			// EICOSI / Mini rig
-			//inputCurrent = *grampc->sol->unext *68 * 2.5;
-			////grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
-			//grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
-			//grampc->sol->xnext[1] = 0;
-			//grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-			//grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
+			inputCurrent = *grampc->sol->unext *68 * 2.5;
+			//grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
+			grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
+			grampc->sol->xnext[1] = 0;
+			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
+			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
 
 			// Update state and time
 			t = t + dt;
