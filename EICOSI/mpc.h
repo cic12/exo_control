@@ -4,7 +4,6 @@
 #include "libgrampc.h"
 
 #define PRINTRES
-
 #define NX    	4
 #define NU  	1
 

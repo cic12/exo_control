@@ -22,16 +22,13 @@ short inputCurrent = 0;
 long currentPosition = 0;
 
 int main(void){
-	// Motor init
+	// Motor
 	long homePosition = 0;
-
 	openDevice();
 	definePosition(homePosition); // Mini rig
 	currentMode();
-	
 	// Threads
 	thread t1(motorComms);
-
 	// DAQmx init
 	int32       error = 0;
 	float64     AOdata[2] = { 3.3 , 3.3 };
@@ -42,7 +39,6 @@ int main(void){
 
 	AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
 	AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
-
 	AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
 
 	myfile.open("res/ai.txt");
@@ -99,18 +95,16 @@ int main(void){
 		last_time = this_time;
 		if (time_counter > (double)(P_SECONDS * CLOCKS_PER_SEC))
 		{
-			// Update setpoint
+			// Setpoint
 			xdes[0] = (cos((0.25 * 2 * M_PI * t) - M_PI)) / 2 + 0.7;
 			grampc_setparam_real_vector(grampc, "xdes", xdes);
-			
-			// Run grampc
+			// Grampc
 			grampc_run(grampc);
 			if (grampc->sol->status > 0) {
 				if (grampc_printstatus(grampc->sol->status, STATUS_LEVEL_ERROR)) {
 					myPrint("at iteration %i:\n -----\n", iMPC);
 				}
 			}
-
 			// Simulation
 			//ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
 			//for (i = 0; i < NX; i++) {
@@ -120,7 +114,6 @@ int main(void){
 			//for (i = 0; i < NX; i++) {
 			//	grampc->sol->xnext[i] = grampc->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
 			//}
-
 			// EICOSI / Mini rig
 			inputCurrent = *grampc->sol->unext *68 * 2.5;
 			//grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
@@ -128,7 +121,6 @@ int main(void){
 			grampc->sol->xnext[1] = 0;
 			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
 			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
-
 			// Update state and time
 			t = t + dt;
 			grampc_setparam_real_vector(grampc, "x0", grampc->sol->xnext);

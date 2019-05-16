@@ -90,7 +90,7 @@ double hTorqueEst(double m1, double m2) {
 	double b1 = 0;
 	double b2 = 100;
 	double b3 = -100;
-	return b1 + b2*AIm[0] + b3*AIm[1];
+	return b1 + b2*m1 + b3*m2;
 }
 
 double assistanceMode(double eTorque, double hTorque) {
