@@ -3,30 +3,48 @@
 struct lowpass_para {
 	double x[3];
 	double y[3];
-}low_para;
+}low_para1,low_para2;
 
-double lowpass(double X_in)
+double lowpass1(double X_in)
 {
 	double a1 = -1.911197067426073;
 	double a2 = 0.914975834801433;
 	double k = 0.0009446918438401619;
 
-	low_para.x[0] = X_in;
+	low_para1.x[0] = X_in;
 
-	low_para.y[0] = k*(low_para.x[0] + 2 * low_para.x[1] + low_para.x[2]) - a1*low_para.y[1] - a2*low_para.y[2];
+	low_para1.y[0] = k*(low_para1.x[0] + 2 * low_para1.x[1] + low_para1.x[2]) - a1*low_para1.y[1] - a2*low_para1.y[2];
 
 	for (int i = 2; i>0; i--)
 	{
-		low_para.x[i] = low_para.x[i - 1];
-		low_para.y[i] = low_para.y[i - 1];
+		low_para1.x[i] = low_para1.x[i - 1];
+		low_para1.y[i] = low_para1.y[i - 1];
 	}
-	return low_para.y[0];
+	return low_para1.y[0];
+}
+
+double lowpass2(double X_in)
+{
+	double a1 = -1.911197067426073;
+	double a2 = 0.914975834801433;
+	double k = 0.0009446918438401619;
+
+	low_para2.x[0] = X_in;
+
+	low_para2.y[0] = k*(low_para2.x[0] + 2 * low_para2.x[1] + low_para2.x[2]) - a1*low_para2.y[1] - a2*low_para2.y[2];
+
+	for (int i = 2; i>0; i--)
+	{
+		low_para2.x[i] = low_para2.x[i - 1];
+		low_para2.y[i] = low_para2.y[i - 1];
+	}
+	return low_para2.y[0];
 }
 
 struct highpass_para {
 	double x[3];
 	double y[3];
-} high_para;
+} high_para1,high_para2;
 
 double highpass1(double X_in)
 {
@@ -34,23 +52,42 @@ double highpass1(double X_in)
 	double a2 = 0.700896781188403;
 	double k = 0.837089190566345;
 
-	high_para.x[0] = X_in;
+	high_para1.x[0] = X_in;
 
-	high_para.y[0] = k*(high_para.x[0] - 2 * high_para.x[1] + high_para.x[2]) - a1*high_para.y[1] - a2*high_para.y[2];
+	high_para1.y[0] = k*(high_para1.x[0] - 2 * high_para1.x[1] + high_para1.x[2]) - a1*high_para1.y[1] - a2*high_para1.y[2];
 
 	for (int i = 2; i>0; i--)
 	{
-		high_para.x[i] = high_para.x[i - 1];
-		high_para.y[i] = high_para.y[i - 1];
+		high_para1.x[i] = high_para1.x[i - 1];
+		high_para1.y[i] = high_para1.y[i - 1];
 	}
-	return high_para.y[0];
+	return high_para1.y[0];
+}
+
+double highpass2(double X_in)
+{
+	double a1 = -1.647459981076977;
+	double a2 = 0.700896781188403;
+	double k = 0.837089190566345;
+
+	high_para2.x[0] = X_in;
+
+	high_para2.y[0] = k*(high_para2.x[0] - 2 * high_para2.x[1] + high_para2.x[2]) - a1*high_para2.y[1] - a2*high_para2.y[2];
+
+	for (int i = 2; i>0; i--)
+	{
+		high_para2.x[i] = high_para2.x[i - 1];
+		high_para2.y[i] = high_para2.y[i - 1];
+	}
+	return high_para2.y[0];
 }
 
 double hTorqueEst(double m1, double m2) {
-	double b1 = 0;
-	double b2 = 100;
-	double b3 = -100;
-	return b1 + b2*m1 + b3*m2;
+	double b1 = 0.297169536047388;
+	double b2 = 1436.64003038666;
+	double b3 = -619.933931268223;
+	//return b1 + b2*m1 + b3*m2; // EMG
+	return (b1 + b2*m1 + b3*m2)/10; // MMG
 }
 
 double assistanceMode(double eTorque, double hTorque) {
