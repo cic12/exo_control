@@ -87,7 +87,7 @@ double hTorqueEst(double m1, double m2) {
 	double b2 = 1436.64003038666;
 	double b3 = -619.933931268223;
 	//return b1 + b2*m1 + b3*m2; // EMG
-	return (b1 + b2*m1 + b3*m2)/10; // MMG
+	return (b1 + b2*m1 + b3*m2)/100; // MMG
 }
 
 double assistanceMode(double eTorque, double hTorque) {
