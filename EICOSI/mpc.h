@@ -1,8 +1,6 @@
 #ifndef MPC_H_
 #define MPC_H_
-
 #include "libgrampc.h"
-
 #define PRINTRES
 #define NX    	4
 #define NU  	1
@@ -14,7 +12,7 @@
 //#define tau_g   0.415f // from old
 
 // Lumped
-//#define A 		0.7129f
+//#define A 	  0.7129f
 //#define B       2.2936f
 //#define J_      0.1744f
 //#define tau_g   6.0796f
@@ -26,9 +24,8 @@
 #define tau_g   0.0f
 
 //#define w_theta 1500000 // EICOSI
-#define w_theta 2000
-//#define w_tau	1 // EICOSI
-#define w_tau	0.1
+#define w_theta 1000
+#define w_tau	1
 
 void openFile(FILE **file, const char *name);
 void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size);

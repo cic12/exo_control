@@ -21,6 +21,7 @@ float64 AIm[2] = { 0 , 0 };
 bool mpc_complete = false;
 short inputCurrent = 0;
 long currentPosition = 0;
+double pMode = 0;
 
 int main(void){
 	// Motor
@@ -31,12 +32,10 @@ int main(void){
 	// Threads
 	thread t1(motorComms);
 	// DAQmx init
-	int32       error = 0;
-	float64     AOdata[2] = { 3.3 , 3.3 };
-	int32       read = 0;
+	int32       error = 0, read = 0;
+	float64     AOdata[2] = { 3.3 , 3.3 };  
 	char        errBuff[2048] = { '\0' };
-	TaskHandle  AItaskHandle = 0;
-	TaskHandle  AOtaskHandle = 0;
+	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 	AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
 	AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
@@ -46,7 +45,7 @@ int main(void){
 
 	// GRAMPC init
 	typeGRAMPC *grampc;
-	typeInt iMPC, i, Sim = 0;
+	typeInt iMPC, i, Sim = 1;
 #ifdef PRINTRES
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct;
 #endif
@@ -107,7 +106,7 @@ int main(void){
 			}
 
 			// Set Current - sim and test
-			inputCurrent = *grampc->sol->unext * 68 * 2.5;
+			//inputCurrent = *grampc->sol->unext * 68 * 2.5;
 
 			if (Sim) {
 				// Simulation - heun scheme
@@ -126,9 +125,8 @@ int main(void){
 				grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
 				grampc->sol->xnext[1] = 0;
 			}
-
 			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2]);
+			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2], 0.5, 0.0);
 			// Update state and time
 			t = t + dt;
 			grampc_setparam_real_vector(grampc, "x0", grampc->sol->xnext);

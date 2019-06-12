@@ -6,7 +6,10 @@
 
 using namespace std;
 
+extern double pMode;
+
 double gaussmf(double x, double sig, double c);
-double assistanceMode(double eTorque, double hTorque);
+double torqueTransform(double Tau_e, double Tau_h);
+double assistanceMode(double Tau_e, double Tau_h, double pA, double pR);
 
 #endif
