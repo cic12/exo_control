@@ -34,7 +34,7 @@ extern "C"
 {
 	void ocp_dim(typeInt *Nx, typeInt *Nu, typeInt *Np, typeInt *Ng, typeInt *Nh, typeInt *NgT, typeInt *NhT, typeUSERPARAM *userparam)
 	{
-		*Nx = 4; // 2 system states and 4 dummy states
+		*Nx = 4; // 2 system states and 2 dummy states
 		*Nu = 1;
 		*Np = 0;
 		*Nh = 0;

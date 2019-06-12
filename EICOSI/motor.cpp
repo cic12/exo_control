@@ -1,6 +1,6 @@
-#include <iostream>
+//#include <iostream>
 #include "motor.h"
-#include "Definitions.h"
+//#include "Definitions.h"
 
 using namespace std;
 

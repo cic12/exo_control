@@ -27,6 +27,9 @@
     <ClCompile Include="daq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NIDAQmx.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="daq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

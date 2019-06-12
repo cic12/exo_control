@@ -90,16 +90,6 @@ double hTorqueEst(double m1, double m2) {
 	return (b1 + b2*m1 + b3*m2)/100; // MMG
 }
 
-double assistanceMode(double eTorque, double hTorque) {
-	//if ((x[4] > 0.01 && u[0] < -0.1) || (x[5] > 0.05 && u[0] > 0.1)) {
-	//	//M = 1 - p_stop;
-	//}
-	//else if ((x[4] > 0.01 && u[0] > -0.1) || (x[5] > 0.05 && u[0] < 0.1)) {
-	//	M = 1 - p_ass;
-	//}
-	return 1;
-}
-
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
 
 	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));

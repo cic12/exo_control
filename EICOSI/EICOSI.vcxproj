@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="daq.cpp" />
+    <ClCompile Include="fis.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="motor.cpp" />
     <ClCompile Include="mpc.cpp" />
@@ -150,6 +151,7 @@
   <ItemGroup>
     <ClInclude Include="daq.h" />
     <ClInclude Include="Definitions.h" />
+    <ClInclude Include="fis.h" />
     <ClInclude Include="motor.h" />
     <ClInclude Include="mpc.h" />
     <ClInclude Include="NIDAQmx.h" />
