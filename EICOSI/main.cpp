@@ -21,7 +21,7 @@ float64 AIm[2] = { 0 , 0 };
 bool mpc_complete = false;
 short inputCurrent = 0;
 long currentPosition = 0;
-double pMode = 0;
+int haltMode = 0;
 
 int main(void){
 	// Motor
@@ -60,8 +60,8 @@ int main(void){
 	ctypeRNum umax[NU] = { 20.0 }; // 40 EICOSI
 	ctypeRNum Thor = 0.5;
 	ctypeRNum dt = (typeRNum)0.002;
-	typeRNum t = (typeRNum)0.0;
-	ctypeRNum Tsim = 4;
+	typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
+	ctypeRNum Tsim = 8;
 	const char* IntegralCost = "on";
 	const char* TerminalCost = "off";
 	const char* ScaleProblem = "on";
@@ -95,7 +95,7 @@ int main(void){
 		if (time_counter > (double)(P_SECONDS * CLOCKS_PER_SEC))
 		{
 			// Setpoint
-			xdes[0] = (cos((0.25 * 2 * M_PI * t) - M_PI)) / 2 + 0.7;
+			xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
 			grampc_setparam_real_vector(grampc, "xdes", xdes);
 			// Grampc
 			grampc_run(grampc);
@@ -106,7 +106,7 @@ int main(void){
 			}
 
 			// Set Current - sim and test
-			//inputCurrent = *grampc->sol->unext * 68 * 2.5;
+			inputCurrent = *grampc->sol->unext * 68 * 2.5;// *4; // last times for conversion from sim
 
 			if (Sim) {
 				// Simulation - heun scheme
@@ -126,9 +126,12 @@ int main(void){
 				grampc->sol->xnext[1] = 0;
 			}
 			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2], 0.5, 0.0);
+			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2], 0.5, 0.5);
 			// Update state and time
 			t = t + dt;
+			if (haltMode) {
+				t_halt = t_halt + dt;
+			}
 			grampc_setparam_real_vector(grampc, "x0", grampc->sol->xnext);
 			iMPC++;
 #ifdef PRINTRES

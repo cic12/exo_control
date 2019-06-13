@@ -7,9 +7,9 @@ struct lowpass_para {
 
 double lowpass1(double X_in)
 {
-	double a1 = -1.911197067426073;
-	double a2 = 0.914975834801433;
-	double k = 0.0009446918438401619;
+	double a1 = -1.982228929792529;
+	double a2 = 0.982385450614126;
+	double k = 0.00003913020539916823;
 
 	low_para1.x[0] = X_in;
 
@@ -25,9 +25,9 @@ double lowpass1(double X_in)
 
 double lowpass2(double X_in)
 {
-	double a1 = -1.911197067426073;
-	double a2 = 0.914975834801433;
-	double k = 0.0009446918438401619;
+	double a1 = -1.982228929792529;
+	double a2 = 0.982385450614126;
+	double k = 0.00003913020539916823;
 
 	low_para2.x[0] = X_in;
 
@@ -87,7 +87,7 @@ double hTorqueEst(double m1, double m2) {
 	double b2 = 1436.64003038666;
 	double b3 = -619.933931268223;
 	//return b1 + b2*m1 + b3*m2; // EMG
-	return (b1 + b2*m1 + b3*m2)/100; // MMG
+	return (b1 + b2*m1 + b3*m2)/25; // MMG
 }
 
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {

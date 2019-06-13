@@ -5,17 +5,18 @@ double gaussmf(double x, double sig, double c) {
 }
 
 double torqueTransform(double Tau_e, double Tau_h) {
-	return Tau_e / (1 - pMode);// +Tau_h;
+	return Tau_e + Tau_h;
 }
 
 double assistanceMode(double Tau_e, double Tau_h, double pA, double pR) {
-	Tau_e = Tau_e * 10;
+	double sig_h = 0.424, c_h = 1, sig_e = 1.275, c_e = 3;
+
 	Tau_e = torqueTransform(Tau_e, Tau_h);
 
-	double muTau_eN = gaussmf(Tau_e, 17, -40);
-	double muTau_eP = gaussmf(Tau_e, 17, 40);
-	double muTau_hN = gaussmf(Tau_h, 10.6, -25);
-	double muTau_hP = gaussmf(Tau_h, 10.6, 25);
+	double muTau_eN = gaussmf(Tau_e, sig_e, -c_e);
+	double muTau_eP = gaussmf(Tau_e, sig_e, c_e);
+	double muTau_hN = gaussmf(Tau_h, sig_h, -c_h);
+	double muTau_hP = gaussmf(Tau_h, sig_h, c_h);
 
 	double r1mA = muTau_eN * muTau_hN; // prod And method
 	double r2mA = muTau_eP * muTau_hP;
@@ -25,12 +26,12 @@ double assistanceMode(double Tau_e, double Tau_h, double pA, double pR) {
 	double lambdaA = r1mA + r2mA;
 	double lambdaR = r3mR + r4mR;
 
-	return 1 - (pA * lambdaA + pR * lambdaR);
-
-	if (lambdaA > lambdaR) { // pMode selection for torqueTransform
-		pMode = pA;
+	if (lambdaR > 0.2) {
+		haltMode = 1;
 	}
 	else {
-		//pMode = pR;
+		haltMode = 0;
 	}
+
+	return 1 - (pA * lambdaA + pR * lambdaR);
 }
