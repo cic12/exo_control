@@ -7,6 +7,8 @@
 using namespace std;
 
 extern int haltMode;
+extern double mu[4];
+extern double rule[4];
 
 double gaussmf(double x, double sig, double c);
 double torqueTransform(double Tau_e, double Tau_h);

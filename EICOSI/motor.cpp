@@ -12,9 +12,11 @@ __int8 mode;
 void motorComms() {
 	while (!mpc_complete)
 	{
-		//setCurrent(-inputCurrent); // EICOSI
-		setCurrent(inputCurrent); // Mini rig
-		getCurrentPosition(currentPosition);
+		if(Motor){
+			//setCurrent(-inputCurrent); // EICOSI
+			setCurrent(inputCurrent); // Mini rig
+			getCurrentPosition(currentPosition);
+		}
 	}
 }
 

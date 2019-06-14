@@ -83,11 +83,10 @@ double highpass2(double X_in)
 }
 
 double hTorqueEst(double m1, double m2) {
-	double b1 = 0.297169536047388;
-	double b2 = 1436.64003038666;
-	double b3 = -619.933931268223;
-	//return b1 + b2*m1 + b3*m2; // EMG
-	return (b1 + b2*m1 + b3*m2)/25; // MMG
+	double b1 = 0;// 0.297169536047388; // EMG
+	double b2 = 50;// 1436.64003038666; // EMG
+	double b3 = -50;// -619.933931268223; // EMG
+	return (b1 + b2*m1 + b3*m2);
 }
 
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {

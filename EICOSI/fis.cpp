@@ -13,20 +13,20 @@ double assistanceMode(double Tau_e, double Tau_h, double pA, double pR) {
 
 	Tau_e = torqueTransform(Tau_e, Tau_h);
 
-	double muTau_eN = gaussmf(Tau_e, sig_e, -c_e);
-	double muTau_eP = gaussmf(Tau_e, sig_e, c_e);
-	double muTau_hN = gaussmf(Tau_h, sig_h, -c_h);
-	double muTau_hP = gaussmf(Tau_h, sig_h, c_h);
+	mu[0] = gaussmf(Tau_e, sig_e, -c_e); // Tau_e N
+	mu[1] = gaussmf(Tau_e, sig_e, c_e); // Tau_e P
+	mu[2] = gaussmf(Tau_h, sig_h, -c_h); // Tau_h N
+	mu[3] = gaussmf(Tau_h, sig_h, c_h); // Tau_h P
 
-	double r1mA = muTau_eN * muTau_hN; // prod And method
-	double r2mA = muTau_eP * muTau_hP;
-	double r3mR = muTau_eN * muTau_hP;
-	double r4mR = muTau_eP * muTau_hN;
+	rule[0] = mu[0] * mu[2];
+	rule[1] = mu[1] * mu[3];
+	rule[2] = mu[0] * mu[3];
+	rule[3] = mu[1] * mu[2];
 
-	double lambdaA = r1mA + r2mA;
-	double lambdaR = r3mR + r4mR;
+	double lambdaA = rule[0] + rule[1];
+	double lambdaR = rule[2] + rule[3];
 
-	if (lambdaR > 0.2) {
+	if (lambdaR > 0.25) {
 		haltMode = 1;
 	}
 	else {

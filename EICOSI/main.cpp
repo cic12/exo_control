@@ -18,17 +18,21 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool mpc_complete = false;
+bool mpc_complete = 0, Sim = 1, Motor = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
-int haltMode = 0;
+int haltMode;
+double mu[4];
+double rule[4];
 
 int main(void){
 	// Motor
-	long homePosition = 0;
-	openDevice();
-	definePosition(homePosition); // Mini rig
-	currentMode();
+	if (Motor) {
+		long homePosition = 0;
+		openDevice();
+		definePosition(homePosition); // Mini rig
+		currentMode();
+	}
 	// Threads
 	thread t1(motorComms);
 	// DAQmx init
@@ -45,9 +49,9 @@ int main(void){
 
 	// GRAMPC init
 	typeGRAMPC *grampc;
-	typeInt iMPC, i, Sim = 1;
+	typeInt iMPC, i;
 #ifdef PRINTRES
-	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct;
+	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
 	//typeRNum CPUtime = 0;
 	typeRNum rwsReferenceIntegration[2 * NX];
@@ -61,7 +65,7 @@ int main(void){
 	ctypeRNum Thor = 0.5;
 	ctypeRNum dt = (typeRNum)0.002;
 	typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
-	ctypeRNum Tsim = 8;
+	ctypeRNum Tsim = 4;
 	const char* IntegralCost = "on";
 	const char* TerminalCost = "off";
 	const char* ScaleProblem = "on";
@@ -75,6 +79,8 @@ int main(void){
 	openFile(&file_mode, "res/mode.txt");
 	openFile(&file_t, "res/tvec.txt");
 	openFile(&file_Ncfct, "res/cost.txt");
+	openFile(&file_mu, "res/mu.txt");
+	openFile(&file_rule, "res/rule.txt");
 #endif
 	// Timed loop init
 	ctypeRNum P_SECONDS = dt;
@@ -106,8 +112,9 @@ int main(void){
 			}
 
 			// Set Current - sim and test
-			inputCurrent = *grampc->sol->unext * 68 * 2.5;// *4; // last times for conversion from sim
-
+			if (Motor) {
+				inputCurrent = *grampc->sol->unext * 68 * 2.5;// *4; // last times for conversion from sim
+			}
 			if (Sim) {
 				// Simulation - heun scheme
 				ffct(rwsReferenceIntegration, t, grampc->param->x0, grampc->sol->unext, grampc->sol->pnext, grampc->userparam);
@@ -141,6 +148,8 @@ int main(void){
 			printNumVector2File(file_t, &t, 1);
 			printNumVector2File(file_mode, &grampc->sol->xnext[3], 1);
 			printNumVector2File(file_Ncfct, grampc->sol->J, 1);
+			printNumVector2File(file_mu, mu, 4);
+			printNumVector2File(file_rule, rule, 4);
 #endif
 			time_counter -= (double)(P_SECONDS * CLOCKS_PER_SEC);
 			task_count++;
@@ -154,7 +163,7 @@ int main(void){
 	grampc_free(&grampc);
 	printf("MPC finished\n");
 #ifdef PRINTRES
-	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct);
+	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
 #endif
 	if (AItaskHandle != 0) {
 		DAQmxStopTask(AItaskHandle);
@@ -166,6 +175,8 @@ int main(void){
 	}
 	t1.join();
 	myfile.close();
-	closeDevice();
+	if (Motor) {
+		closeDevice();
+	}
 	return 0;
 }
