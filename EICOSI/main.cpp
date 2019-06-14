@@ -21,6 +21,7 @@ float64 AIm[2] = { 0 , 0 };
 bool mpc_complete = 0, Sim = 1, Motor = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
+double previousPosition = 0;
 int haltMode;
 double mu[4];
 double rule[4];
@@ -62,7 +63,7 @@ int main(void){
 	ctypeRNum udes[NU] = { 0.0 };
 	ctypeRNum umin[NU] = { -20.0 }; // 40 EICOSI
 	ctypeRNum umax[NU] = { 20.0 }; // 40 EICOSI
-	ctypeRNum Thor = 0.5;
+	ctypeRNum Thor = 0.2;
 	ctypeRNum dt = (typeRNum)0.002;
 	typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
 	ctypeRNum Tsim = 4;
@@ -128,9 +129,11 @@ int main(void){
 			}
 			else {
 				// EICOSI / Mini rig
-				//grampc->sol->xnext[0] = (float)currentPosition/168000.f + M_PI/2; // EICOSI
-				grampc->sol->xnext[0] = (float)currentPosition / 3600.f + 0.2; // Mini rig
-				grampc->sol->xnext[1] = 0;
+				//grampc->sol->xnext[0] = (double)currentPosition/168000.f + M_PI/2; // EICOSI
+				grampc->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
+				grampc->sol->xnext[1] = 0; //(grampc->sol->xnext[0] - previousPosition)/dt; // need state estimator? currently MPC solves for static system
+				// implement SMA for velocity until full state estimator is developed
+				previousPosition = grampc->sol->xnext[0];
 			}
 			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
 			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2], 0.5, 0.5);

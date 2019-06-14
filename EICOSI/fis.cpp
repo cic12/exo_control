@@ -27,7 +27,7 @@ double assistanceMode(double Tau_e, double Tau_h, double pA, double pR) {
 	double lambdaR = rule[2] + rule[3];
 
 	if (lambdaR > 0.25) {
-		haltMode = 1;
+		//haltMode = 1;
 	}
 	else {
 		haltMode = 0;
