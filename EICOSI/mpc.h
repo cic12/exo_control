@@ -19,12 +19,12 @@
 
 // Mini rig 
 #define A 		1.5f
-#define B       0.4f
-#define J_      0.8f
+#define B       0.8f
+#define J_      1.0f
 #define tau_g   0.0f
 
 //#define w_theta 1500000 // EICOSI
-#define w_theta 1000
+#define w_theta 10000 //1000
 #define w_tau	1
 
 void openFile(FILE **file, const char *name);

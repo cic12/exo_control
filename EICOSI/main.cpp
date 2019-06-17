@@ -18,16 +18,19 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool mpc_complete = 0, Sim = 1, Motor = 0;
+bool mpc_complete = 0, Sim = 0, Motor = 1;
 short inputCurrent = 0;
 long currentPosition = 0;
-double previousPosition = 0;
 int haltMode;
 double mu[4];
 double rule[4];
 
 int main(void){
 	// Motor
+	double previousPosition = 0.2;
+	double currentVelocity = 0;
+	double previousVelocity = 0;
+	double alpha = 0.01;
 	if (Motor) {
 		long homePosition = 0;
 		openDevice();
@@ -57,7 +60,7 @@ int main(void){
 	//typeRNum CPUtime = 0;
 	typeRNum rwsReferenceIntegration[2 * NX];
 	//ctypeRNum x0[NX] = { currentPosition, 0, 0, 0 }; // EICOSI
-	ctypeRNum x0[NX] = { 0.2, 0, 0, 1};
+	ctypeRNum x0[NX] = { previousPosition, 0, 0, 1};
 	typeRNum xdes[NX] = { 0, 0, 0, 0 };
 	ctypeRNum u0[NU] = { 0.0 };
 	ctypeRNum udes[NU] = { 0.0 };
@@ -114,7 +117,7 @@ int main(void){
 
 			// Set Current - sim and test
 			if (Motor) {
-				inputCurrent = *grampc->sol->unext * 68 * 2.5;// *4; // last times for conversion from sim
+				inputCurrent = *grampc->sol->unext * 170;
 			}
 			if (Sim) {
 				// Simulation - heun scheme
@@ -131,9 +134,11 @@ int main(void){
 				// EICOSI / Mini rig
 				//grampc->sol->xnext[0] = (double)currentPosition/168000.f + M_PI/2; // EICOSI
 				grampc->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
-				grampc->sol->xnext[1] = 0; //(grampc->sol->xnext[0] - previousPosition)/dt; // need state estimator? currently MPC solves for static system
-				// implement SMA for velocity until full state estimator is developed
+				currentVelocity = (grampc->sol->xnext[0] - previousPosition)/dt; // need state estimator? currently MPC solves for static system
+				grampc->sol->xnext[1] = alpha * currentVelocity + (1-alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
+				// Save current states
 				previousPosition = grampc->sol->xnext[0];
+				previousVelocity = grampc->sol->xnext[1];
 			}
 			grampc->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
 			grampc->sol->xnext[3] = assistanceMode(*grampc->sol->unext, grampc->sol->xnext[2], 0.5, 0.5);
