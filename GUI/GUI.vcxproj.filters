@@ -39,6 +39,18 @@
     <ClCompile Include="qcustomplot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="daq.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="motor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mpc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GUI.h">
@@ -57,5 +69,32 @@
     <QtRcc Include="GUI.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EposCmd.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="EposCmd.lib" />
+    <Library Include="NIDAQmx.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="daq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Definitions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="motor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mpc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NIDAQmx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
