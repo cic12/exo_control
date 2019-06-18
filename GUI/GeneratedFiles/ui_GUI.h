@@ -34,6 +34,8 @@ public:
     QLabel *label_2;
     QPushButton *btn_add;
     QPushButton *btn_clear;
+    QPushButton *btn_start;
+    QPushButton *btn_stop;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -42,7 +44,7 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(600, 400);
+        GUIClass->resize(600, 403);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
@@ -66,6 +68,12 @@ public:
         btn_clear = new QPushButton(centralWidget);
         btn_clear->setObjectName(QString::fromUtf8("btn_clear"));
         btn_clear->setGeometry(QRect(260, 300, 75, 23));
+        btn_start = new QPushButton(centralWidget);
+        btn_start->setObjectName(QString::fromUtf8("btn_start"));
+        btn_start->setGeometry(QRect(350, 300, 75, 23));
+        btn_stop = new QPushButton(centralWidget);
+        btn_stop->setObjectName(QString::fromUtf8("btn_stop"));
+        btn_stop->setGeometry(QRect(440, 300, 75, 23));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -81,6 +89,8 @@ public:
         retranslateUi(GUIClass);
         QObject::connect(btn_add, SIGNAL(clicked()), GUIClass, SLOT(on_btn_add_clicked()));
         QObject::connect(btn_clear, SIGNAL(clicked()), GUIClass, SLOT(on_btn_clear_clicked()));
+        QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
+        QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
 
         QMetaObject::connectSlotsByName(GUIClass);
     } // setupUi
@@ -92,6 +102,8 @@ public:
         label_2->setText(QApplication::translate("GUIClass", "Y", nullptr));
         btn_add->setText(QApplication::translate("GUIClass", "Add", nullptr));
         btn_clear->setText(QApplication::translate("GUIClass", "Clear", nullptr));
+        btn_start->setText(QApplication::translate("GUIClass", "Start MPC", nullptr));
+        btn_stop->setText(QApplication::translate("GUIClass", "Stop MPC", nullptr));
     } // retranslateUi
 
 };
