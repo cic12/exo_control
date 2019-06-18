@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>400</height>
+    <height>403</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,6 +96,32 @@
      <string>Clear</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_start">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>300</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Start MPC</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_stop">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>300</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stop MPC</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -162,9 +188,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>btn_start</sender>
+   <signal>clicked()</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_btn_start_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>385</x>
+     <y>351</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>373</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_stop</sender>
+   <signal>clicked()</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_btn_stop_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>496</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>502</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_btn_add_clicked()</slot>
   <slot>on_btn_clear_clicked()</slot>
+  <slot>on_btn_start_clicked()</slot>
+  <slot>on_btn_stop_clicked()</slot>
  </slots>
 </ui>
