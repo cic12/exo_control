@@ -14,6 +14,7 @@
 #include "motor.h"
 #include "daq.h"
 #include "fis.h"
+//#define PRINTRES
 
 using namespace std;
 

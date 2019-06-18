@@ -1,7 +1,6 @@
 #ifndef MPC_H_
 #define MPC_H_
 #include "libgrampc.h"
-#define PRINTRES
 #define NX    	4
 #define NU  	1
 
