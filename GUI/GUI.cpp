@@ -14,7 +14,7 @@
 #include "motor.h"
 #include "daq.h"
 #include "fis.h"
-//#define PRINTRES
+#define PRINTRES
 
 using namespace std;
 
@@ -124,7 +124,6 @@ void GUI::on_btn_init_clicked()
 
 void GUI::on_btn_start_clicked()
 {
-	//typeGRAMPC *grampc;
 	if (Motor) {
 		openDevice();
 		definePosition(homePosition); // Mini rig
@@ -155,10 +154,8 @@ void GUI::on_btn_start_clicked()
 
 	AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 
-	this_time = clock();
-	last_time = this_time;
+	last_time = clock();
 	start_time = clock();
-
 	// thread from here
 	while (!mpc_complete)
 	{
@@ -213,12 +210,12 @@ void GUI::on_btn_start_clicked()
 			grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 			iMPC++;
 #ifdef PRINTRES
-			printNumVector2File(file_x, grampc->sol->xnext, NX);
-			printNumVector2File(file_xdes, grampc->param->xdes, NX);
-			printNumVector2File(file_u, grampc->sol->unext, NU);
+			printNumVector2File(file_x, grampc_->sol->xnext, NX);
+			printNumVector2File(file_xdes, grampc_->param->xdes, NX);
+			printNumVector2File(file_u, grampc_->sol->unext, NU);
 			printNumVector2File(file_t, &t, 1);
-			printNumVector2File(file_mode, &grampc->sol->xnext[3], 1);
-			printNumVector2File(file_Ncfct, grampc->sol->J, 1);
+			printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
+			printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
 			printNumVector2File(file_mu, mu, 4);
 			printNumVector2File(file_rule, rule, 4);
 #endif
