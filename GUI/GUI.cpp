@@ -75,8 +75,9 @@ clock_t this_time;
 clock_t last_time;
 clock_t start_time;
 
-bool start_clicked = 0;
 bool init_clicked = 0;
+bool start_clicked = 0;
+bool stop_clicked = 0;
 
 GUI::GUI(QWidget *parent)
 	: QMainWindow(parent)
@@ -147,16 +148,13 @@ void GUI::on_btn_init_clicked()
 
 void GUI::on_btn_start_clicked()
 {
+	std::thread t1(motorComms);
 	if (!start_clicked && init_clicked) {
-		std::thread t1(motorComms);
-
 		AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
 		AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
 		AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
 
 		myfile.open("res/ai.txt");
-
-		//printf("\nMPC running ...\n");
 
 		AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 
@@ -226,14 +224,25 @@ void GUI::on_btn_start_clicked()
 				printNumVector2File(file_rule, rule, 4);
 #endif
 				time_counter -= (double)(P_SECONDS * CLOCKS_PER_SEC);
-				task_count++;
-				if (task_count == n_tasks) {
-					clock_t end_time = clock();
-					printf("Duration = %lf s\n", (float)(end_time - start_time) / CLOCKS_PER_SEC);
-					mpc_complete = 1;
-				}
+				//task_count++;
+				//if (task_count == n_tasks) {
+				//	clock_t end_time = clock();
+				//	printf("Duration = %lf s\n", (float)(end_time - start_time) / CLOCKS_PER_SEC);
+				//	mpc_complete = 1;
+				//}
 			}
 		}
+		start_clicked = 1;
+	}
+	if (mpc_complete) {
+		t1.join();
+	}
+}
+
+void GUI::on_btn_stop_clicked()
+{
+	if (!stop_clicked) {
+		mpc_complete = 1;
 		grampc_free(&grampc_);
 		printf("MPC finished\n");
 #ifdef PRINTRES
@@ -247,15 +256,10 @@ void GUI::on_btn_start_clicked()
 			DAQmxStopTask(AOtaskHandle);
 			DAQmxClearTask(AOtaskHandle);
 		}
-		t1.join();
+		//t1.join();
 		myfile.close();
 		if (Motor) {
 			closeDevice();
 		}
-		start_clicked = 1;
 	}
-}
-
-void GUI::on_btn_stop_clicked()
-{
 }
