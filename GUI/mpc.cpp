@@ -43,6 +43,6 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0
 	grampc_setopt_string(*grampc_, "TerminalCost", TerminalCost);
 	grampc_setopt_string(*grampc_, "ScaleProblem", ScaleProblem);
 	
-	grampc_printparam(*grampc_); // Print GRAMPC parameters
-	grampc_printopt(*grampc_); // Print GRAMPC options
+	//grampc_printparam(*grampc_); // Print GRAMPC parameters
+	//grampc_printopt(*grampc_); // Print GRAMPC options
 }

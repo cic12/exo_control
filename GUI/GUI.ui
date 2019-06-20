@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>633</width>
     <height>403</height>
    </rect>
   </property>
@@ -99,7 +99,7 @@
    <widget class="QPushButton" name="btn_start">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>440</x>
       <y>300</y>
       <width>75</width>
       <height>23</height>
@@ -112,7 +112,7 @@
    <widget class="QPushButton" name="btn_stop">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>530</x>
       <y>300</y>
       <width>75</width>
       <height>23</height>
@@ -122,13 +122,26 @@
      <string>Stop MPC</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_init">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>300</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Init MPC</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>633</width>
      <height>21</height>
     </rect>
    </property>
@@ -195,8 +208,8 @@
    <slot>on_btn_start_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>385</x>
-     <y>351</y>
+     <x>475</x>
+     <y>355</y>
     </hint>
     <hint type="destinationlabel">
      <x>437</x>
@@ -211,12 +224,28 @@
    <slot>on_btn_stop_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>496</x>
-     <y>340</y>
+     <x>586</x>
+     <y>355</y>
     </hint>
     <hint type="destinationlabel">
      <x>502</x>
      <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_init</sender>
+   <signal>clicked()</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_btn_init_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
+     <y>354</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>404</x>
+     <y>328</y>
     </hint>
    </hints>
   </connection>
@@ -226,5 +255,6 @@
   <slot>on_btn_clear_clicked()</slot>
   <slot>on_btn_start_clicked()</slot>
   <slot>on_btn_stop_clicked()</slot>
+  <slot>on_btn_init_clicked()</slot>
  </slots>
 </ui>

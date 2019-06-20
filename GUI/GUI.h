@@ -21,6 +21,7 @@ private:
 private slots:
 	void on_btn_add_clicked();
 	void on_btn_clear_clicked();
+	void on_btn_init_clicked();
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
 };
