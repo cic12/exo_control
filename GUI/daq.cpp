@@ -103,7 +103,7 @@ Error:
 		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
 		DAQmxStopTask(AItaskHandle);
 		DAQmxClearTask(AItaskHandle);
-		printf("DAQmx Error: %s\n", errBuff);
+		//printf("DAQmx Error: %s\n", errBuff);
 	}
 	return AItaskHandle;
 }
@@ -120,7 +120,7 @@ Error:
 		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
 		DAQmxStopTask(AOtaskHandle);
 		DAQmxClearTask(AOtaskHandle);
-		printf("DAQmx Error: %s\n", errBuff);
+		//printf("DAQmx Error: %s\n", errBuff);
 	}
 	return AOtaskHandle;
 }
@@ -134,7 +134,7 @@ Error:
 		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
 		DAQmxStopTask(taskHandle);
 		DAQmxClearTask(taskHandle);
-		printf("DAQmx Error: %s\n", errBuff);
+		//printf("DAQmx Error: %s\n", errBuff);
 	}
 	return taskHandle;
 }
