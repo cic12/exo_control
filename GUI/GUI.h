@@ -2,6 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_GUI.h"
+#include "MyThread.h"
 
 class GUI : public QMainWindow
 {
@@ -13,7 +14,7 @@ public:
 	void addPoint(double x, double y);
 	void clearData();
 	void plot();
-
+	MyThread *mThread;
 private:
 	Ui::GUIClass ui;
 	QVector<double> qv_x, qv_y;
@@ -24,4 +25,7 @@ private slots:
 	void on_btn_init_clicked();
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
+
+public slots:
+	void onMpcIteration(int);
 };

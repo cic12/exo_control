@@ -10,7 +10,7 @@ WORD nodeID;
 __int8 mode;
 
 void motorComms() {
-	while (!mpc_complete)
+	if (!mpc_complete)
 	{
 		if(Motor){
 			//setCurrent(-inputCurrent); // EICOSI
