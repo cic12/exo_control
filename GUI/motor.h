@@ -4,7 +4,7 @@
 #include <iostream>
 #include "Definitions.h"
 
-extern bool mpc_complete, Motor;
+extern bool Motor, mpc_complete;
 extern short inputCurrent;
 extern long currentPosition;
 

@@ -1,13 +1,11 @@
-//#include <iostream>
 #include "motor.h"
-//#include "Definitions.h"
-
-using namespace std;
 
 HANDLE keyHandle;
 DWORD errorCode;
 WORD nodeID;
 __int8 mode;
+
+using namespace std;
 
 void motorComms() {
 	if (!mpc_complete)
