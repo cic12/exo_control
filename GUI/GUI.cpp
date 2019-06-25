@@ -45,24 +45,14 @@ void GUI::on_btn_clear_clicked()
 	plot();
 }
 
-void GUI::on_btn_init_clicked()
-{
-	mThread->mpc_init();
-}
-
 void GUI::on_btn_start_clicked()
 {
-	mThread->Stop = false;
 	mThread->start();
 }
 
 void GUI::on_btn_stop_clicked()
 {
-	//mThread->quit();
 	mThread->Stop = true;
-	//mThread->start();
-	//mThread->mpc_stop();
-	//mThread->iMPC = 0;
 }
 
 void GUI::onMpcIteration(int Number) {

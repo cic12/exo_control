@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "Definitions.h"
+#include "MyThread.h"
 
 extern bool Motor, mpc_complete;
 extern short inputCurrent;

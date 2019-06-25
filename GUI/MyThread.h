@@ -11,7 +11,7 @@ public:
 	MyThread(QObject *parent);
 	void run();
 
-	bool Stop = 0;
+	bool Stop = false;
 	int iMPC = 0;
 
 	void mpc_init();

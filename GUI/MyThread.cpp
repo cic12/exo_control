@@ -216,7 +216,7 @@ void MyThread::run()
 		} else {
 			mpc_stop();
 			t1.join();
-			while (1);
+			terminate();
 		}
 	}
 }

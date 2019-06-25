@@ -122,24 +122,11 @@
      <string>Stop MPC</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_init">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>300</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Init MPC</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>330</y>
+      <x>360</x>
+      <y>310</y>
       <width>47</width>
       <height>13</height>
      </rect>
@@ -246,28 +233,11 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>btn_init</sender>
-   <signal>clicked()</signal>
-   <receiver>GUIClass</receiver>
-   <slot>on_btn_init_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>380</x>
-     <y>354</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>404</x>
-     <y>328</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>on_btn_add_clicked()</slot>
   <slot>on_btn_clear_clicked()</slot>
   <slot>on_btn_start_clicked()</slot>
   <slot>on_btn_stop_clicked()</slot>
-  <slot>on_btn_init_clicked()</slot>
  </slots>
 </ui>

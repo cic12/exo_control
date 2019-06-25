@@ -36,7 +36,6 @@ public:
     QPushButton *btn_clear;
     QPushButton *btn_start;
     QPushButton *btn_stop;
-    QPushButton *btn_init;
     QLabel *label_3;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -76,12 +75,9 @@ public:
         btn_stop = new QPushButton(centralWidget);
         btn_stop->setObjectName(QString::fromUtf8("btn_stop"));
         btn_stop->setGeometry(QRect(530, 300, 75, 23));
-        btn_init = new QPushButton(centralWidget);
-        btn_init->setObjectName(QString::fromUtf8("btn_init"));
-        btn_init->setGeometry(QRect(350, 300, 75, 23));
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(320, 330, 47, 13));
+        label_3->setGeometry(QRect(360, 310, 47, 13));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -99,7 +95,6 @@ public:
         QObject::connect(btn_clear, SIGNAL(clicked()), GUIClass, SLOT(on_btn_clear_clicked()));
         QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
-        QObject::connect(btn_init, SIGNAL(clicked()), GUIClass, SLOT(on_btn_init_clicked()));
 
         QMetaObject::connectSlotsByName(GUIClass);
     } // setupUi
@@ -113,7 +108,6 @@ public:
         btn_clear->setText(QApplication::translate("GUIClass", "Clear", nullptr));
         btn_start->setText(QApplication::translate("GUIClass", "Start MPC", nullptr));
         btn_stop->setText(QApplication::translate("GUIClass", "Stop MPC", nullptr));
-        btn_init->setText(QApplication::translate("GUIClass", "Init MPC", nullptr));
         label_3->setText(QApplication::translate("GUIClass", "Number", nullptr));
     } // retranslateUi
 
