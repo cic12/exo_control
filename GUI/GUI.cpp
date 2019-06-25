@@ -55,6 +55,6 @@ void GUI::on_btn_stop_clicked()
 	mThread->Stop = true;
 }
 
-void GUI::onMpcIteration(int Number) {
-	ui.label_3->setText(QString::number(Number));
+void GUI::onMpcIteration(double Number) {
+	ui.label_3->setText(QString::number(Number,'e',1)); // NOT working
 }

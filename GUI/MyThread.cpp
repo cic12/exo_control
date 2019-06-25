@@ -212,7 +212,7 @@ void MyThread::run()
 	while(1){
 		if (!Stop) {
 			mpc_loop();
-			emit mpcIteration(iMPC);
+			emit mpcIteration(t);
 		} else {
 			mpc_stop();
 			t1.join();

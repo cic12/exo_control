@@ -18,5 +18,5 @@ public:
 	void mpc_loop();
 	void mpc_stop();
 signals:
-	void mpcIteration(int);
+	void mpcIteration(double);
 };
