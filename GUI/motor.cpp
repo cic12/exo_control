@@ -8,7 +8,7 @@ __int8 mode;
 using namespace std;
 
 void motorComms() {
-	if (!mpc_complete)
+	while (!mpc_complete)
 	{
 		if(Motor){
 			//setCurrent(-inputCurrent); // EICOSI

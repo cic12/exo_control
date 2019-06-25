@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QThread>
+#include "ui_GUI.h"
 
 class MyThread : public QThread
 {
