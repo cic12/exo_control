@@ -74,8 +74,8 @@ clock_t this_time;
 clock_t last_time;
 clock_t start_time;
 
-bool start_clicked = 0;
-bool stop_clicked = 0;
+//bool start_clicked = 0;
+//bool stop_clicked = 0;
 
 bool mpc_on = 0;
 
@@ -209,14 +209,11 @@ void MyThread::run()
 {
 	mpc_init();
 	std::thread t1(motorComms);
-	while(1){
-		if (!Stop) {
-			mpc_loop();
-			emit mpcIteration(t);
-		} else {
-			mpc_stop();
-			t1.join();
-			terminate();
-		}
+	while(!Stop){
+		mpc_loop();
+		emit mpcIteration(t);
 	}
+	mpc_stop();
+	t1.join();
+	terminate();
 }

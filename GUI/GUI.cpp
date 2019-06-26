@@ -10,7 +10,7 @@ GUI::GUI(QWidget *parent)
 	ui.plot->graph(0)->setLineStyle(QCPGraph::lsLine);
 
 	mThread = new MyThread(this);
-	connect(mThread, SIGNAL(mpcIteration(int)), this, SLOT(onMpcIteration(int)));
+	connect(mThread, SIGNAL(mpcIteration(double)), this, SLOT(onMpcIteration(double)));
 }
 
 void GUI::addPoint(double x, double y)
@@ -55,6 +55,16 @@ void GUI::on_btn_stop_clicked()
 	mThread->Stop = true;
 }
 
-void GUI::onMpcIteration(double Number) {
-	ui.label_3->setText(QString::number(Number,'e',1)); // NOT working
+void GUI::destroyed()
+{
+	// close thread before shut down
+}
+
+void GUI::onMpcIteration(double time) {
+	ui.label_3->setText(QString::number(time, 'f', 3));
+	//int t = time * 1000; // t in ms (every 2 ms)
+	//if (t % 200 == 0) { // every 200 ms
+	//	addPoint(time,time);
+	//	plot();
+	//}
 }
