@@ -20,7 +20,6 @@ private:
 	QVector<double> qv_x, qv_y, qv_y1;
 
 private slots:
-	void on_btn_add_clicked();
 	void on_btn_clear_clicked();
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();

@@ -20,7 +20,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 1, Motor = 0, mpc_complete = 0;
+bool Sim = 0, Motor = 1, mpc_complete = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -55,13 +55,17 @@ ctypeRNum u0[NU] = { 0.0 };
 ctypeRNum udes[NU] = { 0.0 };
 ctypeRNum umin[NU] = { -20.0 }; // 40 EICOSI
 ctypeRNum umax[NU] = { 20.0 }; // 40 EICOSI
-ctypeRNum Thor = 0.2;
+typeRNum Thor = 0.2;
 ctypeRNum dt = (typeRNum)0.002;
 typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
 ctypeRNum Tsim = 4;
 const char* IntegralCost = "on";
 const char* TerminalCost = "off";
 const char* ScaleProblem = "on";
+
+//double w_theta = 10000;
+//double w_tau = 1;
+
 typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
 typeUSERPARAM *userparam = pSys;
 
@@ -73,9 +77,6 @@ double time_counter = 1;
 clock_t this_time;
 clock_t last_time;
 clock_t start_time;
-
-//bool start_clicked = 0;
-//bool stop_clicked = 0;
 
 bool mpc_on = 0;
 
@@ -90,7 +91,14 @@ void MyThread::mpc_init() {
 		definePosition(homePosition); // Mini rig
 		currentMode();
 	}
-	mpcInit(&grampc_, userparam, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
+	//double A = 1.5;
+	//double B = 0.8;
+	//double J_ = 1.0;
+	//double tau_g = 0.0;
+	//double w_theta = 10000;
+	//double w_tau = 1;
+	//double pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
+	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
 
 #ifdef PRINTRES
 	openFile(&file_x, "res/xvec.txt");

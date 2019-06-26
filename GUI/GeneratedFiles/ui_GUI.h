@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QDial>
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
@@ -28,15 +29,13 @@ class Ui_GUIClass
 public:
     QWidget *centralWidget;
     QCustomPlot *plot;
-    QDoubleSpinBox *bx_x;
-    QLabel *label;
-    QDoubleSpinBox *bx_y;
-    QLabel *label_2;
-    QPushButton *btn_add;
     QPushButton *btn_clear;
     QPushButton *btn_start;
     QPushButton *btn_stop;
     QLabel *label_3;
+    QLabel *label_4;
+    QDoubleSpinBox *doubleSpinBox;
+    QDial *dial;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -45,30 +44,15 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(611, 408);
+        GUIClass->resize(632, 461);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
         plot->setObjectName(QString::fromUtf8("plot"));
-        plot->setGeometry(QRect(10, 10, 591, 281));
-        bx_x = new QDoubleSpinBox(centralWidget);
-        bx_x->setObjectName(QString::fromUtf8("bx_x"));
-        bx_x->setGeometry(QRect(10, 300, 62, 22));
-        label = new QLabel(centralWidget);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(20, 330, 47, 13));
-        bx_y = new QDoubleSpinBox(centralWidget);
-        bx_y->setObjectName(QString::fromUtf8("bx_y"));
-        bx_y->setGeometry(QRect(90, 300, 62, 22));
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setGeometry(QRect(100, 330, 47, 13));
-        btn_add = new QPushButton(centralWidget);
-        btn_add->setObjectName(QString::fromUtf8("btn_add"));
-        btn_add->setGeometry(QRect(170, 300, 75, 23));
+        plot->setGeometry(QRect(30, 10, 571, 281));
         btn_clear = new QPushButton(centralWidget);
         btn_clear->setObjectName(QString::fromUtf8("btn_clear"));
-        btn_clear->setGeometry(QRect(260, 300, 75, 23));
+        btn_clear->setGeometry(QRect(280, 300, 75, 23));
         btn_start = new QPushButton(centralWidget);
         btn_start->setObjectName(QString::fromUtf8("btn_start"));
         btn_start->setGeometry(QRect(440, 300, 75, 23));
@@ -77,11 +61,20 @@ public:
         btn_stop->setGeometry(QRect(530, 300, 75, 23));
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(360, 300, 51, 21));
+        label_3->setGeometry(QRect(370, 300, 41, 20));
+        label_4 = new QLabel(centralWidget);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setGeometry(QRect(370, 320, 41, 21));
+        doubleSpinBox = new QDoubleSpinBox(centralWidget);
+        doubleSpinBox->setObjectName(QString::fromUtf8("doubleSpinBox"));
+        doubleSpinBox->setGeometry(QRect(30, 300, 62, 22));
+        dial = new QDial(centralWidget);
+        dial->setObjectName(QString::fromUtf8("dial"));
+        dial->setGeometry(QRect(20, 330, 81, 81));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 611, 21));
+        menuBar->setGeometry(QRect(0, 0, 632, 21));
         GUIClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(GUIClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -91,7 +84,6 @@ public:
         GUIClass->setStatusBar(statusBar);
 
         retranslateUi(GUIClass);
-        QObject::connect(btn_add, SIGNAL(clicked()), GUIClass, SLOT(on_btn_add_clicked()));
         QObject::connect(btn_clear, SIGNAL(clicked()), GUIClass, SLOT(on_btn_clear_clicked()));
         QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
@@ -103,13 +95,11 @@ public:
     void retranslateUi(QMainWindow *GUIClass)
     {
         GUIClass->setWindowTitle(QApplication::translate("GUIClass", "GUI", nullptr));
-        label->setText(QApplication::translate("GUIClass", "X", nullptr));
-        label_2->setText(QApplication::translate("GUIClass", "Y", nullptr));
-        btn_add->setText(QApplication::translate("GUIClass", "Add", nullptr));
         btn_clear->setText(QApplication::translate("GUIClass", "Clear", nullptr));
         btn_start->setText(QApplication::translate("GUIClass", "Start MPC", nullptr));
         btn_stop->setText(QApplication::translate("GUIClass", "Stop MPC", nullptr));
-        label_3->setText(QApplication::translate("GUIClass", "Time", nullptr));
+        label_3->setText(QApplication::translate("GUIClass", "0.000", nullptr));
+        label_4->setText(QApplication::translate("GUIClass", "Time", nullptr));
     } // retranslateUi
 
 };

@@ -16,7 +16,7 @@
 //#define J_      0.1744f
 //#define tau_g   6.0796f
 
-// Mini rig 
+//// Mini rig 
 #define A 		1.5f
 #define B       0.8f
 #define J_      1.0f
