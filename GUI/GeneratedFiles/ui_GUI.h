@@ -45,12 +45,12 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(633, 403);
+        GUIClass->resize(611, 408);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
         plot->setObjectName(QString::fromUtf8("plot"));
-        plot->setGeometry(QRect(10, 10, 581, 281));
+        plot->setGeometry(QRect(10, 10, 591, 281));
         bx_x = new QDoubleSpinBox(centralWidget);
         bx_x->setObjectName(QString::fromUtf8("bx_x"));
         bx_x->setGeometry(QRect(10, 300, 62, 22));
@@ -81,7 +81,7 @@ public:
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 633, 21));
+        menuBar->setGeometry(QRect(0, 0, 611, 21));
         GUIClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(GUIClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));

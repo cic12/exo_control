@@ -20,7 +20,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 1, Motor = 1, mpc_complete = 0;
+bool Sim = 1, Motor = 0, mpc_complete = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -129,7 +129,7 @@ void MyThread::mpc_loop() {
 			grampc_run(grampc_);
 			if (grampc_->sol->status > 0) {
 				if (grampc_printstatus(grampc_->sol->status, STATUS_LEVEL_ERROR)) {
-					myPrint("at iteration %i:\n -----\n", iMPC);
+					//myPrint("at iteration %i:\n -----\n", iMPC);
 				}
 			}
 			if (Motor) {
@@ -187,7 +187,7 @@ void MyThread::mpc_stop() {
 	mpc_complete = 1;
 
 	grampc_free(&grampc_);
-	printf("MPC finished\n");
+	//printf("MPC finished\n");
 #ifdef PRINTRES
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
 #endif
@@ -211,7 +211,7 @@ void MyThread::run()
 	std::thread t1(motorComms);
 	while(!Stop){
 		mpc_loop();
-		emit mpcIteration(t);
+		emit mpcIteration(t,grampc_->sol->xnext[0], grampc_->param->xdes[0]);
 	}
 	mpc_stop();
 	t1.join();
