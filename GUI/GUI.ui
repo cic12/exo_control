@@ -354,7 +354,7 @@
    <sender>A_doubleSpinBox</sender>
    <signal>valueChanged(double)</signal>
    <receiver>GUIClass</receiver>
-   <slot>param_changed()</slot>
+   <slot>on_A_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>55</x>
@@ -371,6 +371,6 @@
   <slot>on_btn_clear_clicked()</slot>
   <slot>on_btn_start_clicked()</slot>
   <slot>on_btn_stop_clicked()</slot>
-  <slot>param_changed()</slot>
+  <slot>on_A_changed()</slot>
  </slots>
 </ui>

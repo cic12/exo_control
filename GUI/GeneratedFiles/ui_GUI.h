@@ -145,7 +145,7 @@ public:
         retranslateUi(GUIClass);
         QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
-        QObject::connect(A_doubleSpinBox, SIGNAL(valueChanged(double)), GUIClass, SLOT(param_changed()));
+        QObject::connect(A_doubleSpinBox, SIGNAL(valueChanged(double)), GUIClass, SLOT(on_A_changed()));
 
         QMetaObject::connectSlotsByName(GUIClass);
     } // setupUi
@@ -171,12 +171,6 @@ public:
 
 namespace Ui {
     class GUIClass: public Ui_GUIClass {};
-} // namespace Ui
-
-QT_END_NAMESPACE
-
-#endif // UI_GUI_H
-: public Ui_GUIClass {};
 } // namespace Ui
 
 QT_END_NAMESPACE

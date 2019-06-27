@@ -87,6 +87,7 @@ bool mpc_on = 0;
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)
 {
+	//connect(gui, SIGNAL(paramChanged(double)), this, SLOT(onParamChanged(double)));
 }
 
 void MyThread::mpc_init() {
@@ -210,9 +211,9 @@ void MyThread::mpc_stop() {
 	}
 }
 
-//void param_change(double A_new) {
-//	A = A_new;
-//}
+void onParamChanged(double A_new) {
+	A = A_new;
+}
 
 void MyThread::run()
 {

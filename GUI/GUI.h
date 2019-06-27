@@ -21,7 +21,10 @@ private:
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
+	void on_A_changed();
 
 public slots:
 	void onMpcIteration(double,double,double);
+signals:
+	void paramChanged(double);
 };

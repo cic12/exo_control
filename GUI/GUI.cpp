@@ -44,7 +44,7 @@ GUI::GUI(QWidget *parent)
 
 	mThread = new MyThread(this);
 	connect(mThread, SIGNAL(mpcIteration(double,double,double)), this, SLOT(onMpcIteration(double,double,double)));
-	//connect(this, SIGNAL(on_A_changed()),mThread, SLOT(mpcIteration(double, double, double)));
+	//connect(this, SIGNAL(paramChanged(double)),mThread, SLOT(onParamChanged(double)));
 }
 
 void GUI::addPoint(double x, double y, double y1)
@@ -73,6 +73,11 @@ void GUI::on_btn_start_clicked()
 void GUI::on_btn_stop_clicked()
 {
 	mThread->Stop = true;
+}
+
+void GUI::on_A_changed()
+{
+	emit paramChanged(ui.A_doubleSpinBox->value());
 }
 
 void GUI::onMpcIteration(double time, double x, double x_des) {
