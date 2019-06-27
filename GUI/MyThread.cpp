@@ -42,11 +42,10 @@ TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 // GRAMPC init
 typeGRAMPC *grampc_;
-typeInt i;// iMPC = 0;
+typeInt i;
 #ifdef PRINTRES
 FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
-//typeRNum CPUtime = 0;
 typeRNum rwsReferenceIntegration[2 * NX];
 //ctypeRNum x0[NX] = { currentPosition, 0, 0, 0 }; // EICOSI
 ctypeRNum x0[NX] = { previousPosition, 0, 0, 1 };
@@ -55,24 +54,29 @@ ctypeRNum u0[NU] = { 0.0 };
 ctypeRNum udes[NU] = { 0.0 };
 ctypeRNum umin[NU] = { -20.0 }; // 40 EICOSI
 ctypeRNum umax[NU] = { 20.0 }; // 40 EICOSI
-typeRNum Thor = 0.2;
 ctypeRNum dt = (typeRNum)0.002;
 typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
-ctypeRNum Tsim = 4;
+//ctypeRNum Tsim = 4;
 const char* IntegralCost = "on";
 const char* TerminalCost = "off";
 const char* ScaleProblem = "on";
 
-//double w_theta = 10000;
-//double w_tau = 1;
+// GUI params
+double A = 1.5;
+double B = 0.8;
+double J_ = 1.0;
+double tau_g = 0.0;
+double w_theta = 10000;
+double w_tau = 1;
+double Thor = 0.2;
+//QThread A_;
+double pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
+// include daq variables
 
-typeRNum pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
-typeUSERPARAM *userparam = pSys;
-
-// Timed loop init
+// Timed loop
 ctypeRNum P_SECONDS = dt;
 int task_count = 0;
-double n_tasks = Tsim / dt;
+//double n_tasks = Tsim / dt;
 double time_counter = 1;
 clock_t this_time;
 clock_t last_time;
@@ -81,7 +85,7 @@ clock_t start_time;
 bool mpc_on = 0;
 
 MyThread::MyThread(QObject *parent)
-	: QThread(parent)
+	:QThread(parent)
 {
 }
 
@@ -91,13 +95,7 @@ void MyThread::mpc_init() {
 		definePosition(homePosition); // Mini rig
 		currentMode();
 	}
-	//double A = 1.5;
-	//double B = 0.8;
-	//double J_ = 1.0;
-	//double tau_g = 0.0;
-	//double w_theta = 10000;
-	//double w_tau = 1;
-	//double pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
+
 	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
 
 #ifdef PRINTRES
@@ -144,7 +142,7 @@ void MyThread::mpc_loop() {
 				// Set Current
 				inputCurrent = *grampc_->sol->unext * 170;
 			}
-			if (Sim) {
+			if (Sim) { // Convert to Sim function
 				// Simulation - heun scheme
 				ffct(rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 				for (i = 0; i < NX; i++) {
@@ -193,7 +191,6 @@ void MyThread::mpc_loop() {
 void MyThread::mpc_stop() {
 	Stop = 1;
 	mpc_complete = 1;
-
 	grampc_free(&grampc_);
 	//printf("MPC finished\n");
 #ifdef PRINTRES
@@ -213,11 +210,16 @@ void MyThread::mpc_stop() {
 	}
 }
 
+//void param_change(double A_new) {
+//	A = A_new;
+//}
+
 void MyThread::run()
 {
 	mpc_init();
 	std::thread t1(motorComms);
 	while(!Stop){
+		// reset param values here
 		mpc_loop();
 		emit mpcIteration(t,grampc_->sol->xnext[0], grampc_->param->xdes[0]);
 	}

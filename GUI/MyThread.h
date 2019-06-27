@@ -13,12 +13,13 @@ public:
 
 	bool Stop = false;
 	int iMPC = 0;
-	double w_theta = 10000;
-	double w_tau = 1;
+	//double A_ = 1.5;
 
 	void mpc_init();
 	void mpc_loop();
 	void mpc_stop();
+//public slots:
+//	void param_change(double);
 signals:
 	void mpcIteration(double,double,double);
 };
