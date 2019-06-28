@@ -275,6 +275,9 @@
     </property>
    </widget>
    <widget class="QCustomPlot" name="plot1" native="true">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>110</x>

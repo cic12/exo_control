@@ -132,6 +132,7 @@ public:
         btn_set_params->setGeometry(QRect(20, 20, 75, 23));
         plot1 = new QCustomPlot(centralWidget);
         plot1->setObjectName(QString::fromUtf8("plot1"));
+        plot1->setEnabled(false);
         plot1->setGeometry(QRect(110, 260, 471, 221));
         progressBar = new QProgressBar(centralWidget);
         progressBar->setObjectName(QString::fromUtf8("progressBar"));
