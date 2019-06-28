@@ -112,7 +112,7 @@ public:
         W_theta_box->setObjectName(QString::fromUtf8("W_theta_box"));
         W_theta_box->setGeometry(QRect(20, 270, 71, 22));
         W_theta_box->setMaximum(100000.000000000000000);
-        W_theta_box->setValue(1000.000000000000000);
+        W_theta_box->setValue(10000.000000000000000);
         label_10 = new QLabel(centralWidget);
         label_10->setObjectName(QString::fromUtf8("label_10"));
         label_10->setGeometry(QRect(20, 300, 61, 16));

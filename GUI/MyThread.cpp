@@ -86,11 +86,11 @@ MyThread::MyThread(QObject *parent)
 
 void MyThread::paramSet(double A_, double B_, double J__, double tau_g_, double w_theta_, double w_tau_, double Thor_) {
 	A = A_; pSys[0] = A;
-	B = B_; pSys[0] = B;
-	J_ = J__; pSys[0] = J_;
-	tau_g = tau_g_; pSys[0] = tau_g;
-	w_theta = w_theta_; pSys[0] = w_theta;
-	w_tau = w_tau_; pSys[0] = w_tau;
+	B = B_; pSys[1] = B;
+	J_ = J__; pSys[2] = J_;
+	tau_g = tau_g_; pSys[3] = tau_g;
+	w_theta = w_theta_; pSys[4] = w_theta;
+	w_tau = w_tau_; pSys[5] = w_tau;
 	grampc_->userparam = pSys;
 
 	Thor = Thor_;
