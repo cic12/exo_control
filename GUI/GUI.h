@@ -25,6 +25,4 @@ private slots:
 
 public slots:
 	void onMpcIteration(double,double,double);
-signals:
-	void paramChanged(double);
 };

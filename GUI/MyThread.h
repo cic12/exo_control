@@ -18,8 +18,7 @@ public:
 	void mpc_init();
 	void mpc_loop();
 	void mpc_stop();
-public slots:
-	//void onParamChanged(double);
+
 signals:
 	void mpcIteration(double,double,double);
 };

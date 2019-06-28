@@ -77,7 +77,6 @@ void GUI::on_btn_stop_clicked()
 
 void GUI::on_A_changed()
 {
-	emit paramChanged(ui.A_doubleSpinBox->value());
 }
 
 void GUI::onMpcIteration(double time, double x, double x_des) {

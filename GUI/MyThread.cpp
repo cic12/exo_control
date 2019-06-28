@@ -82,8 +82,6 @@ clock_t this_time;
 clock_t last_time;
 clock_t start_time;
 
-bool mpc_on = 0;
-
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)
 {
