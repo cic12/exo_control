@@ -28,6 +28,7 @@ class Ui_GUIClass
 public:
     QWidget *centralWidget;
     QCustomPlot *plot;
+    QCustomPlot *plot_2;
     QPushButton *btn_start;
     QPushButton *btn_stop;
     QLabel *label_3;
@@ -61,6 +62,9 @@ public:
         plot = new QCustomPlot(centralWidget);
         plot->setObjectName(QString::fromUtf8("plot"));
         plot->setGeometry(QRect(110, 20, 471, 221));
+        plot_2 = new QCustomPlot(plot);
+        plot_2->setObjectName(QString::fromUtf8("plot_2"));
+        plot_2->setGeometry(QRect(0, 250, 471, 221));
         btn_start = new QPushButton(centralWidget);
         btn_start->setObjectName(QString::fromUtf8("btn_start"));
         btn_start->setGeometry(QRect(20, 410, 75, 23));
