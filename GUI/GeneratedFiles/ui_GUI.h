@@ -145,6 +145,7 @@ public:
         retranslateUi(GUIClass);
         QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
+        QObject::connect(A_doubleSpinBox, SIGNAL(valueChanged(double)), GUIClass, SLOT(on_A_changed()));
 
         QMetaObject::connectSlotsByName(GUIClass);
     } // setupUi

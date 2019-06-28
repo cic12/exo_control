@@ -350,10 +350,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>A_doubleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_A_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>103</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>300</x>
+     <y>269</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
-  <slot>on_btn_clear_clicked()</slot>
   <slot>on_btn_start_clicked()</slot>
   <slot>on_btn_stop_clicked()</slot>
+  <slot>on_A_changed()</slot>
  </slots>
 </ui>
