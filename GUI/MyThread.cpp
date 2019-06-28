@@ -20,7 +20,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 0, Motor = 1, mpc_complete = 0;
+bool Sim = 1, Motor = 0, mpc_complete = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -229,8 +229,8 @@ void MyThread::run()
 	while(!Stop){
 		// reset param values here
 		mpc_loop();
-		emit mpcIteration(t,grampc_->sol->xnext[0], grampc_->param->xdes[0]);
-	}
+		emit mpcIteration(t,grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
+	}// double time, double theta, double thetades, double dtheta, double tau_e, double tau_h_est, double mode
 	mpc_stop();
 	t1.join();
 	terminate();

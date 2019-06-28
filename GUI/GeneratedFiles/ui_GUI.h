@@ -15,6 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
@@ -48,6 +49,8 @@ public:
     QLabel *label_11;
     QPushButton *btn_set_params;
     QCustomPlot *plot1;
+    QProgressBar *progressBar;
+    QLabel *label;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -56,7 +59,7 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(601, 545);
+        GUIClass->resize(847, 544);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
@@ -130,10 +133,24 @@ public:
         plot1 = new QCustomPlot(centralWidget);
         plot1->setObjectName(QString::fromUtf8("plot1"));
         plot1->setGeometry(QRect(110, 260, 471, 221));
+        progressBar = new QProgressBar(centralWidget);
+        progressBar->setObjectName(QString::fromUtf8("progressBar"));
+        progressBar->setEnabled(false);
+        progressBar->setGeometry(QRect(600, 142, 21, 341));
+        progressBar->setLayoutDirection(Qt::LeftToRight);
+        progressBar->setMaximum(100);
+        progressBar->setValue(50);
+        progressBar->setTextVisible(true);
+        progressBar->setOrientation(Qt::Vertical);
+        progressBar->setTextDirection(QProgressBar::TopToBottom);
+        label = new QLabel(centralWidget);
+        label->setObjectName(QString::fromUtf8("label"));
+        label->setEnabled(false);
+        label->setGeometry(QRect(600, 100, 31, 16));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 601, 21));
+        menuBar->setGeometry(QRect(0, 0, 847, 21));
         GUIClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(GUIClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -165,6 +182,7 @@ public:
         label_10->setText(QApplication::translate("GUIClass", "W_tau", nullptr));
         label_11->setText(QApplication::translate("GUIClass", "Thor", nullptr));
         btn_set_params->setText(QApplication::translate("GUIClass", "Set Params", nullptr));
+        label->setText(QApplication::translate("GUIClass", "Mode", nullptr));
     } // retranslateUi
 
 };
