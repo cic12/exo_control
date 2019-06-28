@@ -47,7 +47,6 @@ public:
     QLabel *label_10;
     QDoubleSpinBox *Thor_doubleSpinBox;
     QLabel *label_11;
-    QCustomPlot *plot_2;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -127,9 +126,6 @@ public:
         label_11 = new QLabel(centralWidget);
         label_11->setObjectName(QString::fromUtf8("label_11"));
         label_11->setGeometry(QRect(20, 340, 61, 16));
-        plot_2 = new QCustomPlot(centralWidget);
-        plot_2->setObjectName(QString::fromUtf8("plot_2"));
-        plot_2->setGeometry(QRect(110, 260, 471, 221));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
