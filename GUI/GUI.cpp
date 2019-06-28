@@ -5,6 +5,12 @@ GUI::GUI(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	// QVectors
+	int n_plot = 100;
+	qv_x.resize(n_plot);// qv_x.fill(8); qv_x.removeFirst(); qv_x.append(0);
+	qv_y.resize(n_plot); qv_y.fill(0.2);
+	qv_y1.resize(n_plot); qv_y1.fill(0.2);
+
 	// include this section to fully disable antialiasing for higher performance:
 
 	ui.plot->setNotAntialiasedElements(QCP::aeAll);
@@ -28,33 +34,27 @@ GUI::GUI(QWidget *parent)
 	ui.plot->yAxis->setAutoTickStep(false);
 	ui.plot->yAxis->setTickStep(0.2);
 	ui.plot->axisRect()->setupFullAxesBox();
-	ui.plot->yAxis->setRange(0.2, 1.2);
 
 	// make left and bottom axes always transfer their ranges to right and top axes:
 	connect(ui.plot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui.plot->xAxis2, SLOT(setRange(QCPRange)));
 	connect(ui.plot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui.plot->yAxis2, SLOT(setRange(QCPRange)));
 
+	ui.plot->xAxis->setRange(0.0, 8);
+	ui.plot->yAxis->setRange(0.0, 1.5);
+
 	mThread = new MyThread(this);
 	connect(mThread, SIGNAL(mpcIteration(double,double,double)), this, SLOT(onMpcIteration(double,double,double)));
+	//connect(this, SIGNAL(paramChanged(double)),mThread, SLOT(onParamChanged(double)));
 }
 
 void GUI::addPoint(double x, double y, double y1)
 {
-	if (qv_x.length() > 160) {
 		qv_x.removeFirst();
 		qv_y.removeFirst();
 		qv_y1.removeFirst();
-	}
 		qv_x.append(x);
 		qv_y.append(y);
 		qv_y1.append(y1);
-}
-
-void GUI::clearData()
-{
-	qv_x.clear();
-	qv_y.clear();
-	qv_y1.clear();
 }
 
 void GUI::plot()
@@ -63,12 +63,6 @@ void GUI::plot()
 	ui.plot->graph(1)->setData(qv_x, qv_y1);
 	ui.plot->replot();
 	ui.plot->update();
-}
-
-void GUI::on_btn_clear_clicked()
-{
-	clearData();
-	plot();
 }
 
 void GUI::on_btn_start_clicked()
@@ -81,9 +75,9 @@ void GUI::on_btn_stop_clicked()
 	mThread->Stop = true;
 }
 
-void GUI::destroyed()
+void GUI::on_A_changed()
 {
-	// close thread before shut down
+	emit paramChanged(ui.A_doubleSpinBox->value());
 }
 
 void GUI::onMpcIteration(double time, double x, double x_des) {
@@ -94,5 +88,5 @@ void GUI::onMpcIteration(double time, double x, double x_des) {
 		plot();
 	}
 	ui.plot->rescaleAxes();
-	ui.plot->yAxis->setRange(0.2, 1.2);
+	ui.plot->yAxis->setRange(0.0, 1.5);
 }
