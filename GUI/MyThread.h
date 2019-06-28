@@ -15,6 +15,7 @@ public:
 	bool Stop = false;
 	int iMPC = 0;
 
+	void paramSet(double, double, double, double, double, double, double);
 	void mpc_init();
 	void mpc_loop();
 	void mpc_stop();

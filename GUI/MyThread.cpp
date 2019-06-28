@@ -20,7 +20,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 0, Motor = 1, mpc_complete = 0;
+bool Sim = 1, Motor = 0, mpc_complete = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -56,7 +56,6 @@ ctypeRNum umin[NU] = { -20.0 }; // 40 EICOSI
 ctypeRNum umax[NU] = { 20.0 }; // 40 EICOSI
 ctypeRNum dt = (typeRNum)0.002;
 typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
-//ctypeRNum Tsim = 4;
 const char* IntegralCost = "on";
 const char* TerminalCost = "off";
 const char* ScaleProblem = "on";
@@ -69,14 +68,12 @@ double tau_g = 0.0;
 double w_theta = 10000;
 double w_tau = 1;
 double Thor = 0.2;
-//QThread A_;
-double pSys[9] = { A , B , J_ , tau_g , w_theta, w_tau };
+double pSys[6] = { A , B , J_ , tau_g , w_theta, w_tau };
 // include daq variables
 
 // Timed loop
 ctypeRNum P_SECONDS = dt;
 int task_count = 0;
-//double n_tasks = Tsim / dt;
 double time_counter = 1;
 clock_t this_time;
 clock_t last_time;
@@ -85,7 +82,19 @@ clock_t start_time;
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)
 {
-	//connect(gui, SIGNAL(paramChanged(double)), this, SLOT(onParamChanged(double)));
+}
+
+void MyThread::paramSet(double A_, double B_, double J__, double tau_g_, double w_theta_, double w_tau_, double Thor_) {
+	A = A_; pSys[0] = A;
+	B = B_; pSys[0] = B;
+	J_ = J__; pSys[0] = J_;
+	tau_g = tau_g_; pSys[0] = tau_g;
+	w_theta = w_theta_; pSys[0] = w_theta;
+	w_tau = w_tau_; pSys[0] = w_tau;
+	grampc_->userparam = pSys;
+
+	Thor = Thor_;
+	grampc_setparam_real(grampc_, "Thor", Thor);
 }
 
 void MyThread::mpc_init() {

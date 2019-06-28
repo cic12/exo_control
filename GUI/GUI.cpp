@@ -11,8 +11,10 @@ GUI::GUI(QWidget *parent)
 	qv_y.resize(n_plot); qv_y.fill(0.2);
 	qv_y1.resize(n_plot); qv_y1.fill(0.2);
 
-	// include this section to fully disable antialiasing for higher performance:
+	// Set box values from code
+	//ui.A_box.value() = 0;
 
+	// include this section to fully disable antialiasing for higher performance:
 	ui.plot->setNotAntialiasedElements(QCP::aeAll);
 	QFont font;
 	font.setStyleStrategy(QFont::NoAntialias);
@@ -75,8 +77,9 @@ void GUI::on_btn_stop_clicked()
 	mThread->Stop = true;
 }
 
-void GUI::on_A_changed()
+void GUI::on_btn_set_params_clicked()
 {
+	mThread->paramSet(ui.A_box->value(), ui.B_box->value(), ui.J_box->value(), ui.tau_g_box->value(), ui.W_theta_box->value(), ui.W_tau_box->value(), ui.Thor_box->value());
 }
 
 void GUI::onMpcIteration(double time, double x, double x_des) {
