@@ -6,10 +6,11 @@ GUI::GUI(QWidget *parent)
 	ui.setupUi(this);
 
 	// QVectors
+	int n_plot = 100;
 	qv_x.resize(n_plot);
 	qv_y.resize(n_plot); qv_y.fill(0.2);
 	qv_y1.resize(n_plot); qv_y1.fill(0.2);
-	qv_y2.resize(n_plot); qv_y2.fill(0.2);
+	//qv_y2.resize(n_plot); qv_y2.fill(0.2);
 
 	//qv1_x.resize(n_plot);
 	//qv1_y.resize(n_plot);
@@ -35,8 +36,8 @@ GUI::GUI(QWidget *parent)
 	ui.plot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
 	ui.plot->addGraph();
 	ui.plot->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
-	ui.plot->addGraph();
-	ui.plot->graph(2)->setPen(QPen(Qt::green)); // line color green for third graph
+	//ui.plot->addGraph();
+	//ui.plot->graph(2)->setPen(QPen(Qt::green)); // line color green for third graph
 
 	//ui.plot1->addGraph();
 	//ui.plot1->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
@@ -80,11 +81,11 @@ void GUI::addPoint(double x, double y, double y1, double y2, double _x, double _
 		qv_x.removeFirst();
 		qv_y.removeFirst();
 		qv_y1.removeFirst();
-		qv_y2.removeFirst();
+		//qv_y2.removeFirst();
 		qv_x.append(x);
 		qv_y.append(y);
 		qv_y1.append(y1);
-		qv_y2.append(y2);
+		//qv_y2.append(y2);
 
 		//qv1_x.removeFirst();
 		//qv1_y.removeFirst();
@@ -101,7 +102,7 @@ void GUI::plot()
 	// set data
 	ui.plot->graph(0)->setData(qv_x, qv_y);
 	ui.plot->graph(1)->setData(qv_x, qv_y1);
-	ui.plot->graph(2)->setData(qv_x, qv_y2);
+	//ui.plot->graph(2)->setData(qv_x, qv_y2);
 
 	//ui.plot1->graph(0)->setData(qv1_x, qv1_y);
 	//ui.plot1->graph(1)->setData(qv1_x, qv1_y1);
@@ -133,14 +134,12 @@ void GUI::on_btn_set_params_clicked()
 void GUI::onMpcIteration(double time, double theta, double thetades, double dtheta, double tau_e, double tau_h_est, double mode) {
 	ui.label_3->setText(QString::number(time, 'f', 3));
 	int t = time * 500; // 1 int increment per dt
-	int mod = 25;// 1 / (0.002*freq);
-	if(t % 25 && t > 0) { // 25 * 0.002 = 0.05
+	int mod = 1 / (0.002*freq);
+	if(t % mod == 0 && t > 0) { // 25 * 0.002 = 0.05
 		addPoint(time, theta, thetades, dtheta, time, tau_e, tau_h_est, tau_e + tau_h_est);
 		plot();
 		//rescale
-		//ui.plot1->rescaleAxes();
-		//ui.plot1->yAxis->setRange(ylim1[0], ylim1[1]);
+		ui.plot->rescaleAxes();
+		ui.plot->yAxis->setRange(ylim[0], ylim[1]);
 	}
-	ui.plot->rescaleAxes();
-	ui.plot->yAxis->setRange(ylim[0], ylim[1]);
 }
