@@ -10,7 +10,6 @@ class MyThread : public QThread
 public:
 	MyThread(QObject *parent);
 	void run();
-	//GUI *gui;
 
 	bool Stop = false;
 	int iMPC = 0;

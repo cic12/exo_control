@@ -16,7 +16,7 @@ public:
 
 private:
 	Ui::GUIClass ui;
-	QVector<double> qv_x, qv_y, qv_y1;
+	QVector<double> qv_x, qv_y, qv_y1, qv_y2, qv1_x, qv1_y, qv1_y1, qv1_y2;
 
 private slots:
 	void on_btn_start_clicked();
