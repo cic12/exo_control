@@ -135,7 +135,7 @@ void GUI::onMpcIteration(double time, double theta, double thetades, double dthe
 	ui.label_3->setText(QString::number(time, 'f', 3));
 	int t = time * 500; // 1 int increment per dt
 	int mod = 1 / (0.002*freq);
-	if(t % mod == 0 && t > 0) { // 25 * 0.002 = 0.05
+	if(t % mod == 0) { // 25 * 0.002 = 0.05
 		addPoint(time, theta, thetades, dtheta, time, tau_e, tau_h_est, tau_e + tau_h_est);
 		plot();
 		//rescale
