@@ -49,27 +49,11 @@ GUI::GUI(QWidget *parent)
 	// axes settings
 	ui.plot->xAxis->setAutoTickStep(false);
 	ui.plot->xAxis->setTickStep(1);
-	//ui.plot->yAxis->setAutoTickStep(false);
-	//ui.plot->yAxis->setTickStep(0.2);
-	//ui.plot->axisRect()->setupFullAxesBox();
 
 	ui.plot1->xAxis->setAutoTickStep(false);
 	ui.plot1->xAxis->setTickStep(1);
-	//ui.plot1->yAxis->setAutoTickStep(false);
-	//ui.plot1->yAxis->setTickStep(0.2);
-	//ui.plot1->axisRect()->setupFullAxesBox();
 
-	// make left and bottom axes always transfer their ranges to right and top axes:
-	//connect(ui.plot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui.plot->xAxis2, SLOT(setRange(QCPRange)));
-	//connect(ui.plot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui.plot->yAxis2, SLOT(setRange(QCPRange)));
-
-	//connect(ui.plot1->xAxis, SIGNAL(rangeChanged(QCPRange)), ui.plot1->xAxis2, SLOT(setRange(QCPRange)));
-	//connect(ui.plot1->yAxis, SIGNAL(rangeChanged(QCPRange)), ui.plot1->yAxis2, SLOT(setRange(QCPRange)));
-
-	ui.plot->xAxis->setRange(xlim[0], xlim[1]);
 	ui.plot->yAxis->setRange(ylim[0], ylim[1]);
-
-	ui.plot1->xAxis->setRange(xlim[0], xlim[1]);
 	ui.plot1->yAxis->setRange(ylim1[0], ylim1[1]);
 
 	mThread = new MyThread(this);
@@ -78,42 +62,28 @@ GUI::GUI(QWidget *parent)
 
 void GUI::addPoint(double x, double y, double y1, double y2, double _x, double _y, double _y1, double _y2)
 {
-		qv_x.removeFirst();
-		qv_y.removeFirst();
-		qv_y1.removeFirst();
-		qv_y2.removeFirst();
-		qv_x.append(x);
-		qv_y.append(y);
-		qv_y1.append(y1);
-		qv_y2.append(y2);
+	ui.plot->graph(0)->addData(x,y);
+	ui.plot->graph(1)->addData(x, y1);
+	ui.plot->graph(2)->addData(x, y2);
+	ui.plot1->graph(0)->addData(_x, _y);
+	ui.plot1->graph(1)->addData(_x, _y1);
+	ui.plot1->graph(2)->addData(_x, _y2);
 
-		qv1_x.removeFirst();
-		qv1_y.removeFirst();
-		qv1_y1.removeFirst();
-		qv1_y2.removeFirst();
-		qv1_x.append(_x);
-		qv1_y.append(_y);
-		qv1_y1.append(_y1);
-		qv1_y2.append(_y2);
+	ui.plot->graph(0)->removeDataBefore(x - t_span);
+	ui.plot->graph(1)->removeDataBefore(x - t_span);
+	ui.plot->graph(2)->removeDataBefore(x - t_span);
+	ui.plot1->graph(0)->removeDataBefore(_x - t_span);
+	ui.plot1->graph(1)->removeDataBefore(_x - t_span);
+	ui.plot1->graph(2)->removeDataBefore(_x - t_span);
+
+	ui.plot->xAxis->setRange(x, t_span, Qt::AlignRight);
+	ui.plot1->xAxis->setRange(_x, t_span, Qt::AlignRight);
 }
 
 void GUI::plot()
 {
-	// set data
-	ui.plot->graph(0)->setData(qv_x, qv_y);
-	ui.plot->graph(1)->setData(qv_x, qv_y1);
-	//ui.plot->graph(2)->setData(qv_x, qv_y2);
-
-	ui.plot1->graph(0)->setData(qv1_x, qv1_y);
-	ui.plot1->graph(1)->setData(qv1_x, qv1_y1);
-	ui.plot1->graph(2)->setData(qv1_x, qv1_y2);
-
-	// update plots
 	ui.plot->replot();
-	ui.plot->update();
-
 	ui.plot1->replot();
-	ui.plot1->update();
 }
 
 void GUI::on_btn_start_clicked()
@@ -138,10 +108,5 @@ void GUI::onMpcIteration(double time, double theta, double thetades, double dthe
 	if(t % mod == 0) { // 25 * 0.002 = 0.05
 		addPoint(time, theta, thetades, dtheta, time, tau_e, tau_h_est, tau_e + tau_h_est);
 		plot();
-		//rescale
-		ui.plot->rescaleAxes();
-		ui.plot->yAxis->setRange(ylim[0], ylim[1]);
-		ui.plot1->rescaleAxes();
-		ui.plot1->yAxis->setRange(ylim1[0], ylim1[1]);
 	}
 }
