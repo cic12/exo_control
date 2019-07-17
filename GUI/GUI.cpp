@@ -5,18 +5,6 @@ GUI::GUI(QWidget *parent)
 {
 	ui.setupUi(this);
 
-	// QVectors
-	int n_plot = 100;
-	qv_x.resize(n_plot);
-	qv_y.resize(n_plot); qv_y.fill(0.2);
-	qv_y1.resize(n_plot); qv_y1.fill(0.2);
-	qv_y2.resize(n_plot); qv_y2.fill(0.2);
-
-	qv1_x.resize(n_plot);
-	qv1_y.resize(n_plot);
-	qv1_y1.resize(n_plot);
-	qv1_y2.resize(n_plot);
-
 	// include this section to fully disable antialiasing for higher performance:
 	QFont font;
 	font.setStyleStrategy(QFont::NoAntialias);

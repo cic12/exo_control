@@ -200,7 +200,6 @@ void MyThread::mpc_stop() {
 	Stop = 1;
 	mpc_complete = 1;
 	grampc_free(&grampc_);
-	//printf("MPC finished\n");
 #ifdef PRINTRES
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
 #endif
@@ -230,7 +229,7 @@ void MyThread::run()
 		// reset param values here
 		mpc_loop();
 		emit mpcIteration(t,grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
-	}// double time, double theta, double thetades, double dtheta, double tau_e, double tau_h_est, double mode
+	}
 	mpc_stop();
 	t1.join();
 	terminate();

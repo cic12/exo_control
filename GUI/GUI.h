@@ -16,11 +16,8 @@ public:
 
 private:
 	Ui::GUIClass ui;
-	QVector<double> qv_x, qv_y, qv_y1, qv_y2, qv1_x, qv1_y, qv1_y1, qv1_y2;
 	double t_span = 4;
 	double freq = 20;
-	double n_plot = t_span * freq;
-	double xlim[2] = { 0 , t_span};
 	double ylim[2] = { 2 , -2 };
 	double ylim1[2] = { -20 , 20 };
 private slots:
