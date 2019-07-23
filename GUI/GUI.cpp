@@ -90,11 +90,7 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration(double time, double theta, double thetades, double dtheta, double tau_e, double tau_h_est, double mode) {
-	ui.label_3->setText(QString::number(time, 'f', 3));
-	int t = time * 500; // 1 int increment per dt
-	int mod = 1 / (0.002*freq);
-	if(t % mod == 0) { // 25 * 0.002 = 0.05
-		addPoint(time, theta, thetades, dtheta, time, tau_e, tau_h_est, tau_e + tau_h_est);
-		plot();
-	}
+	ui.label_3->setText(QString::number(time, 'f', 3)); // set text label
+	addPoint(time, theta, thetades, dtheta, time, tau_e, tau_h_est, tau_e + tau_h_est);
+	plot();
 }

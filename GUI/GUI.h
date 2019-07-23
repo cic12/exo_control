@@ -17,7 +17,6 @@ public:
 private:
 	Ui::GUIClass ui;
 	double t_span = 4;
-	double freq = 20;
 	double ylim[2] = { 2 , -2 };
 	double ylim1[2] = { -20 , 20 };
 private slots:

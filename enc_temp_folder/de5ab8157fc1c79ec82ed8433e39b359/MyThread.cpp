@@ -229,7 +229,7 @@ void MyThread::run()
 	while(!Stop){
 		mpc_loop();
 		loop_count++;
-		if (loop_count == 25) { // 25 * 0.002 = 0.05 (20 fps)
+		if (loop_count == 10) { // 25 * 0.002 = 0.05 (20 fps)
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 			loop_count = 0;
 		}
