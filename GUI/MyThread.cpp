@@ -1,5 +1,8 @@
 #include "MyThread.h"
 #include <QtCore>
+#include <QFile> // CSV
+#include <QStringList> // CSV
+#include <QVector>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -20,7 +23,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 1, Motor = 0, mpc_complete = 0;
+bool Sim = 1, Motor = 0, mpc_complete = 0, EMGSim = 1;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -79,6 +82,9 @@ clock_t this_time;
 clock_t last_time;
 clock_t start_time;
 
+QVector<double> aivec;
+QVector<double> aivec1;
+
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)
 {
@@ -102,6 +108,25 @@ void MyThread::mpc_init() {
 		openDevice();
 		definePosition(homePosition); // Mini rig
 		currentMode();
+	}
+
+	// CSV
+	QFile myQfile("res/emgs/aiEA025.csv");
+	if (!myQfile.open(QIODevice::ReadOnly)) {
+		return;
+	}
+	QStringList wordList;
+	QStringList wordList1;
+
+	while (!myQfile.atEnd()) {
+		QByteArray line = myQfile.readLine();
+		wordList.append(line.split(',').at(0));
+		wordList1.append(line.split(',').at(1));
+	}
+	int len = wordList.length();
+	for (int i = 0; i < len; i++) {
+		aivec.append(wordList.at(0).toDouble());
+		aivec1.append(wordList1.at(0).toDouble());
 	}
 
 	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);

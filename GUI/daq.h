@@ -5,11 +5,16 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <QtCore>
 #include "NIDAQmx.h"
 
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
 
 using namespace std;
+
+extern bool EMGSim;
+extern QVector<double> aivec;
+extern QVector<double> aivec1;
 
 extern ofstream myfile;
 extern float64 AIdata[2];

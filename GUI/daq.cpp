@@ -83,9 +83,9 @@ double highpass2(double X_in)
 }
 
 double hTorqueEst(double m1, double m2) {
-	double b1 = 0;// 0.297169536047388; // EMG
-	double b2 = 200;// 1436.64003038666; // EMG
-	double b3 = -200;// -619.933931268223; // EMG
+	double b1 = 0.297169536047388; // EMG // 0; // MMG
+	double b2 = 1436.64003038666; // EMG // 200; // MMG
+	double b3 = -619.933931268223; // EMG // 200; // MMG
 	return (b1 + b2*m1 + b3*m2);
 }
 
@@ -144,11 +144,25 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	int32   error = 0;
 	char    errBuff[2048] = { '\0' };
 	int32   read = 0;
-	//float64 offset[2] = { 0.0102 , 0.0238 }; // EMG
-	float64 offset[2] = { -0.7 , -0.75 }; // MMG
+	float64 offset[2] = { 0.0102 , 0.0238 }; // EMG
+	//float64 offset[2] = { -0.7 , -0.75 }; // MMG
+
+	int vec_i = 0;
 
 	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
 
+	if (EMGSim) {
+		if (vec_i < aivec.length()) {
+			AIdata[0] = aivec[vec_i];
+			AIdata[1] = aivec1[vec_i];
+			vec_i++;
+		}
+		else {
+			AIdata[0] = 0;
+			AIdata[1] = 0;
+		}
+ 	}
+	
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0] + offset[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1] + offset[1])));
 	if (read>0) {
