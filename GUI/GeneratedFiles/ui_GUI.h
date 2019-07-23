@@ -48,7 +48,6 @@ public:
     QLabel *label_11;
     QPushButton *btn_set_params;
     QCustomPlot *plot1;
-    QLabel *label;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -57,7 +56,7 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(629, 544);
+        GUIClass->resize(592, 544);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
@@ -132,13 +131,10 @@ public:
         plot1->setObjectName(QString::fromUtf8("plot1"));
         plot1->setEnabled(false);
         plot1->setGeometry(QRect(110, 260, 471, 221));
-        label = new QLabel(centralWidget);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(590, 20, 31, 16));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 629, 21));
+        menuBar->setGeometry(QRect(0, 0, 592, 21));
         GUIClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(GUIClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -170,7 +166,6 @@ public:
         label_10->setText(QApplication::translate("GUIClass", "W_tau", nullptr));
         label_11->setText(QApplication::translate("GUIClass", "Thor", nullptr));
         btn_set_params->setText(QApplication::translate("GUIClass", "Set Params", nullptr));
-        label->setText(QApplication::translate("GUIClass", "Mode", nullptr));
     } // retranslateUi
 
 };
