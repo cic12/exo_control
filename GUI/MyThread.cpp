@@ -223,15 +223,12 @@ void onParamChanged(double A_new) {
 
 void MyThread::run()
 {
-	int loop_count = 0;
 	mpc_init();
 	std::thread t1(motorComms);
 	while(!Stop){
 		mpc_loop();
-		loop_count++;
-		if (loop_count == 25) { // 25 * 0.002 = 0.05 (20 fps)
+		if (iMPC % 10 == 0) {
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
-			loop_count = 0;
 		}
 	}
 	mpc_stop();
