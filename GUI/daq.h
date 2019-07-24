@@ -13,6 +13,8 @@
 using namespace std;
 
 extern bool EMGSim;
+extern int vec_i;
+extern int len;
 extern QVector<double> aivec;
 extern QVector<double> aivec1;
 

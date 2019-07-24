@@ -144,15 +144,14 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	int32   error = 0;
 	char    errBuff[2048] = { '\0' };
 	int32   read = 0;
-	float64 offset[2] = { 0.0102 , 0.0238 }; // EMG
+	float64 offset[2] = { 0.0 , 0.0 };
+	//float64 offset[2] = { 0.0102 , 0.0238 }; // EMG
 	//float64 offset[2] = { -0.7 , -0.75 }; // MMG
-
-	int vec_i = 0;
 
 	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
 
 	if (EMGSim) {
-		if (vec_i < aivec.length()) {
+		if (vec_i < len) {
 			AIdata[0] = aivec[vec_i];
 			AIdata[1] = aivec1[vec_i];
 			vec_i++;

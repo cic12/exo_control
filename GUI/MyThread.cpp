@@ -82,6 +82,8 @@ clock_t this_time;
 clock_t last_time;
 clock_t start_time;
 
+int vec_i;
+int len;
 QVector<double> aivec;
 QVector<double> aivec1;
 
@@ -123,10 +125,10 @@ void MyThread::mpc_init() {
 		wordList.append(line.split(',').at(0));
 		wordList1.append(line.split(',').at(1));
 	}
-	int len = wordList.length();
+	len = wordList.length();
 	for (int i = 0; i < len; i++) {
-		aivec.append(wordList.at(0).toDouble());
-		aivec1.append(wordList1.at(0).toDouble());
+		aivec.append(wordList.at(i).toDouble());
+		aivec1.append(wordList1.at(i).toDouble());
 	}
 
 	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
