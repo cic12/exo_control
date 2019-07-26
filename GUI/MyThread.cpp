@@ -55,8 +55,8 @@ ctypeRNum x0[NX] = { previousPosition, 0, 0, 1 };
 typeRNum xdes[NX] = { 0, 0, 0, 0 };
 ctypeRNum u0[NU] = { 0.0 };
 ctypeRNum udes[NU] = { 0.0 };
-ctypeRNum umin[NU] = { -20.0 }; // 40 EICOSI
-ctypeRNum umax[NU] = { 20.0 }; // 40 EICOSI
+ctypeRNum umin[NU] = { -40.0 };
+ctypeRNum umax[NU] = { 40.0 };
 ctypeRNum dt = (typeRNum)0.002;
 typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
 const char* IntegralCost = "on";
@@ -198,8 +198,8 @@ void MyThread::mpc_loop() {
 				previousPosition = grampc_->sol->xnext[0];
 				previousVelocity = grampc_->sol->xnext[1];
 			}
-			grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-			grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], 0.5, 0.5);
+			//grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]); // BOTTLENECK - separate thread to avoid async
+			//grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], 0.5, 0.5); // BOTTLENECK - separate thread to avoid async
 			//Update state and time
 			t = t + dt;
 			if (haltMode) {
@@ -244,21 +244,35 @@ void MyThread::mpc_stop() {
 	}
 }
 
-void onParamChanged(double A_new) {
-	A = A_new;
+void hTorqueEstFunction() {
+	while (!mpc_complete)
+	{
+		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
+	}
+}
+
+void assistanceModeFunction() {
+	while (!mpc_complete)
+	{
+		grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], 0.5, 0.5);
+	}
 }
 
 void MyThread::run()
 {
 	mpc_init();
 	std::thread t1(motorComms);
+	std::thread t2(hTorqueEstFunction);
+	std::thread t3(assistanceModeFunction);
 	while(!Stop){
 		mpc_loop();
-		if (iMPC % 10 == 0) {
+		if (iMPC % 20 == 0) {
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 		}
 	}
 	mpc_stop();
 	t1.join();
+	t2.join();
+	t3.join();
 	terminate();
 }
