@@ -87,6 +87,8 @@ int len;
 QVector<double> aivec;
 QVector<double> aivec1;
 
+void controllerFunctions();
+
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)
 {
@@ -105,7 +107,7 @@ void MyThread::paramSet(double A_, double B_, double J__, double tau_g_, double 
 	grampc_setparam_real(grampc_, "Thor", Thor);
 }
 
-void MyThread::mpc_init() {
+void MyThread::mpc_init(char emg_string[]) {
 	if (Motor) {
 		openDevice();
 		definePosition(homePosition); // Mini rig
@@ -113,7 +115,7 @@ void MyThread::mpc_init() {
 	}
 
 	// CSV
-	QFile myQfile("res/emgs/aiEA025.csv");
+	QFile myQfile(emg_string);
 	if (!myQfile.open(QIODevice::ReadOnly)) {
 		return;
 	}
@@ -198,8 +200,7 @@ void MyThread::mpc_loop() {
 				previousPosition = grampc_->sol->xnext[0];
 				previousVelocity = grampc_->sol->xnext[1];
 			}
-			//grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]); // BOTTLENECK - separate thread to avoid async
-			//grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], 0.5, 0.5); // BOTTLENECK - separate thread to avoid async
+			controllerFunctions();
 			//Update state and time
 			t = t + dt;
 			if (haltMode) {
@@ -244,35 +245,25 @@ void MyThread::mpc_stop() {
 	}
 }
 
-void hTorqueEstFunction() {
-	while (!mpc_complete)
-	{
-		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-	}
-}
-
-void assistanceModeFunction() {
-	while (!mpc_complete)
-	{
-		grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], 0.5, 0.5);
-	}
+void controllerFunctions() {
+	grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
+	grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], grampc_->sol->xnext[1], 1.0, 1.0);
 }
 
 void MyThread::run()
 {
-	mpc_init();
-	std::thread t1(motorComms);
-	std::thread t2(hTorqueEstFunction);
-	std::thread t3(assistanceModeFunction);
-	while(!Stop){
+	char emg_data[] = "res/emgs/aiER025.csv";
+	mpc_init(emg_data);
+	//std::thread t1(motorComms); 
+	//std::thread t2(controllerFunctions);
+	while(!Stop && t < 20){
 		mpc_loop();
 		if (iMPC % 20 == 0) {
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 		}
 	}
 	mpc_stop();
-	t1.join();
-	t2.join();
-	t3.join();
+	//t1.join();
+	//t2.join();
 	terminate();
 }

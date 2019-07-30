@@ -15,7 +15,7 @@ public:
 	int iMPC = 0;
 
 	void paramSet(double, double, double, double, double, double, double);
-	void mpc_init();
+	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
 

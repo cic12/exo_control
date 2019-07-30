@@ -76,6 +76,7 @@ void GUI::plot()
 
 void GUI::on_btn_start_clicked()
 {
+	mThread->setPriority(QThread::HighestPriority);
 	mThread->start();
 }
 

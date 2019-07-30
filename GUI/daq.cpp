@@ -144,9 +144,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	int32   error = 0;
 	char    errBuff[2048] = { '\0' };
 	int32   read = 0;
-	float64 offset[2] = { 0.0 , 0.0 };
-	//float64 offset[2] = { 0.0102 , 0.0238 }; // EMG
-	//float64 offset[2] = { -0.7 , -0.75 }; // MMG
+	float64 offset[2] = { 0 , 0 }; // { 0.0102, 0.0238 }; // EMG
 
 	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
 
