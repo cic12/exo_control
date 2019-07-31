@@ -2,8 +2,8 @@
 #include <QtWidgets/QApplication>
 
 int main(int argc, char *argv[]) {
+	SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS); 
 	QApplication a(argc, argv);
-	QThread::currentThread()->setPriority(QThread::HighPriority);
 	GUI w;
 	w.show();
 	return a.exec();

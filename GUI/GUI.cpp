@@ -76,7 +76,6 @@ void GUI::plot()
 
 void GUI::on_btn_start_clicked()
 {
-	mThread->setPriority(QThread::HighestPriority);
 	mThread->start();
 }
 
@@ -91,6 +90,7 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration(double time, double theta, double thetades, double dtheta, double tau_e, double tau_h_est, double mode) {
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL); 
 	ui.label_3->setText(QString::number(time, 'f', 3)); // set text label
 	addPoint(time, theta, thetades, dtheta, time, tau_e, tau_h_est, tau_e + tau_h_est);
 	plot();

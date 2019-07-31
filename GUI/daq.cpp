@@ -148,18 +148,6 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 
 	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
 
-	if (EMGSim) {
-		if (vec_i < len) {
-			AIdata[0] = aivec[vec_i];
-			AIdata[1] = aivec1[vec_i];
-			vec_i++;
-		}
-		else {
-			AIdata[0] = 0;
-			AIdata[1] = 0;
-		}
- 	}
-	
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0] + offset[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1] + offset[1])));
 	if (read>0) {

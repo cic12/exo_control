@@ -12,12 +12,6 @@
 
 using namespace std;
 
-extern bool EMGSim;
-extern int vec_i;
-extern int len;
-extern QVector<double> aivec;
-extern QVector<double> aivec1;
-
 extern ofstream myfile;
 extern float64 AIdata[2];
 extern float64 AIm[2];

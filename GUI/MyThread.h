@@ -18,6 +18,7 @@ public:
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
+	void controllerFunctions();
 
 private:
 
