@@ -151,7 +151,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0] + offset[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1] + offset[1])));
 	if (read>0) {
-		myfile << AIdata[0] + offset[0] << "," << AIdata[1] + offset[1] << "," << AIm[0] << "," << AIm[1] << "\n";
+		aiFile << AIdata[0] + offset[0] << "," << AIdata[1] + offset[1] << "," << AIm[0] << "," << AIm[1] << "\n";
 	}
 
 Error:

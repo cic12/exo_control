@@ -45,7 +45,7 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0
 	
 	mpcFile.open("res/mpcDetails.txt");
 
-	mpcFile << "-- MPC PARAMETERS --\n";
+	mpcFile << "%s" << "-- MPC PARAMETERS --\n";
 	mpcFile << "     Nx: " << (*grampc_)->param->Nx << "\n";
 	mpcFile << "     Nu: " << (*grampc_)->param->Nu << "\n";
 	mpcFile << "     Np: " << (*grampc_)->param->Np << "\n";

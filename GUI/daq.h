@@ -12,7 +12,7 @@
 
 using namespace std;
 
-extern ofstream myfile;
+extern ofstream aiFile;
 extern float64 AIdata[2];
 extern float64 AIm[2];
 

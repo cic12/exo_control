@@ -1,8 +1,15 @@
 #ifndef MPC_H_
 #define MPC_H_
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
 #include "libgrampc.h"
 #define NX    	4
 #define NU  	1
+
+using namespace std;
+
+extern ofstream mpcFile;
 
 void openFile(FILE **file, const char *name);
 void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size);

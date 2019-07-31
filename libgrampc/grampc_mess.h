@@ -106,7 +106,7 @@
 #define printError(x)  mexErrMsgTxt((x))
 #define printErrorAddString(mess,addstring)  mexPrintf("%s: %s",(addstring),(mess)); mexErrMsgTxt(INVALID_SET_OPERATION)
 #else 
-#define myPrint(x,y)   printf((x),(y))
+#define myPrint(x,y)  printf((x),(y));
 #define printError(x)  printf("%s",(x)); exit(EXIT_FAILURE)
 #define printErrorAddString(mess,addstring)  printf("%s: %s",(addstring),(mess)); exit(EXIT_FAILURE)
 #endif

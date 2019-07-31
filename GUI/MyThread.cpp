@@ -20,10 +20,10 @@
 
 using namespace std;
 
-ofstream myfile;
+ofstream aiFile, mpcFile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 0, Motor = 1, mpc_complete = 0, aiSim = 0;
+bool Sim = 1, Motor = 0, mpc_complete = 0, aiSim = 1;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -113,7 +113,7 @@ void MyThread::mpc_init(char emg_string[]) {
 		definePosition(homePosition); // Mini rig
 		currentMode();
 	}
-	myfile.open("res/ai.txt");
+	aiFile.open("res/ai.txt");
 	if (aiSim) {
 		QFile myQfile(emg_string);
 		if (!myQfile.open(QIODevice::ReadOnly)) {
@@ -126,16 +126,16 @@ void MyThread::mpc_init(char emg_string[]) {
 			wordList.append(line.split(',').at(0));
 			wordList1.append(line.split(',').at(1));
 		}
-		myfile << aivec[0] << "," << aivec1[0] << "," << AImvec[0] << "," << AImvec1[0] << "\n";
+		aiFile << aivec[0] << "," << aivec1[0] << "," << AImvec[0] << "," << AImvec1[0] << "\n";
 		int len = wordList.length();
 		for (int i = 0; i < len; i++) {
 			aivec.append(wordList.at(i).toDouble());
 			aivec1.append(wordList1.at(i).toDouble());
 			AImvec.append(lowpass1(abs(highpass1(aivec[i]))));
 			AImvec1.append(lowpass2(abs(highpass2(aivec1[i]))));
-			myfile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
+			aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 		}
-	}
+	}  
 	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
 
 #ifdef PRINTRES
@@ -241,7 +241,7 @@ void MyThread::mpc_stop() {
 	Stop = 1;
 	mpc_complete = 1;
 	grampc_free(&grampc_);
-	myfile.close();
+	aiFile.close();
 #ifdef PRINTRES
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
 #endif
@@ -266,7 +266,7 @@ void MyThread::run()
 	mpc_init(emg_data);
 	std::thread t1(motorComms);
 	SetThreadPriority(&t1, THREAD_PRIORITY_TIME_CRITICAL);
-	while(!Stop && t < 20){
+	while(!Stop && t < 8){
 		mpc_loop();
 		if (iMPC % 10 == 0) {
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
