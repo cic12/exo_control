@@ -23,7 +23,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 1, Motor = 0, mpc_complete = 0, aiSim = 1;
+bool Sim = 1, Motor = 0, mpc_complete = 0, aiSim = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
