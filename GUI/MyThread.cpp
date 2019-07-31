@@ -23,7 +23,7 @@ using namespace std;
 ofstream myfile;
 float64 AIdata[2] = { 0 , 0 };
 float64 AIm[2] = { 0 , 0 };
-bool Sim = 1, Motor = 0, mpc_complete = 0, aiSim = 0;
+bool Sim = 0, Motor = 1, mpc_complete = 0, aiSim = 0;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -228,12 +228,6 @@ void MyThread::mpc_loop() {
 }
 
 void MyThread::mpc_stop() {
-	Stop = 1;
-	mpc_complete = 1;
-	grampc_free(&grampc_);
-#ifdef PRINTRES
-	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
-#endif
 	if (!aiSim) {
 		if (AItaskHandle != 0) {
 			DAQmxStopTask(AItaskHandle);
@@ -244,7 +238,13 @@ void MyThread::mpc_stop() {
 			DAQmxClearTask(AOtaskHandle);
 		}
 	}
+	Stop = 1;
+	mpc_complete = 1;
+	grampc_free(&grampc_);
 	myfile.close();
+#ifdef PRINTRES
+	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
+#endif
 	if (Motor) {
 		closeDevice();
 	}
@@ -264,12 +264,15 @@ void MyThread::run()
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
 	char emg_data[] = "res/emgs/aiFR025.csv";
 	mpc_init(emg_data);
+	std::thread t1(motorComms);
+	SetThreadPriority(&t1, THREAD_PRIORITY_TIME_CRITICAL);
 	while(!Stop && t < 20){
 		mpc_loop();
-		if (iMPC % 50 == 0) {
+		if (iMPC % 10 == 0) {
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 		}
 	}
 	mpc_stop();
+	t1.join();
 	terminate();
 }
