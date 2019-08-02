@@ -59,18 +59,14 @@ ctypeRNum umin[NU] = { -40.0 };
 ctypeRNum umax[NU] = { 40.0 };
 ctypeRNum dt = (typeRNum)0.002;
 typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
-const char* IntegralCost = "on";
-const char* TerminalCost = "off";
-const char* ScaleProblem = "on";
+const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
+
+// FIS params
+double b1 = 0.297169536047388, b2 = 1436.64003038666, b3 = -619.933931268223;
+double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
 
 // GUI params
-double A = 1.5;
-double B = 0.8;
-double J_ = 1.0;
-double tau_g = 0.0;
-double w_theta = 10000;
-double w_tau = 1;
-double Thor = 0.2;
+double A = 1.5, B = 0.8, J_ = 1.0, tau_g = 0.0, w_theta = 10000, w_tau = 1, Thor = 0.2;
 double pSys[6] = { A , B , J_ , tau_g , w_theta, w_tau };
 // include daq variables
 
@@ -137,6 +133,33 @@ void MyThread::mpc_init(char emg_string[]) {
 		}
 	}  
 	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
+
+	// FIS params
+
+	//mpcFile.open("res/mpcDetails.txt");
+
+	mpcFile << fixed;
+	mpcFile << setprecision(15);
+
+	mpcFile << "-------------------------------------------------------------\n";
+	mpcFile << "                    FIS Param " << "Value" << "\n";
+	mpcFile << "-------------------------------------------------------------\n";
+
+	mpcFile << "                           b1 " << b1 << "\n";
+	mpcFile << "                           b2 " << b2 << "\n";
+	mpcFile << "                           b3 " << b3 << "\n";
+
+	mpcFile << setprecision(3);
+
+	mpcFile << "                           pA " << pA << "\n";
+	mpcFile << "                           pR " << pR << "\n";
+	mpcFile << "                        sig_h " << sig_h << "\n";
+	mpcFile << "                          c_h " << c_h << "\n"; 
+	mpcFile << "                        sig_e " << sig_e << "\n";
+	mpcFile << "                          c_e " << c_e << "\n";
+	mpcFile << "                     halt_lim " << halt_lim;
+
+	mpcFile.close();
 
 #ifdef PRINTRES
 	openFile(&file_x, "res/xvec.txt");
@@ -255,8 +278,8 @@ void MyThread::controllerFunctions() {
 		AIm[0] = AImvec[iMPC];
 		AIm[1] = AImvec1[iMPC];
 	}
-	grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1]);
-	grampc_->sol->xnext[3] = assistanceMode(*grampc_->sol->unext, grampc_->sol->xnext[2], grampc_->sol->xnext[1], 1.0, 1.0);
+	grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], b1, b2, b3);
+	grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], pA, pR, sig_h, c_h, sig_e, c_e, halt_lim);
 }
 
 void MyThread::run()
@@ -268,7 +291,7 @@ void MyThread::run()
 	SetThreadPriority(&t1, THREAD_PRIORITY_TIME_CRITICAL);
 	while(!Stop && t < 8){
 		mpc_loop();
-		if (iMPC % 10 == 0) {
+		if (iMPC % 25 == 0) {
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 		}
 	}

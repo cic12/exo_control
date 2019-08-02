@@ -11,7 +11,6 @@ extern double mu[4];
 extern double rule[4];
 
 double gaussmf(double x, double sig, double c);
-double torqueTransform(double Tau_e, double Tau_h);
-double assistanceMode(double Tau_e, double Tau_h, double dtheta, double pA, double pR);
+double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim);
 
 #endif

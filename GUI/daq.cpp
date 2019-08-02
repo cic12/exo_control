@@ -82,10 +82,7 @@ double highpass2(double X_in)
 	return high_para2.y[0];
 }
 
-double hTorqueEst(double m1, double m2) {
-	double b1 = 0.297169536047388; // EMG // 0; // MMG
-	double b2 = 1436.64003038666; // EMG // 200; // MMG
-	double b3 = -619.933931268223; // EMG // 200; // MMG
+double hTorqueEst(double m1, double m2, double b1, double b2, double b3) {
 	return (b1 + b2*m1 + b3*m2);
 }
 
