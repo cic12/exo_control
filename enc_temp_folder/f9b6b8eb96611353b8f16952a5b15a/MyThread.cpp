@@ -54,7 +54,7 @@ typeRNum rwsReferenceIntegration[2 * NX];
 ctypeRNum x0[NX] = { previousPosition, 0, 0, 1 };
 typeRNum xdes[NX] = { 0, 0, 0, 0 };
 ctypeRNum u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 };
-ctypeRNum Tsim = (typeRNum)20.0, dt = (typeRNum)0.002;
+ctypeRNum Tsim = (typeRNum)60.0, dt = (typeRNum)0.002;
 typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
 const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 
