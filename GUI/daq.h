@@ -1,10 +1,10 @@
 #ifndef DAQ_H_
 #define DAQ_H_
 
-#include <stdio.h>
-#include <iostream>
+//#include <cstdio>
+//#include <iostream>
 #include <fstream>
-#include <math.h>
+//#include <cmath>
 #include <QtCore>
 #include "NIDAQmx.h"
 

@@ -24,7 +24,6 @@ ofstream aiFile, mpcFile;
 float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 };
 bool mpc_complete = 0;
 testConfig test0;
-//bool Sim = 1, Motor = 0, aiSim = 1;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;

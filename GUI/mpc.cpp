@@ -17,7 +17,7 @@ void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size) {
 	fprintf(file, "%.5f\n", val[size - 1]); /* new line */
 }
 
-void printVector2file(const char *prefix, ofstream *file, ctypeRNum *const val, ctypeInt size) {
+void print_vector2_file(const char *prefix, ofstream *file, ctypeRNum *const val, ctypeInt size) {
 	typeInt i;
 	*file << prefix;
 	for (i = 0; i < size - 1; i++) {
@@ -75,12 +75,12 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0
 	
 	mpcFile << setprecision(5) << "\n";
 
-	printVector2file("                          x0 ", &mpcFile, (*grampc_)->param->x0, (*grampc_)->param->Nx);
-	printVector2file("                        xdes ", &mpcFile, (*grampc_)->param->xdes, (*grampc_)->param->Nx);
-	printVector2file("                          u0 ", &mpcFile, (*grampc_)->param->u0, (*grampc_)->param->Nu);
-	printVector2file("                        udes ", &mpcFile, (*grampc_)->param->udes, (*grampc_)->param->Nu);
-	printVector2file("                        umax ", &mpcFile, (*grampc_)->param->umax, (*grampc_)->param->Nu);
-	printVector2file("                        umin ", &mpcFile, (*grampc_)->param->umin, (*grampc_)->param->Nu);
+	print_vector2_file("                          x0 ", &mpcFile, (*grampc_)->param->x0, (*grampc_)->param->Nx);
+	print_vector2_file("                        xdes ", &mpcFile, (*grampc_)->param->xdes, (*grampc_)->param->Nx);
+	print_vector2_file("                          u0 ", &mpcFile, (*grampc_)->param->u0, (*grampc_)->param->Nu);
+	print_vector2_file("                        udes ", &mpcFile, (*grampc_)->param->udes, (*grampc_)->param->Nu);
+	print_vector2_file("                        umax ", &mpcFile, (*grampc_)->param->umax, (*grampc_)->param->Nu);
+	print_vector2_file("                        umin ", &mpcFile, (*grampc_)->param->umin, (*grampc_)->param->Nu);
 
 	mpcFile << setprecision(3) << "\n";
 
@@ -143,16 +143,16 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0
 
 	mpcFile << fixed;
 
-	printVector2file("                       xScale ", &mpcFile, (*grampc_)->opt->xScale, (*grampc_)->param->Nx);
-	printVector2file("                      xOffset ", &mpcFile, (*grampc_)->opt->xOffset, (*grampc_)->param->Nx);
-	printVector2file("                       uScale ", &mpcFile, (*grampc_)->opt->uScale, (*grampc_)->param->Nu);
-	printVector2file("                      uOffset ", &mpcFile, (*grampc_)->opt->uOffset, (*grampc_)->param->Nu);
-	printVector2file("                       pScale ", &mpcFile, (*grampc_)->opt->pScale, (*grampc_)->param->Np);
-	printVector2file("                      pOffset ", &mpcFile, (*grampc_)->opt->pOffset, (*grampc_)->param->Np);
+	print_vector2_file("                       xScale ", &mpcFile, (*grampc_)->opt->xScale, (*grampc_)->param->Nx);
+	print_vector2_file("                      xOffset ", &mpcFile, (*grampc_)->opt->xOffset, (*grampc_)->param->Nx);
+	print_vector2_file("                       uScale ", &mpcFile, (*grampc_)->opt->uScale, (*grampc_)->param->Nu);
+	print_vector2_file("                      uOffset ", &mpcFile, (*grampc_)->opt->uOffset, (*grampc_)->param->Nu);
+	print_vector2_file("                       pScale ", &mpcFile, (*grampc_)->opt->pScale, (*grampc_)->param->Np);
+	print_vector2_file("                      pOffset ", &mpcFile, (*grampc_)->opt->pOffset, (*grampc_)->param->Np);
 	mpcFile << "                       TScale " << (*grampc_)->opt->TScale << "\n";
 	mpcFile << "                      TOffset " << (*grampc_)->opt->TOffset << "\n";
 	mpcFile << "                       JScale " << (*grampc_)->opt->JScale << "\n";
-	printVector2file("                       cScale ", &mpcFile, (*grampc_)->opt->cScale, (*grampc_)->param->Nc);
+	print_vector2_file("                       cScale ", &mpcFile, (*grampc_)->opt->cScale, (*grampc_)->param->Nc);
 	mpcFile << "\n";
 
 	mpcFile << "          EqualityConstraints " << ((*grampc_)->opt->EqualityConstraints == INT_ON ? "on" : "off") << "\n";
@@ -160,7 +160,7 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0
 	mpcFile << "  TerminalEqualityConstraints " << ((*grampc_)->opt->TerminalEqualityConstraints == INT_ON ? "on" : "off") << "\n";
 	mpcFile << "TerminalInequalityConstraints " << ((*grampc_)->opt->TerminalInequalityConstraints == INT_ON ? "on" : "off") << "\n";
 	mpcFile << "          ConstraintsHandling " << ((*grampc_)->opt->ConstraintsHandling == INT_EXTPEN ? "extpen" : "auglag") << "\n";
-	printVector2file("             ConstraintAbsTol ", &mpcFile, (*grampc_)->opt->ConstraintsAbsTol, (*grampc_)->param->Nc);
+	print_vector2_file("             ConstraintAbsTol ", &mpcFile, (*grampc_)->opt->ConstraintsAbsTol, (*grampc_)->param->Nc);
 	mpcFile << "\n";
 
 	mpcFile << scientific;
