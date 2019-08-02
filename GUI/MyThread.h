@@ -3,6 +3,10 @@
 #include <QThread>
 #include "ui_GUI.h"
 
+struct testConfig {
+	bool Sim = 1, Motor = 0, aiSim = 1;
+};
+
 class MyThread : public QThread
 {
 	Q_OBJECT

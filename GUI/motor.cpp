@@ -10,7 +10,7 @@ using namespace std;
 void motorComms() {
 	while (!mpc_complete)
 	{
-		if(Motor){
+		if(test0.Motor){
 			//setCurrent(-inputCurrent); // EICOSI
 			setCurrent(inputCurrent); // Mini rig
 			getCurrentPosition(currentPosition);

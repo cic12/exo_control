@@ -23,10 +23,8 @@ using namespace std;
 ofstream aiFile, mpcFile;
 float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 };
 bool mpc_complete = 0;
-//struct testConfig {
-//	bool Sim = 1, Motor = 0, aiSim = 1;
-//} test0;
-bool Sim = 1, Motor = 0, aiSim = 1;
+testConfig test0;
+//bool Sim = 1, Motor = 0, aiSim = 1;
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -96,13 +94,13 @@ void MyThread::paramSet(double A_, double B_, double J__, double tau_g_, double 
 }
 
 void MyThread::mpc_init(char emg_string[]) {
-	if (Motor) {
+	if (test0.Motor) {
 		openDevice();
 		definePosition(homePosition); // Mini rig
 		currentMode();
 	}
 	aiFile.open("res/ai.txt");
-	if (aiSim) {
+	if (test0.aiSim) {
 		QFile myQfile(emg_string);
 		if (!myQfile.open(QIODevice::ReadOnly)) {
 			return;
@@ -166,10 +164,9 @@ void MyThread::mpc_init(char emg_string[]) {
 	mpcFile << "                  Test Option " << "Setting" << "\n";
 	mpcFile << "-------------------------------------------------------------\n";
 
-	mpcFile << "                      Exo Sim " << (Sim == 1 ? "on" : "off") << "\n";
-	mpcFile << "                        Motor " << (Motor == 1 ? "on" : "off") << "\n";
-	mpcFile << "                       AI Sim " << (aiSim == 1 ? "on" : "off") << "\n";
-
+	mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
+	mpcFile << "                        Motor " << (test0.Motor == 1 ? "on" : "off") << "\n";
+	mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
 
 	mpcFile.close();
 
@@ -183,7 +180,7 @@ void MyThread::mpc_init(char emg_string[]) {
 	openFile(&file_mu, "res/mu.txt");
 	openFile(&file_rule, "res/rule.txt");
 #endif
-	if (!aiSim) {
+	if (!test0.aiSim) {
 		AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
 		AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
 		AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
@@ -211,11 +208,11 @@ void MyThread::mpc_loop() {
 					//myPrint("at iteration %i:\n -----\n", iMPC);
 				}
 			}
-			if (Motor) {
+			if (test0.Motor) {
 				// Set Current
 				inputCurrent = *grampc_->sol->unext * 170;
 			}
-			if (Sim) { // Convert to Sim function
+			if (test0.Sim) { // Convert to Sim function
 				// Simulation - heun scheme
 				ffct(rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 				for (i = 0; i < NX; i++) {
@@ -263,7 +260,7 @@ void MyThread::mpc_loop() {
 }
 
 void MyThread::mpc_stop() {
-	if (!aiSim) {
+	if (!test0.aiSim) {
 		if (AItaskHandle != 0) {
 			DAQmxStopTask(AItaskHandle);
 			DAQmxClearTask(AItaskHandle);
@@ -280,13 +277,13 @@ void MyThread::mpc_stop() {
 #ifdef PRINTRES
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
 #endif
-	if (Motor) {
+	if (test0.Motor) {
 		closeDevice();
 	}
 }
 
 void MyThread::controllerFunctions() {
-	if (aiSim) {
+	if (test0.aiSim) {
 		AIm[0] = AImvec[iMPC];
 		AIm[1] = AImvec1[iMPC];
 	}
