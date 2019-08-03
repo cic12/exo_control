@@ -23,7 +23,7 @@ using namespace std;
 ofstream aiFile, mpcFile;
 float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 };
 bool mpc_complete = 0;
-testConfig test0;
+
 short inputCurrent = 0;
 long currentPosition = 0;
 int haltMode;
@@ -42,36 +42,31 @@ TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 // GRAMPC init
 typeGRAMPC *grampc_;
-typeInt i;
+int i;
 #ifdef PRINTRES
 FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
-typeRNum rwsReferenceIntegration[2 * NX];
-//ctypeRNum x0[NX] = { currentPosition, 0, 0, 0 }; // EICOSI
-ctypeRNum x0[NX] = { previousPosition, 0, 0, 1 };
-typeRNum xdes[NX] = { 0, 0, 0, 0 };
-ctypeRNum u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 };
-ctypeRNum Tsim = (typeRNum)20.0, dt = (typeRNum)0.002;
-typeRNum t = (typeRNum)0.0, t_halt = (typeRNum)0.0;
+double rwsReferenceIntegration[2 * NX];
+const double x0[NX] = { previousPosition, 0, 0, 1 };
+double xdes[NX] = { 0, 0, 0, 0 };
+const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 };
+const double Tsim = 20.0, dt = 0.002;
+double t = 0.0, t_halt = 0.0;
 const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 
-// FIS params
-double b1 = 0.297169536047388, b2 = 1436.64003038666, b3 = -619.933931268223;
-double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
+double Thor = 0.2;
 
-// GUI params
-double A = 1.5, B = 0.8, J_ = 1.0, tau_g = 0.0, w_theta = 10000, w_tau = 1, Thor = 0.2;
-double pSys[6] = { A , B , J_ , tau_g , w_theta, w_tau };
-// include daq variables
+// Params
+testParams test0;
+modelParams model0;
+fisParams fis0;
 
 // Timed loop
-ctypeRNum P_SECONDS = dt;
 int task_count = 0;
 double time_counter = 1;
 clock_t this_time, last_time, start_time;
 
 int vec_i;
-//int len;
 QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 
 MyThread::MyThread(QObject *parent)
@@ -79,15 +74,15 @@ MyThread::MyThread(QObject *parent)
 {
 }
 
-void MyThread::paramSet(double A_, double B_, double J__, double tau_g_, double w_theta_, double w_tau_, double Thor_) {
-	A = A_; pSys[0] = A;
-	B = B_; pSys[1] = B;
-	J_ = J__; pSys[2] = J_;
-	tau_g = tau_g_; pSys[3] = tau_g;
-	w_theta = w_theta_; pSys[4] = w_theta;
-	w_tau = w_tau_; pSys[5] = w_tau;
-	grampc_->userparam = pSys;
-
+void MyThread::paramSet(double A_, double B_, double J_, double tau_g_, double w_theta_, double w_tau_, double Thor_) {
+	model0.A = A_; model0.pSys[0] = model0.A;
+	model0.B = B_; model0.pSys[1] = model0.B;
+	model0.J = J_; model0.pSys[2] = model0.J;
+	model0.tau_g = tau_g_; model0.pSys[3] = model0.tau_g;
+	model0.w_theta = w_theta_; model0.pSys[4] = model0.w_theta;
+	model0.w_tau = w_tau_; model0.pSys[5] = model0.w_tau;
+	grampc_->userparam = model0.pSys;
+	
 	Thor = Thor_;
 	grampc_setparam_real(grampc_, "Thor", Thor);
 }
@@ -121,7 +116,7 @@ void MyThread::mpc_init(char emg_string[]) {
 			aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 		}
 	}  
-	mpcInit(&grampc_, &pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
+	mpcInit(&grampc_, &model0.pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
 
 	// FIS params
 
@@ -132,12 +127,12 @@ void MyThread::mpc_init(char emg_string[]) {
 	mpcFile << "                  Model Param " << "Value" << "\n";
 	mpcFile << "-------------------------------------------------------------\n";
 
-	mpcFile << "                            A " << A << "\n";
-	mpcFile << "                            B " << B << "\n";
-	mpcFile << "                            J " << J_ << "\n";
-	mpcFile << "                        tau_g " << tau_g << "\n";
-	mpcFile << "                      w_theta " << w_theta << "\n";
-	mpcFile << "                        w_tau " << w_tau << "\n";
+	mpcFile << "                            A " << model0.A << "\n";
+	mpcFile << "                            B " << model0.B << "\n";
+	mpcFile << "                            J " << model0.J << "\n";
+	mpcFile << "                        tau_g " << model0.tau_g << "\n";
+	mpcFile << "                      w_theta " << model0.w_theta << "\n";
+	mpcFile << "                        w_tau " << model0.w_tau << "\n";
 
 	mpcFile << setprecision(15);
 
@@ -145,19 +140,19 @@ void MyThread::mpc_init(char emg_string[]) {
 	mpcFile << "                    FIS Param " << "Value" << "\n";
 	mpcFile << "-------------------------------------------------------------\n";
 
-	mpcFile << "                           b1 " << b1 << "\n";
-	mpcFile << "                           b2 " << b2 << "\n";
-	mpcFile << "                           b3 " << b3 << "\n";
+	mpcFile << "                           b1 " << fis0.b1 << "\n";
+	mpcFile << "                           b2 " << fis0.b2 << "\n";
+	mpcFile << "                           b3 " << fis0.b3 << "\n";
 
 	mpcFile << setprecision(3);
 
-	mpcFile << "                           pA " << pA << "\n";
-	mpcFile << "                           pR " << pR << "\n";
-	mpcFile << "                        sig_h " << sig_h << "\n";
-	mpcFile << "                          c_h " << c_h << "\n"; 
-	mpcFile << "                        sig_e " << sig_e << "\n";
-	mpcFile << "                          c_e " << c_e << "\n";
-	mpcFile << "                     halt_lim " << halt_lim << "\n";
+	mpcFile << "                           pA " << fis0.pA << "\n";
+	mpcFile << "                           pR " << fis0.pR << "\n";
+	mpcFile << "                        sig_h " << fis0.sig_h << "\n";
+	mpcFile << "                          c_h " << fis0.c_h << "\n"; 
+	mpcFile << "                        sig_e " << fis0.sig_e << "\n";
+	mpcFile << "                          c_e " << fis0.c_e << "\n";
+	mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
 
 	mpcFile << "-------------------------------------------------------------\n";
 	mpcFile << "                  Test Option " << "Setting" << "\n";
@@ -195,7 +190,7 @@ void MyThread::mpc_loop() {
 		time_counter += (double)(this_time - last_time);
 		last_time = this_time;
 		this->msleep(1);
-		if (time_counter > (double)(P_SECONDS * CLOCKS_PER_SEC))
+		if (time_counter > (double)(dt * CLOCKS_PER_SEC))
 		{
 			// Setpoint
 			xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
@@ -234,7 +229,7 @@ void MyThread::mpc_loop() {
 			}
 
 			//EveryNCallback(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, NULL);// , 1, 0, EveryNCallback, NULL);
-			controllerFunctions();
+			controllerFunctions(fis0);
 			//Update state and time
 			t = t + dt;
 			if (haltMode) {
@@ -252,7 +247,7 @@ void MyThread::mpc_loop() {
 			printNumVector2File(file_mu, mu, 4);
 			printNumVector2File(file_rule, rule, 4);
 #endif
-			time_counter -= (double)(P_SECONDS * CLOCKS_PER_SEC);
+			time_counter -= (double)(dt * CLOCKS_PER_SEC);
 			task_count++;
 		}
 	}
@@ -281,13 +276,13 @@ void MyThread::mpc_stop() {
 	}
 }
 
-void MyThread::controllerFunctions() {
+void MyThread::controllerFunctions(fisParams fis) {
 	if (test0.aiSim) {
 		AIm[0] = AImvec[iMPC];
 		AIm[1] = AImvec1[iMPC];
 	}
-	grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], b1, b2, b3);
-	grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], pA, pR, sig_h, c_h, sig_e, c_e, halt_lim);
+	grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
+	grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
 }
 
 void MyThread::run()

@@ -8,7 +8,7 @@
 extern bool mpc_complete;
 extern short inputCurrent;
 extern long currentPosition;
-extern testConfig test0;
+extern testParams test0;
 
 void motorComms();
 void enableDevice();
