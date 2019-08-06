@@ -20,18 +20,16 @@
 
 using namespace std;
 
-ofstream aiFile, mpcFile;
-float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 };
-bool mpc_complete = 0;
+ofstream aiFile, mpcFile; // extern daq.h
+float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }; // extern daq.h // AIdata
+bool mpc_complete = 0;  // extern motor.h
 
-short inputCurrent = 0;
-long currentPosition = 0;
-int haltMode;
-double mu[4], rule[4];
+short inputCurrent = 0; // extern motor.h
+long currentPosition = 0; // extern motor.h
+int haltMode; // extern fis.h
 
 // Motor
-double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0;
-double alpha = 0.01;
+double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
 long homePosition = 0;
 
 // DAQmx init
@@ -52,14 +50,16 @@ double xdes[NX] = { 0, 0, 0, 0 };
 const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 };
 const double Tsim = 20.0, dt = 0.002;
 double t = 0.0, t_halt = 0.0;
-const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
+const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on"; // mpcInit()
 
 double Thor = 0.2;
 
 // Params
 testParams test0;
 modelParams model0;
+
 fisParams fis0;
+double mu[4], rule[4];
 
 // Timed loop
 int task_count = 0;
@@ -161,6 +161,10 @@ void MyThread::mpc_init(char emg_string[]) {
 	mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
 	mpcFile << "                        Motor " << (test0.Motor == 1 ? "on" : "off") << "\n";
 	mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
+
+	if (test0.aiSim) {
+		mpcFile << "                          EMG " << emg_string << "\n";
+	}
 
 	mpcFile.close();
 
@@ -288,14 +292,17 @@ void MyThread::controllerFunctions(fisParams fis) {
 void MyThread::run()
 {
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-	char emg_data[] = "res/emgs/aiFR025.csv";
+	char emg_data[] = "res/emgs/aiR025.csv";
 	mpc_init(emg_data);
 	std::thread t1(motorComms);
 	SetThreadPriority(&t1, THREAD_PRIORITY_TIME_CRITICAL);
-	while(!Stop && t < Tsim){
+	while (!Stop && t < Tsim)
+	{
 		mpc_loop();
-		if (iMPC % 25 == 0) {
-			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
+		if (iMPC % 25 == 0)
+		{
+			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
+			                  grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 		}
 	}
 	mpc_stop();
