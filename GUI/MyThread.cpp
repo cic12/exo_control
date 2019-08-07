@@ -223,16 +223,19 @@ void MyThread::mpc_loop() {
 			}
 			else {
 				// EICOSI / Mini rig
-				//grampc->sol->xnext[0] = (double)currentPosition/168000.f + M_PI/2; // EICOSI
-				grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
+				if (test0.Exo) {
+					grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
+
+				}
+				else {
+					grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
+				}
 				currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / dt; // need state estimator? currently MPC solves for static system
 				grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
 				// Save current states
 				previousPosition = grampc_->sol->xnext[0];
 				previousVelocity = grampc_->sol->xnext[1];
 			}
-
-			//EveryNCallback(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, NULL);// , 1, 0, EveryNCallback, NULL);
 			controllerFunctions(fis0);
 			//Update state and time
 			t = t + dt;

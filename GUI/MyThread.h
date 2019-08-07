@@ -4,7 +4,7 @@
 #include "ui_GUI.h"
 
 struct testParams {
-	bool Sim = 1, Motor = 0, aiSim = 1;
+	bool Sim = 1, Motor = 0, aiSim = 1 , Exo = 1;
 };
 
 struct modelParams {
