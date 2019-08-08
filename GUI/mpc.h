@@ -5,9 +5,6 @@
 #include <fstream>
 #include <iomanip>
 #include "libgrampc.h"
-#define NX    	4
-#define NU  	1
-#define NC      6
 
 using namespace std;
 

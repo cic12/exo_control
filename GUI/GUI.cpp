@@ -52,17 +52,17 @@ void GUI::addPoint(double x, double y, double y1, double y2, double _x, double _
 {
 	ui.plot->graph(0)->addData(x,y);
 	ui.plot->graph(1)->addData(x, y1);
-	ui.plot->graph(2)->addData(x, y2);
+	//ui.plot->graph(2)->addData(x, y2);
 	ui.plot1->graph(0)->addData(_x, _y);
-	ui.plot1->graph(1)->addData(_x, _y1);
-	ui.plot1->graph(2)->addData(_x, _y2);
+	//ui.plot1->graph(1)->addData(_x, _y1);
+	//ui.plot1->graph(2)->addData(_x, _y2);
 
 	ui.plot->graph(0)->removeDataBefore(x - t_span);
 	ui.plot->graph(1)->removeDataBefore(x - t_span);
-	ui.plot->graph(2)->removeDataBefore(x - t_span);
+	//ui.plot->graph(2)->removeDataBefore(x - t_span);
 	ui.plot1->graph(0)->removeDataBefore(_x - t_span);
-	ui.plot1->graph(1)->removeDataBefore(_x - t_span);
-	ui.plot1->graph(2)->removeDataBefore(_x - t_span);
+	//ui.plot1->graph(1)->removeDataBefore(_x - t_span);
+	//ui.plot1->graph(2)->removeDataBefore(_x - t_span);
 
 	ui.plot->xAxis->setRange(x, t_span, Qt::AlignRight);
 	ui.plot1->xAxis->setRange(_x, t_span, Qt::AlignRight);

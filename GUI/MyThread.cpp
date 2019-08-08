@@ -45,20 +45,7 @@ int i;
 FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
 
-//double rwsReferenceIntegration[2 * NX];
-//const double x0[NX] = { previousPosition, 0, 0, 1 };
-//double xdes[NX] = { 0, 0, 0, 0 };
-//const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 };// , umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-
-
 double t = 0.0, t_halt = 0.0;
-
-//double Thor = 0.2;
-
-//const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
-//const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
-//const double ConstraintsAbsTol[4] = { 1e-3, 1e-3, 1e-3, 1e-3 };
-
 
 // Params
 testParams test0;
@@ -214,7 +201,7 @@ void MyThread::mpc_loop() {
 			}
 			if (test0.Motor) {
 				// Set Current
-				inputCurrent = *grampc_->sol->unext * 170;
+				inputCurrent = *grampc_->sol->unext;// *170;
 			}
 			if (test0.Sim) { // Convert to Sim function
 				// Simulation - heun scheme

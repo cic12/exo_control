@@ -5,10 +5,10 @@
 #include "libgrampc.h"
 #define NX    	4
 #define NU  	1
-#define NC      6
+#define NH      4
 
 struct testParams {
-	bool Sim = 1, Motor = 0, aiSim = 1 , Exo = 1;
+	bool Sim = 1, Motor = 1, aiSim = 0 , Exo = 1;
 };
 
 struct mpcParams {
@@ -16,11 +16,11 @@ struct mpcParams {
 	const double x0[NX] = { 0.2, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-	const double Tsim = 20.0, dt = 0.002;
+	const double Tsim = 60.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
-	const double ConstraintsAbsTol[NC] = { 1e-3, 1e-3, 1e-3, 1e-3, 1e-3, 1e-3 };
+	const double ConstraintsAbsTol[NH] = { 1e-3, 1e-3, 1e-3, 1e-3 };
 };
 
 struct modelParams {
