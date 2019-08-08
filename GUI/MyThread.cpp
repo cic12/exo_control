@@ -44,20 +44,26 @@ int i;
 #ifdef PRINTRES
 FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
-double rwsReferenceIntegration[2 * NX];
-const double x0[NX] = { previousPosition, 0, 0, 1 };
-double xdes[NX] = { 0, 0, 0, 0 };
-const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 };
-const double Tsim = 20.0, dt = 0.002;
-double t = 0.0, t_halt = 0.0;
-const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on"; // mpcInit()
 
-double Thor = 0.2;
+//double rwsReferenceIntegration[2 * NX];
+//const double x0[NX] = { previousPosition, 0, 0, 1 };
+//double xdes[NX] = { 0, 0, 0, 0 };
+//const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 };// , umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
+
+
+double t = 0.0, t_halt = 0.0;
+
+//double Thor = 0.2;
+
+//const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
+//const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
+//const double ConstraintsAbsTol[4] = { 1e-3, 1e-3, 1e-3, 1e-3 };
+
 
 // Params
 testParams test0;
 modelParams model0;
-
+mpcParams mpc0;
 fisParams fis0;
 double mu[4], rule[4];
 
@@ -83,8 +89,8 @@ void MyThread::paramSet(double A_, double B_, double J_, double tau_g_, double w
 	model0.w_tau = w_tau_; model0.pSys[5] = model0.w_tau;
 	grampc_->userparam = model0.pSys;
 	
-	Thor = Thor_;
-	grampc_setparam_real(grampc_, "Thor", Thor);
+	mpc0.Thor = Thor_;
+	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
 }
 
 void MyThread::mpc_init(char emg_string[]) {
@@ -116,7 +122,7 @@ void MyThread::mpc_init(char emg_string[]) {
 			aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 		}
 	}  
-	mpcInit(&grampc_, &model0.pSys, x0, xdes, u0, udes, umax, umin, &Thor, &dt, &t, TerminalCost, IntegralCost, ScaleProblem);
+	mpcInit(&grampc_, &model0.pSys, mpc0.x0, mpc0.xdes, mpc0.u0, mpc0.udes, mpc0.umax, mpc0.umin, &mpc0.Thor, &mpc0.dt, &t, mpc0.TerminalCost, mpc0.IntegralCost, mpc0.ScaleProblem, mpc0.AugLagUpdateGradientRelTol, mpc0.ConstraintsAbsTol);
 
 	// FIS params
 
@@ -194,11 +200,11 @@ void MyThread::mpc_loop() {
 		time_counter += (double)(this_time - last_time);
 		last_time = this_time;
 		this->msleep(1);
-		if (time_counter > (double)(dt * CLOCKS_PER_SEC))
+		if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC))
 		{
 			// Setpoint
-			xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-			grampc_setparam_real_vector(grampc_, "xdes", xdes);
+			mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+			grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
 			// Grampc
 			grampc_run(grampc_);
 			if (grampc_->sol->status > 0) {
@@ -212,13 +218,13 @@ void MyThread::mpc_loop() {
 			}
 			if (test0.Sim) { // Convert to Sim function
 				// Simulation - heun scheme
-				ffct(rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+				ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 				for (i = 0; i < NX; i++) {
-					grampc_->sol->xnext[i] = grampc_->param->x0[i] + dt * rwsReferenceIntegration[i];
+					grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
 				}
-				ffct(rwsReferenceIntegration + NX, t + dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+				ffct(mpc0.rwsReferenceIntegration + NX, t + mpc0.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 				for (i = 0; i < NX; i++) {
-					grampc_->sol->xnext[i] = grampc_->param->x0[i] + dt * (rwsReferenceIntegration[i] + rwsReferenceIntegration[i + NX]) / 2;
+					grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * (mpc0.rwsReferenceIntegration[i] + mpc0.rwsReferenceIntegration[i + NX]) / 2;
 				}
 			}
 			else {
@@ -230,7 +236,7 @@ void MyThread::mpc_loop() {
 				else {
 					grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
 				}
-				currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / dt; // need state estimator? currently MPC solves for static system
+				currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 				grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
 				// Save current states
 				previousPosition = grampc_->sol->xnext[0];
@@ -238,9 +244,9 @@ void MyThread::mpc_loop() {
 			}
 			controllerFunctions(fis0);
 			//Update state and time
-			t = t + dt;
+			t = t + mpc0.dt;
 			if (haltMode) {
-				t_halt = t_halt + dt;
+				t_halt = t_halt + mpc0.dt;
 			}
 			grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 			iMPC++;
@@ -254,7 +260,7 @@ void MyThread::mpc_loop() {
 			printNumVector2File(file_mu, mu, 4);
 			printNumVector2File(file_rule, rule, 4);
 #endif
-			time_counter -= (double)(dt * CLOCKS_PER_SEC);
+			time_counter -= (double)(mpc0.dt * CLOCKS_PER_SEC);
 			task_count++;
 		}
 	}
@@ -295,11 +301,11 @@ void MyThread::controllerFunctions(fisParams fis) {
 void MyThread::run()
 {
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-	char emg_data[] = "res/emgs/aiR025.csv";
+	char emg_data[] = "res/emgs/aiER025.csv";
 	mpc_init(emg_data);
 	std::thread t1(motorComms);
 	SetThreadPriority(&t1, THREAD_PRIORITY_TIME_CRITICAL);
-	while (!Stop && t < Tsim)
+	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
 		if (iMPC % 25 == 0)

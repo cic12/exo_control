@@ -25,5 +25,5 @@ double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double 
 	else {
 		haltMode = 0;
 	}
-	return 1 - (pA * lambdaA + pR * lambdaR); // sqrt() to emphasise effect
+	return 1 - sqrt(pA * lambdaA + pR * lambdaR); // sqrt() to emphasise effect
 }

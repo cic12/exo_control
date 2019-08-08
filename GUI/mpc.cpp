@@ -31,7 +31,7 @@ void printVector2File(const char *prefix, ofstream *file, ctypeRNum *const val, 
 	}
 }
 
-void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0, const ctypeRNum *xdes, const ctypeRNum *u0, const ctypeRNum *udes, const ctypeRNum *umax, const ctypeRNum *umin, const ctypeRNum *Thor, const ctypeRNum *dt, const ctypeRNum *t, const typeChar *TerminalCost, const typeChar *IntegralCost, const typeChar *ScaleProblem) {
+void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0, const ctypeRNum *xdes, const ctypeRNum *u0, const ctypeRNum *udes, const ctypeRNum *umax, const ctypeRNum *umin, ctypeRNum *Thor, const ctypeRNum *dt, const ctypeRNum *t, const typeChar *TerminalCost, const typeChar *IntegralCost, const typeChar *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol) {
 	grampc_init(grampc_,userparam);
 
 	grampc_setparam_real_vector(*grampc_, "x0", x0);
@@ -49,6 +49,9 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0
 	grampc_setopt_string(*grampc_, "TerminalCost", TerminalCost);
 	grampc_setopt_string(*grampc_, "ScaleProblem", ScaleProblem);
 	
+	//grampc_setopt_real(*grampc_, " AugLagUpdateGradientRelTol ", AugLagUpdateGradientRelTol);
+	//grampc_setopt_real_vector(*grampc_, " ConstraintsAbsTol ", ConstraintsAbsTol);
+
 	// MPC params
 
 	mpcFile.open("res/mpcDetails.txt");

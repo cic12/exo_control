@@ -11,13 +11,7 @@ void motorComms() {
 	while (!mpc_complete)
 	{
 		if(test0.Motor){
-			if (test0.Exo) {
-				setCurrent(-inputCurrent); // EICOSI
-			}
-			else
-			{
-				setCurrent(inputCurrent); // Mini rig
-			}
+			setCurrent(inputCurrent);
 			getCurrentPosition(currentPosition);
 		}
 	}
