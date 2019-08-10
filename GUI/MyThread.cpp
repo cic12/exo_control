@@ -3,12 +3,14 @@
 #include <QFile>
 #include <QStringList>
 #include <QVector>
+#include <QDebug>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <thread>
 #include <time.h>
 #include <math.h>
+//#include <string>
 #include "libgrampc.h"
 #include "Definitions.h"
 #include "NIDAQmx.h"
@@ -58,7 +60,7 @@ double mu[4], rule[4];
 // Timed loop
 int task_count = 0;
 double time_counter = 1;
-clock_t this_time, last_time, start_time;
+clock_t this_time, last_time, start_time, end_time;
 
 int vec_i;
 QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
@@ -183,82 +185,85 @@ void MyThread::mpc_init(char emg_string[]) {
 		AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 	}
 	last_time = clock();
-	start_time = clock();
+	start_time = last_time;
 }
 
-void MyThread::mpc_loop() {
-	if (!Stop) {
-		this_time = clock();
-		time_counter += (double)(this_time - last_time);
-		last_time = this_time;
-		this->msleep(1);
-		if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC))
-		{
-			// Setpoint
-			mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-			grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
-			// Grampc
-			grampc_run(grampc_);
-			if (grampc_->sol->status > 0) {
-				if (grampc_printstatus(grampc_->sol->status, STATUS_LEVEL_ERROR)) {
-					//myPrint("at iteration %i:\n -----\n", iMPC);
-				}
+void MyThread::mpc_loop() { // executes repeatedly
+	this_time = clock();
+	time_counter += (double)(this_time - last_time);
+	last_time = this_time;
+	//this->usleep(500); // DOUBLE CHECK TIMING ???
+	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
+	{
+		// Setpoint
+		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
+		// Grampc
+		grampc_run(grampc_);
+		if (grampc_->sol->status > 0) {
+			if (grampc_printstatus(grampc_->sol->status, STATUS_LEVEL_ERROR)) {
+				//myPrint("at iteration %i:\n -----\n", iMPC);
 			}
-			if (test0.Motor) {
-				// Set Current
-				//demandedCurrent = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
-				demandedCurrent = *grampc_->sol->unext * 170;
+		}
+		if (test0.Motor) {
+			// Set Current
+			//demandedCurrent = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
+			demandedCurrent = *grampc_->sol->unext * 170;
+		}
+		if (test0.Sim) { // Convert to Sim function
+			// Simulation - heun scheme
+			ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+			for (i = 0; i < NX; i++) {
+				grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
 			}
-			if (test0.Sim) { // Convert to Sim function
-				// Simulation - heun scheme
-				ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
-				for (i = 0; i < NX; i++) {
-					grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
-				}
-				ffct(mpc0.rwsReferenceIntegration + NX, t + mpc0.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
-				for (i = 0; i < NX; i++) {
-					grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * (mpc0.rwsReferenceIntegration[i] + mpc0.rwsReferenceIntegration[i + NX]) / 2;
-				}
+			ffct(mpc0.rwsReferenceIntegration + NX, t + mpc0.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+			for (i = 0; i < NX; i++) {
+				grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * (mpc0.rwsReferenceIntegration[i] + mpc0.rwsReferenceIntegration[i + NX]) / 2;
+			}
+		}
+		else {
+			// EICOSI / Mini rig
+			if (test0.Exo) {
+				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
 			}
 			else {
-				// EICOSI / Mini rig
-				if (test0.Exo) {
-					grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-				}
-				else {
-					grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
-				}
-				currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
-				grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
-				// Save current states
-				previousPosition = grampc_->sol->xnext[0];
-				previousVelocity = grampc_->sol->xnext[1];
+				grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
 			}
-			controllerFunctions(fis0);
-			//Update state and time
-			t = t + mpc0.dt;
-			if (haltMode) {
-				t_halt = t_halt + mpc0.dt;
-			}
-			grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
-			iMPC++;
-#ifdef PRINTRES
-			printNumVector2File(file_x, grampc_->sol->xnext, NX);
-			printNumVector2File(file_xdes, grampc_->param->xdes, NX);
-			printNumVector2File(file_u, grampc_->sol->unext, NU);
-			printNumVector2File(file_t, &t, 1);
-			printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
-			printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
-			printNumVector2File(file_mu, mu, 4);
-			printNumVector2File(file_rule, rule, 4);
-#endif
-			time_counter -= (double)(mpc0.dt * CLOCKS_PER_SEC);
-			task_count++;
+			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
+			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
+			// Save current states
+			previousPosition = grampc_->sol->xnext[0];
+			previousVelocity = grampc_->sol->xnext[1];
 		}
+		controllerFunctions(fis0);
+		//Update state and time
+		t = t + mpc0.dt;
+		if (haltMode) {
+			t_halt = t_halt + mpc0.dt;
+		}
+		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
+		iMPC++;
+#ifdef PRINTRES
+		printNumVector2File(file_x, grampc_->sol->xnext, NX);
+		printNumVector2File(file_xdes, grampc_->param->xdes, NX);
+		printNumVector2File(file_u, grampc_->sol->unext, NU);
+		printNumVector2File(file_t, &t, 1);
+		printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
+		printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
+		printNumVector2File(file_mu, mu, 4);
+		printNumVector2File(file_rule, rule, 4);
+#endif
+		time_counter -= (double)(mpc0.dt * CLOCKS_PER_SEC);
+		task_count++;
 	}
 }
 
 void MyThread::mpc_stop() {
+	end_time = clock();
+	double duration = (double)(end_time - start_time);
+	string dur = to_string(duration);
+	QString qstr = QString::fromStdString(dur);
+	qDebug() << duration;
 	if (!test0.aiSim) {
 		if (AItaskHandle != 0) {
 			DAQmxStopTask(AItaskHandle);
@@ -296,11 +301,11 @@ void MyThread::controllerFunctions(fisParams fis) {
 
 void MyThread::run()
 {
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+	qDebug() << "MyThread::run()";
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 	char emg_data[] = "res/emgs/aiER025.csv";
 	mpc_init(emg_data);
 	std::thread t1(motorComms);
-	SetThreadPriority(&t1, THREAD_PRIORITY_TIME_CRITICAL);
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
@@ -308,6 +313,7 @@ void MyThread::run()
 		{
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
 				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
+			this->usleep(1000);
 		}
 	}
 	mpc_stop();

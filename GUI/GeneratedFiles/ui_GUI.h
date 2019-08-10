@@ -57,6 +57,7 @@ public:
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
         GUIClass->resize(592, 544);
+        GUIClass->setFocusPolicy(Qt::NoFocus);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);

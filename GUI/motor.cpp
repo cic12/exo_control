@@ -8,6 +8,7 @@ __int8 mode;
 using namespace std;
 
 void motorComms() {
+	std::this_thread::sleep_for(std::chrono::microseconds(100));
 	while (!mpc_complete)
 	{
 		if(test0.Motor){
@@ -15,7 +16,11 @@ void motorComms() {
 			inputCurrent = demandedCurrent;
 			getCurrentPosition(currentPosition);
 		}
+		else {
+			std::this_thread::sleep_for(std::chrono::microseconds(500));
+		}
 	}
+
 }
 
 void enableDevice()
