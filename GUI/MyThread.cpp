@@ -206,7 +206,7 @@ void MyThread::mpc_loop() {
 			}
 			if (test0.Motor) {
 				// Set Current
-				//*grampc_->sol->unext = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
+				//demandedCurrent = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
 				demandedCurrent = *grampc_->sol->unext * 170;
 			}
 			if (test0.Sim) { // Convert to Sim function
@@ -224,7 +224,6 @@ void MyThread::mpc_loop() {
 				// EICOSI / Mini rig
 				if (test0.Exo) {
 					grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-					//grampc_->sol->xnext[0] = (double)currentPosition / 168000.f;
 				}
 				else {
 					grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
@@ -305,7 +304,7 @@ void MyThread::run()
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
-		if (iMPC % 25 == 0)
+		if (iMPC % 10 == 0)
 		{
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
 				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);

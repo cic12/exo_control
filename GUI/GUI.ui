@@ -102,7 +102,7 @@
      <double>0.100000000000000</double>
     </property>
     <property name="value">
-     <double>1.500000000000000</double>
+     <double>0.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_5">
@@ -128,7 +128,7 @@
      </rect>
     </property>
     <property name="value">
-     <double>0.800000000000000</double>
+     <double>0.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_6">
@@ -154,7 +154,7 @@
      </rect>
     </property>
     <property name="value">
-     <double>1.000000000000000</double>
+     <double>0.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
@@ -203,7 +203,7 @@
      </rect>
     </property>
     <property name="value">
-     <double>1.000000000000000</double>
+     <double>0.000000000000000</double>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="W_theta_box">
@@ -219,7 +219,7 @@
      <double>100000.000000000000000</double>
     </property>
     <property name="value">
-     <double>10000.000000000000000</double>
+     <double>0.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_10">
@@ -245,7 +245,7 @@
      </rect>
     </property>
     <property name="value">
-     <double>0.200000000000000</double>
+     <double>0.000000000000000</double>
     </property>
    </widget>
    <widget class="QLabel" name="label_11">

@@ -18,7 +18,7 @@ private:
 	Ui::GUIClass ui;
 	double t_span = 4;
 	double ylim[2] = { 2 , -2 };
-	double ylim1[2] = { -45 , 45 };
+	double ylim1[2] = { -15 , 25 };
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
