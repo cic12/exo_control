@@ -11,7 +11,8 @@ void motorComms() {
 	while (!mpc_complete)
 	{
 		if(test0.Motor){
-			setCurrent(inputCurrent);
+			setCurrent(demandedCurrent);
+			inputCurrent = demandedCurrent;
 			getCurrentPosition(currentPosition);
 		}
 	}

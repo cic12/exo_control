@@ -24,6 +24,7 @@ ofstream aiFile, mpcFile; // extern daq.h
 float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }; // extern daq.h // AIdata
 bool mpc_complete = 0;  // extern motor.h
 
+short demandedCurrent = 0;
 short inputCurrent = 0; // extern motor.h
 long currentPosition = 0; // extern motor.h
 int haltMode; // extern fis.h
@@ -83,8 +84,12 @@ void MyThread::paramSet(double A_, double B_, double J_, double tau_g_, double w
 void MyThread::mpc_init(char emg_string[]) {
 	if (test0.Motor) {
 		openDevice();
-		definePosition(homePosition); // Mini rig
+		if (!test0.Exo) {
+			definePosition(homePosition); // Mini rig
+		}
 		currentMode();
+		getCurrentPosition(currentPosition);
+		previousPosition = currentPosition / 168000.f + M_PI / 2;
 	}
 	aiFile.open("res/ai.txt");
 	if (test0.aiSim) {
@@ -201,7 +206,8 @@ void MyThread::mpc_loop() {
 			}
 			if (test0.Motor) {
 				// Set Current
-				inputCurrent = *grampc_->sol->unext;// *170;
+				//*grampc_->sol->unext = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
+				demandedCurrent = *grampc_->sol->unext * 170;
 			}
 			if (test0.Sim) { // Convert to Sim function
 				// Simulation - heun scheme
@@ -218,7 +224,7 @@ void MyThread::mpc_loop() {
 				// EICOSI / Mini rig
 				if (test0.Exo) {
 					grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-
+					//grampc_->sol->xnext[0] = (double)currentPosition / 168000.f;
 				}
 				else {
 					grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
@@ -281,8 +287,12 @@ void MyThread::controllerFunctions(fisParams fis) {
 		AIm[0] = AImvec[iMPC];
 		AIm[1] = AImvec1[iMPC];
 	}
-	grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
-	grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+	if (test0.tauEst) {
+		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
+	}
+	if (test0.Mode) {
+		grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+	}
 }
 
 void MyThread::run()
@@ -298,7 +308,7 @@ void MyThread::run()
 		if (iMPC % 25 == 0)
 		{
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
-			                  grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
+				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
 		}
 	}
 	mpc_stop();

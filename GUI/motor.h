@@ -6,6 +6,7 @@
 #include "MyThread.h"
 
 extern bool mpc_complete;
+extern short demandedCurrent;
 extern short inputCurrent;
 extern long currentPosition;
 extern testParams test0;
