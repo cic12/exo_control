@@ -3,6 +3,7 @@
 #include <QThread>
 #include "ui_GUI.h"
 #include "libgrampc.h"
+#include "NIDAQmx.h"
 #include "fis.h"
 #define PRINTRES
 #define NX    	4
@@ -12,8 +13,8 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
-	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
+	//bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
+	bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 
 struct mpcParams {
@@ -69,6 +70,7 @@ private:
 	clock_t this_time, last_time, start_time, end_time;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	typeGRAMPC *grampc_;
+	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 #ifdef PRINTRES
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif

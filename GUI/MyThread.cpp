@@ -5,40 +5,18 @@
 #include <QVector>
 #include <QDebug>
 #include <stdio.h>
-#include <iostream>
 #include <fstream>
 #include <thread>
 #include <time.h>
 #include <math.h>
+
 #include "libgrampc.h"
 #include "Definitions.h"
-#include "NIDAQmx.h"
+
 #include "mpc.h"
 #include "motor.h"
 #include "daq.h"
 #include "fis.h"
-
-bool mpc_complete = 0;
-
-// DAQmx init
-ofstream	aiFile, mpcFile; // extern daq.h
-float64		AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { 0.0127, 0.0257 }; // EMG
-int32       error = 0, read = 0;
-char        errBuff[2048] = { '\0' };
-TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
-
-// Motor
-int haltMode; // extern fis.h
-short demandedCurrent = 0; // extern motor.h
-short inputCurrent = 0; // extern motor.h
-long currentPosition = 0, homePosition = 0; // extern motor.h
-
-
-
-double mu[4], rule[4]; // extern fis.h
-
-// Params
-testParams test0; // extern motor.h
 
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)

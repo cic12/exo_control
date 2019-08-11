@@ -1,5 +1,8 @@
 #include "fis.h"
 
+int haltMode;
+double mu[4], rule[4];
+
 double gaussmf(double x, double sig, double c) {
 	return exp(-((x - c)*(x - c))/(2*sig*sig));
 }

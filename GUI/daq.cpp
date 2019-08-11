@@ -1,5 +1,10 @@
 #include "daq.h"
 
+char errBuff[2048] = { '\0' };
+int32 error = 0;
+ofstream aiFile;
+float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { 0.0127, 0.0257 };
+
 struct lowpass_para {
 	double x[3];
 	double y[3];

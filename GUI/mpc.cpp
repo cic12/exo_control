@@ -1,6 +1,8 @@
 #include "mpc.h"
 #include "libgrampc.h"
 
+ofstream	mpcFile;
+
 void openFile(FILE **file, const char *name) {
 	*file = fopen(name, "w");
 	if (*file == NULL) {

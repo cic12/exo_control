@@ -58,13 +58,13 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(601, 788);
+        GUIClass->resize(946, 879);
         GUIClass->setFocusPolicy(Qt::NoFocus);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
         plot->setObjectName(QString::fromUtf8("plot"));
-        plot->setGeometry(QRect(110, 20, 471, 161));
+        plot->setGeometry(QRect(380, 20, 391, 161));
         btn_start = new QPushButton(centralWidget);
         btn_start->setObjectName(QString::fromUtf8("btn_start"));
         btn_start->setGeometry(QRect(20, 410, 75, 23));
@@ -140,19 +140,19 @@ public:
         plot2 = new QCustomPlot(centralWidget);
         plot2->setObjectName(QString::fromUtf8("plot2"));
         plot2->setEnabled(false);
-        plot2->setGeometry(QRect(110, 380, 471, 161));
+        plot2->setGeometry(QRect(380, 380, 391, 161));
         plot3 = new QCustomPlot(centralWidget);
         plot3->setObjectName(QString::fromUtf8("plot3"));
         plot3->setEnabled(false);
-        plot3->setGeometry(QRect(110, 560, 471, 161));
+        plot3->setGeometry(QRect(380, 560, 391, 161));
         plot1 = new QCustomPlot(centralWidget);
         plot1->setObjectName(QString::fromUtf8("plot1"));
         plot1->setEnabled(false);
-        plot1->setGeometry(QRect(110, 200, 471, 161));
+        plot1->setGeometry(QRect(380, 200, 391, 161));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 601, 21));
+        menuBar->setGeometry(QRect(0, 0, 946, 21));
         GUIClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(GUIClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));

@@ -7,7 +7,7 @@
 
 extern short demandedCurrent;
 extern short inputCurrent;
-extern long currentPosition;
+extern long currentPosition, homePosition;
 extern testParams test0;
 
 extern bool mpc_complete;

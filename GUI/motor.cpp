@@ -7,6 +7,12 @@ __int8 mode;
 
 using namespace std;
 
+bool mpc_complete = 0;
+short demandedCurrent = 0; // extern motor.h
+short inputCurrent = 0; // extern motor.h
+long currentPosition = 0, homePosition = 0; // extern motor.h
+testParams test0;
+
 void motorComms()
 {
 	this_thread::sleep_for(std::chrono::microseconds(500));
