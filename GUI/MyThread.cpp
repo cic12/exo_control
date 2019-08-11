@@ -261,8 +261,6 @@ void MyThread::mpc_loop() { // executes repeatedly
 void MyThread::mpc_stop() {
 	end_time = clock();
 	double duration = (double)(end_time - start_time);
-	string dur = to_string(duration);
-	QString qstr = QString::fromStdString(dur);
 	qDebug() << duration;
 	if (!test0.aiSim) {
 		if (AItaskHandle != 0) {
@@ -309,11 +307,11 @@ void MyThread::run()
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
-		if (iMPC % 10 == 0)
+		if (iMPC % 10 == 0) // 500 Hz to 50 Hz
 		{
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
 				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
-			this->usleep(1000);
+			this->usleep(500); // 
 		}
 	}
 	mpc_stop();

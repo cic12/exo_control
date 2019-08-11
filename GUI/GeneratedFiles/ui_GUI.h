@@ -56,7 +56,7 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(592, 544);
+        GUIClass->resize(592, 546);
         GUIClass->setFocusPolicy(Qt::NoFocus);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));

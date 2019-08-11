@@ -13,7 +13,6 @@ public:
 	void addPoint(double x, double y, double y1, double y2, double _x, double _y, double _y1, double _y2);
 	void plot();
 	MyThread *mThread;
-
 private:
 	Ui::GUIClass ui;
 	double t_span = 4;

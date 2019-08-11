@@ -8,8 +8,8 @@
 #define NH      4
 
 struct testParams {
-	//bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Testing
-	bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1;
+	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
+	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 
 struct mpcParams {
@@ -26,8 +26,8 @@ struct mpcParams {
 
 struct modelParams {
 	//double A = 1.5, B = 0.8, J = 1.0, tau_g = 0.0, w_theta = 100000, w_tau = 1; // mini rig
-	double A = 0.7129, B = 2.2936, J = 0.1744, tau_g = 6.0796, w_theta = 10000, w_tau = 1; // exo + human
-	//double A = 0.187, B = 0.408, J = 0.080, tau_g = 0.415, w_theta = 10000, w_tau = 1; // exo
+	//double A = 0.7129, B = 2.2936, J = 0.1744, tau_g = 6.0796, w_theta = 10000, w_tau = 1; // exo + human
+	double A = 0.066, B = 1.926, J = 0.066, tau_g = 0.415, w_theta = 10000, w_tau = 1; // exo
 	double x1min = 0.1, x1max = 1.3, x2min = -0.5, x2max = 0.5, umin = -40, umax = 40;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
