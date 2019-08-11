@@ -18,8 +18,8 @@ private:
 	double t_span = 4;
 	double ylim[2] = { 2 , -2 };
 	double ylim1[2] = { -15 , 25 };
-	double ylim2[2] = { -0.1 , 0.1 };
-	double ylim3[2] = { -0.1 , 0.1 };
+	double ylim2[2] = { -0.02 , 0.02 };
+	double ylim3[2] = { -0.02 , 0.02 };
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
