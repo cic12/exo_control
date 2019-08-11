@@ -10,7 +10,6 @@
 #include <thread>
 #include <time.h>
 #include <math.h>
-//#include <string>
 #include "libgrampc.h"
 #include "Definitions.h"
 #include "NIDAQmx.h"
@@ -18,22 +17,17 @@
 #include "motor.h"
 #include "daq.h"
 #include "fis.h"
-#define PRINTRES
-
-using namespace std;
 
 ofstream aiFile, mpcFile; // extern daq.h
 float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }; // extern daq.h // AIdata
 bool mpc_complete = 0;  // extern motor.h
 
+// Motor
+int haltMode; // extern fis.h
 short demandedCurrent = 0;
 short inputCurrent = 0; // extern motor.h
-long currentPosition = 0; // extern motor.h
-int haltMode; // extern fis.h
-
-// Motor
+long currentPosition = 0, homePosition = 0; // extern motor.h
 double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
-long homePosition = 0;
 
 // DAQmx init
 int32       error = 0, read = 0;
@@ -43,27 +37,18 @@ TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 // GRAMPC init
 typeGRAMPC *grampc_;
-int i;
 #ifdef PRINTRES
 FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
 
-double t = 0.0, t_halt = 0.0;
+double mu[4], rule[4];
 
 // Params
 testParams test0;
-modelParams model0;
-mpcParams mpc0;
-fisParams fis0;
-double mu[4], rule[4];
 
 // Timed loop
-int task_count = 0;
-double time_counter = 1;
+double task_count = 0, time_counter = 1;
 clock_t this_time, last_time, start_time, end_time;
-
-int vec_i;
-QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)

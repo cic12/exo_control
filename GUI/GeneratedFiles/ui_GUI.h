@@ -81,6 +81,7 @@ public:
         A_box = new QDoubleSpinBox(centralWidget);
         A_box->setObjectName(QString::fromUtf8("A_box"));
         A_box->setGeometry(QRect(20, 70, 71, 22));
+        A_box->setDecimals(4);
         A_box->setSingleStep(0.100000000000000);
         A_box->setValue(0.000000000000000);
         label_5 = new QLabel(centralWidget);
@@ -89,6 +90,7 @@ public:
         B_box = new QDoubleSpinBox(centralWidget);
         B_box->setObjectName(QString::fromUtf8("B_box"));
         B_box->setGeometry(QRect(20, 120, 71, 22));
+        B_box->setDecimals(4);
         B_box->setValue(0.000000000000000);
         label_6 = new QLabel(centralWidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
@@ -96,6 +98,7 @@ public:
         J_box = new QDoubleSpinBox(centralWidget);
         J_box->setObjectName(QString::fromUtf8("J_box"));
         J_box->setGeometry(QRect(20, 170, 71, 22));
+        J_box->setDecimals(4);
         J_box->setValue(0.000000000000000);
         label_7 = new QLabel(centralWidget);
         label_7->setObjectName(QString::fromUtf8("label_7"));
@@ -103,16 +106,19 @@ public:
         tau_g_box = new QDoubleSpinBox(centralWidget);
         tau_g_box->setObjectName(QString::fromUtf8("tau_g_box"));
         tau_g_box->setGeometry(QRect(20, 220, 71, 22));
+        tau_g_box->setDecimals(4);
         label_9 = new QLabel(centralWidget);
         label_9->setObjectName(QString::fromUtf8("label_9"));
         label_9->setGeometry(QRect(20, 250, 61, 16));
         W_tau_box = new QDoubleSpinBox(centralWidget);
         W_tau_box->setObjectName(QString::fromUtf8("W_tau_box"));
         W_tau_box->setGeometry(QRect(20, 320, 71, 22));
+        W_tau_box->setDecimals(1);
         W_tau_box->setValue(0.000000000000000);
         W_theta_box = new QDoubleSpinBox(centralWidget);
         W_theta_box->setObjectName(QString::fromUtf8("W_theta_box"));
         W_theta_box->setGeometry(QRect(20, 270, 71, 22));
+        W_theta_box->setDecimals(1);
         W_theta_box->setMaximum(100000.000000000000000);
         W_theta_box->setValue(0.000000000000000);
         label_10 = new QLabel(centralWidget);
@@ -121,6 +127,7 @@ public:
         Thor_box = new QDoubleSpinBox(centralWidget);
         Thor_box->setObjectName(QString::fromUtf8("Thor_box"));
         Thor_box->setGeometry(QRect(20, 370, 71, 22));
+        Thor_box->setDecimals(3);
         Thor_box->setValue(0.000000000000000);
         label_11 = new QLabel(centralWidget);
         label_11->setObjectName(QString::fromUtf8("label_11"));

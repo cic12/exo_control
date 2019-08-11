@@ -3,9 +3,12 @@
 #include <QThread>
 #include "ui_GUI.h"
 #include "libgrampc.h"
+#define PRINTRES
 #define NX    	4
 #define NU  	1
 #define NH      4
+
+using namespace std;
 
 struct testParams {
 	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
@@ -50,13 +53,22 @@ public:
 	bool Stop = false;
 	int iMPC = 0;
 
+	// Params
+	mpcParams mpc0;
+	modelParams model0;
+	fisParams fis0;
+
 	void paramSet(double, double, double, double, double, double, double);
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
 	void controllerFunctions(fisParams);
-
+	
 private:
+	
+	double t = 0.0, t_halt = 0.0;
+	int i, vec_i;
+	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 
 signals:
 	void mpcIteration(double, double, double, double, double, double, double);

@@ -46,6 +46,14 @@ GUI::GUI(QWidget *parent)
 
 	mThread = new MyThread(this);
 	connect(mThread, SIGNAL(mpcIteration(double,double,double,double,double,double,double)), this, SLOT(onMpcIteration(double,double,double,double,double,double,double)));
+
+	ui.A_box->setValue(mThread->model0.A);
+	ui.B_box->setValue(mThread->model0.B);
+	ui.J_box->setValue(mThread->model0.J);
+	ui.tau_g_box->setValue(mThread->model0.tau_g);
+	ui.W_theta_box->setValue(mThread->model0.w_theta);
+	ui.W_tau_box->setValue(mThread->model0.w_tau);
+	ui.Thor_box->setValue(mThread->mpc0.Thor);
 }
 
 void GUI::addPoint(double x, double y, double y1, double y2, double _x, double _y, double _y1, double _y2)
