@@ -14,13 +14,9 @@ using namespace std;
 
 extern ofstream aiFile;
 extern float64 AIdata[2], AIm[2], offset[2];
-
 extern int32 error;
 extern char errBuff[2048];
 extern float64 AOdata[2];
-
-extern TaskHandle AItaskHandle;
-extern TaskHandle AOtaskHandle;
 
 double lowpass1(double X_in);
 double lowpass2(double X_in);

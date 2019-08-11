@@ -3,6 +3,7 @@
 #include <QThread>
 #include "ui_GUI.h"
 #include "libgrampc.h"
+#include "fis.h"
 #define PRINTRES
 #define NX    	4
 #define NU  	1
@@ -38,9 +39,7 @@ struct modelParams {
 struct fisParams
 {
 	double b1 = 0.297169536047388, b2 = 1436.64003038666, b3 = -619.933931268223;
-	//double b1 = 0.25, b2 = 1500, b3 = -1000;
 	double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
-	double mu[4], rule[4];
 };
 	
 class MyThread : public QThread
@@ -61,15 +60,18 @@ public:
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
-	//void motorComms();
 	void controllerFunctions(fisParams);
 private:
-	//bool mpc_complete = 0;
+	int i, vec_i;
 	double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
 	double t = 0.0, t_halt = 0.0;
-	int i, vec_i;
+	double task_count = 0, time_counter = 1;
+	clock_t this_time, last_time, start_time, end_time;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
-
+	typeGRAMPC *grampc_;
+#ifdef PRINTRES
+	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
+#endif
 signals:
 	void mpcIteration(double, double, double, double, double, double, double, double, double, double, double);
 };

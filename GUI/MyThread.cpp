@@ -21,8 +21,8 @@
 bool mpc_complete = 0;
 
 // DAQmx init
-ofstream aiFile, mpcFile; // extern daq.h
-float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { 0.0127, 0.0257 }; // EMG
+ofstream	aiFile, mpcFile; // extern daq.h
+float64		AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { 0.0127, 0.0257 }; // EMG
 int32       error = 0, read = 0;
 char        errBuff[2048] = { '\0' };
 TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
@@ -33,20 +33,12 @@ short demandedCurrent = 0; // extern motor.h
 short inputCurrent = 0; // extern motor.h
 long currentPosition = 0, homePosition = 0; // extern motor.h
 
-// GRAMPC init
-typeGRAMPC *grampc_;
-#ifdef PRINTRES
-FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
-#endif
 
-double mu[4], rule[4];
+
+double mu[4], rule[4]; // extern fis.h
 
 // Params
-testParams test0;
-
-// Timed loop
-double task_count = 0, time_counter = 1;
-clock_t this_time, last_time, start_time, end_time;
+testParams test0; // extern motor.h
 
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)

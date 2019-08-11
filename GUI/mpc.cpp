@@ -9,7 +9,7 @@ void openFile(FILE **file, const char *name) {
 	}
 }
 
-void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size) {
+void printNumVector2File(FILE *file, const double * val, const int size) {
 	typeInt i;
 	for (i = 0; i < size - 1; i++) {
 		fprintf(file, "%.5f,", val[i]);
@@ -17,7 +17,7 @@ void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size) {
 	fprintf(file, "%.5f\n", val[size - 1]); /* new line */
 }
 
-void printVector2File(const char *prefix, ofstream *file, ctypeRNum *const val, ctypeInt size) {
+void printVector2File(const char *prefix, ofstream *file, const double * val, const int size) {
 	typeInt i;
 	*file << prefix;
 	for (i = 0; i < size - 1; i++) {
@@ -31,7 +31,7 @@ void printVector2File(const char *prefix, ofstream *file, ctypeRNum *const val, 
 	}
 }
 
-void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0, const ctypeRNum *xdes, const ctypeRNum *u0, const ctypeRNum *udes, const ctypeRNum *umax, const ctypeRNum *umin, ctypeRNum *Thor, const ctypeRNum *dt, const ctypeRNum *t, const typeChar *TerminalCost, const typeChar *IntegralCost, const typeChar *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol) {
+void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol) {
 	grampc_init(grampc_,userparam);
 
 	grampc_setparam_real_vector(*grampc_, "x0", x0);

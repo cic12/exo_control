@@ -11,8 +11,8 @@ using namespace std;
 extern ofstream mpcFile;
 
 void openFile(FILE **file, const char *name);
-void printNumVector2File(FILE *file, ctypeRNum *const val, ctypeInt size);
-void printVector2File(const char *prefix, ofstream *file, ctypeRNum *const val, ctypeInt size);
-void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const ctypeRNum *x0, const ctypeRNum *xdes, const ctypeRNum *u0, const ctypeRNum *udes, const ctypeRNum *umax, const ctypeRNum *umin, ctypeRNum *Thor, const ctypeRNum *dt, const ctypeRNum *t, const typeChar *TerminalCost, const typeChar *IntegralCost, const typeChar *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol);
+void printNumVector2File(FILE *file, const double *const val, const int size);
+void printVector2File(const char *prefix, ofstream *file, const double * val, const int size);
+void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol);
 
 #endif
