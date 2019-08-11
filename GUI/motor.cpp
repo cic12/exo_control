@@ -8,9 +8,9 @@ __int8 mode;
 using namespace std;
 
 bool mpc_complete = 0;
-short demandedCurrent = 0; // extern motor.h
-short inputCurrent = 0; // extern motor.h
-long currentPosition = 0, homePosition = 0; // extern motor.h
+short demandedCurrent = 0;
+short inputCurrent = 0;
+long currentPosition = 0, homePosition = 0;
 testParams test0;
 
 void motorComms()
@@ -24,7 +24,7 @@ void motorComms()
 			getCurrentPosition(currentPosition);
 		}
 		else {
-			this_thread::sleep_for(std::chrono::microseconds(500));
+			this_thread::sleep_for(std::chrono::microseconds(50));
 		}
 	}
 }
