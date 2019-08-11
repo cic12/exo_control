@@ -5,11 +5,12 @@
 #include "Definitions.h"
 #include "MyThread.h"
 
-extern bool mpc_complete;
 extern short demandedCurrent;
 extern short inputCurrent;
 extern long currentPosition;
 extern testParams test0;
+
+extern bool mpc_complete;
 
 void motorComms();
 void enableDevice();

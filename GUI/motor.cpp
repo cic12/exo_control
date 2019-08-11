@@ -7,17 +7,18 @@ __int8 mode;
 
 using namespace std;
 
-void motorComms() {
-	std::this_thread::sleep_for(std::chrono::microseconds(500));
+void motorComms()
+{
+	this_thread::sleep_for(std::chrono::microseconds(500));
 	while (!mpc_complete)
 	{
-		if(test0.Motor){
+		if (test0.Motor) {
 			setCurrent(demandedCurrent);
 			inputCurrent = demandedCurrent;
 			getCurrentPosition(currentPosition);
 		}
 		else {
-			std::this_thread::sleep_for(std::chrono::microseconds(500));
+			this_thread::sleep_for(std::chrono::microseconds(500));
 		}
 	}
 }

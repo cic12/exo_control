@@ -18,22 +18,20 @@
 #include "daq.h"
 #include "fis.h"
 
+bool mpc_complete = 0;
+
+// DAQmx init
 ofstream aiFile, mpcFile; // extern daq.h
-float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }; // extern daq.h // AIdata
-bool mpc_complete = 0;  // extern motor.h
+float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { 0.0127, 0.0257 }; // EMG
+int32       error = 0, read = 0;
+char        errBuff[2048] = { '\0' };
+TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 // Motor
 int haltMode; // extern fis.h
-short demandedCurrent = 0;
+short demandedCurrent = 0; // extern motor.h
 short inputCurrent = 0; // extern motor.h
 long currentPosition = 0, homePosition = 0; // extern motor.h
-double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
-
-// DAQmx init
-int32       error = 0, read = 0;
-float64     AOdata[2] = { 3.3 , 3.3 };
-char        errBuff[2048] = { '\0' };
-TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 // GRAMPC init
 typeGRAMPC *grampc_;
@@ -173,11 +171,11 @@ void MyThread::mpc_init(char emg_string[]) {
 	start_time = last_time;
 }
 
-void MyThread::mpc_loop() { // executes repeatedly
+void MyThread::mpc_loop() {
+	this->usleep(500);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
-	//this->usleep(500); // DOUBLE CHECK TIMING ???
 	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
 		// Setpoint
@@ -269,6 +267,22 @@ void MyThread::mpc_stop() {
 	}
 }
 
+//void motorComms()
+//{
+//	this_thread::sleep_for(std::chrono::microseconds(500));
+//	while (!mpc_complete)
+//	{
+//		if (test0.Motor) {
+//			setCurrent(demandedCurrent);
+//			inputCurrent = demandedCurrent;
+//			getCurrentPosition(currentPosition);
+//		}
+//		else {
+//			this_thread::sleep_for(std::chrono::microseconds(500));
+//		}
+//	}
+//}
+
 void MyThread::controllerFunctions(fisParams fis) {
 	if (test0.aiSim) {
 		AIm[0] = AImvec[iMPC];
@@ -292,11 +306,10 @@ void MyThread::run()
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
-		if (iMPC % 10 == 0) // 500 Hz to 50 Hz
+		if (iMPC % 20 == 0)
 		{
 			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
-				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3]);
-			this->usleep(500); // 
+				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3], AIdata[0] + offset[0], AIm[0], AIdata[1] + offset[1], AIm[1]); 
 		}
 	}
 	mpc_stop();

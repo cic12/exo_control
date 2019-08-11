@@ -20,7 +20,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-	const double Tsim = 20.0, dt = 0.002;
+	const double Tsim = 40.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
@@ -41,7 +41,7 @@ struct fisParams
 	double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
 	double mu[4], rule[4];
 };
-
+	
 class MyThread : public QThread
 {
 	Q_OBJECT
@@ -49,11 +49,9 @@ class MyThread : public QThread
 public:
 	MyThread(QObject *parent);
 	void run();
-
 	bool Stop = false;
 	int iMPC = 0;
 
-	// Params
 	mpcParams mpc0;
 	modelParams model0;
 	fisParams fis0;
@@ -62,14 +60,15 @@ public:
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
+	//void motorComms();
 	void controllerFunctions(fisParams);
-	
 private:
-	
+	//bool mpc_complete = 0;
+	double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
 	double t = 0.0, t_halt = 0.0;
 	int i, vec_i;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 
 signals:
-	void mpcIteration(double, double, double, double, double, double, double);
+	void mpcIteration(double, double, double, double, double, double, double, double, double, double, double);
 };

@@ -47,6 +47,8 @@ public:
     QDoubleSpinBox *Thor_box;
     QLabel *label_11;
     QPushButton *btn_set_params;
+    QCustomPlot *plot2;
+    QCustomPlot *plot3;
     QCustomPlot *plot1;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -56,13 +58,13 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(592, 546);
+        GUIClass->resize(601, 788);
         GUIClass->setFocusPolicy(Qt::NoFocus);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         plot = new QCustomPlot(centralWidget);
         plot->setObjectName(QString::fromUtf8("plot"));
-        plot->setGeometry(QRect(110, 20, 471, 221));
+        plot->setGeometry(QRect(110, 20, 471, 161));
         btn_start = new QPushButton(centralWidget);
         btn_start->setObjectName(QString::fromUtf8("btn_start"));
         btn_start->setGeometry(QRect(20, 410, 75, 23));
@@ -135,14 +137,22 @@ public:
         btn_set_params = new QPushButton(centralWidget);
         btn_set_params->setObjectName(QString::fromUtf8("btn_set_params"));
         btn_set_params->setGeometry(QRect(20, 20, 75, 23));
+        plot2 = new QCustomPlot(centralWidget);
+        plot2->setObjectName(QString::fromUtf8("plot2"));
+        plot2->setEnabled(false);
+        plot2->setGeometry(QRect(110, 380, 471, 161));
+        plot3 = new QCustomPlot(centralWidget);
+        plot3->setObjectName(QString::fromUtf8("plot3"));
+        plot3->setEnabled(false);
+        plot3->setGeometry(QRect(110, 560, 471, 161));
         plot1 = new QCustomPlot(centralWidget);
         plot1->setObjectName(QString::fromUtf8("plot1"));
         plot1->setEnabled(false);
-        plot1->setGeometry(QRect(110, 260, 471, 221));
+        plot1->setGeometry(QRect(110, 200, 471, 161));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 592, 21));
+        menuBar->setGeometry(QRect(0, 0, 601, 21));
         GUIClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(GUIClass);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
