@@ -84,12 +84,12 @@ GUI::GUI(QWidget *parent)
 	ui.plot2->xAxis->setAutoTickStep(false);
 	ui.plot2->xAxis->setTickStep(1);
 	ui.plot2->yAxis->setAutoTickStep(false);
-	ui.plot2->yAxis->setTickStep(0.02);
+	ui.plot2->yAxis->setTickStep(0.05);
 
 	ui.plot3->xAxis->setAutoTickStep(false);
 	ui.plot3->xAxis->setTickStep(1);
 	ui.plot3->yAxis->setAutoTickStep(false);
-	ui.plot3->yAxis->setTickStep(0.02);
+	ui.plot3->yAxis->setTickStep(0.05);
 
 	ui.plot4->xAxis->setAutoTickStep(false);
 	ui.plot4->xAxis->setTickStep(1);

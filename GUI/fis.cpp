@@ -3,6 +3,10 @@
 int haltMode;
 double mu[4], rule[4], lambdaA, lambdaR;
 
+double hTorqueEst(double m1, double m2, double b1, double b2, double b3) {
+	return (b1 + b2 * m1 + b3 * m2);
+}
+
 double gaussmf(double x, double sig, double c) {
 	return exp(-((x - c)*(x - c))/(2*sig*sig));
 }

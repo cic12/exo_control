@@ -81,6 +81,8 @@ void MyThread::mpc_init(char emg_string[]) {
 	}  
 	mpcInit(&grampc_, &model0.pSys, mpc0.x0, mpc0.xdes, mpc0.u0, mpc0.udes, mpc0.umax, mpc0.umin, &mpc0.Thor, &mpc0.dt, &t, mpc0.TerminalCost, mpc0.IntegralCost, mpc0.ScaleProblem, mpc0.AugLagUpdateGradientRelTol, mpc0.ConstraintsAbsTol);
 
+	//RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
+
 	// FIS params
 	mpcFile << fixed;
 	mpcFile << setprecision(3);
@@ -264,7 +266,7 @@ void MyThread::run()
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
-		if (iMPC % 10 == 0)
+		if (iMPC % 20 == 0)
 		{
 			vars0.time = t;
 			vars0.x1 = grampc_->sol->xnext[0];

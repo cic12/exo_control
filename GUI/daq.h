@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include <QtCore>
 #include "NIDAQmx.h"
 
@@ -20,7 +21,6 @@ double lowpass1(double X_in);
 double lowpass2(double X_in);
 double highpass1(double X_in);
 double highpass2(double X_in);
-double hTorqueEst(double m1, double m2, double b1, double b2, double b3);
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle);
 TaskHandle DAQmxAOinit(float64 &AOdata, int32 error, char &errBuff, TaskHandle AOtaskHandle);
 TaskHandle DAQmxAstart(int32 error, char &errBuff, TaskHandle taskHandle);

@@ -49,7 +49,7 @@ double lowpass2(double X_in)
 struct highpass_para {
 	double x[3];
 	double y[3];
-} high_para1,high_para2;
+} high_para1, high_para2;
 
 double highpass1(double X_in)
 {
@@ -59,9 +59,9 @@ double highpass1(double X_in)
 
 	high_para1.x[0] = X_in;
 
-	high_para1.y[0] = k*(high_para1.x[0] - 2 * high_para1.x[1] + high_para1.x[2]) - a1*high_para1.y[1] - a2*high_para1.y[2];
+	high_para1.y[0] = k * (high_para1.x[0] - 2 * high_para1.x[1] + high_para1.x[2]) - a1 * high_para1.y[1] - a2 * high_para1.y[2];
 
-	for (int i = 2; i>0; i--)
+	for (int i = 2; i > 0; i--)
 	{
 		high_para1.x[i] = high_para1.x[i - 1];
 		high_para1.y[i] = high_para1.y[i - 1];
@@ -77,18 +77,14 @@ double highpass2(double X_in)
 
 	high_para2.x[0] = X_in;
 
-	high_para2.y[0] = k*(high_para2.x[0] - 2 * high_para2.x[1] + high_para2.x[2]) - a1*high_para2.y[1] - a2*high_para2.y[2];
+	high_para2.y[0] = k * (high_para2.x[0] - 2 * high_para2.x[1] + high_para2.x[2]) - a1 * high_para2.y[1] - a2 * high_para2.y[2];
 
-	for (int i = 2; i>0; i--)
+	for (int i = 2; i > 0; i--)
 	{
 		high_para2.x[i] = high_para2.x[i - 1];
 		high_para2.y[i] = high_para2.y[i - 1];
 	}
 	return high_para2.y[0];
-}
-
-double hTorqueEst(double m1, double m2, double b1, double b2, double b3) {
-	return (b1 + b2*m1 + b3*m2);
 }
 
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
@@ -110,7 +106,7 @@ Error:
 	return AItaskHandle;
 }
 
-TaskHandle DAQmxAOinit(float64 &AOdata,  int32 error, char &errBuff, TaskHandle AOtaskHandle) {
+TaskHandle DAQmxAOinit(float64 &AOdata, int32 error, char &errBuff, TaskHandle AOtaskHandle) {
 
 	DAQmxErrChk(DAQmxCreateTask("3V3 Out", &AOtaskHandle));
 	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
@@ -141,6 +137,19 @@ Error:
 	return taskHandle;
 }
 
+double limEMG(double emg, double lim) {
+	if (abs(emg) > lim) {
+		if (emg > 0) {
+			emg = lim;
+		}
+		else
+		{
+			emg = -lim;
+		}
+	}
+	return emg;
+}
+
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
 {
 	int32   error = 0;
@@ -152,6 +161,10 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 
 	AIdata[0] += offset[0];
 	AIdata[1] += offset[1];
+
+	double lim = 0.05;
+	limEMG(AIdata[0], lim);
+	limEMG(AIdata[1], lim);
 
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1])));

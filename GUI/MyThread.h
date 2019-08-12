@@ -22,7 +22,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-	const double Tsim = 20.0, dt = 0.002;
+	const double Tsim = 24.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
@@ -38,7 +38,7 @@ struct modelParams {
 struct fisParams
 {
 	double b1 = 0.2972, b2 = 1436.6400, b3 = -619.9339;
-	double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
+	double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.425, c_e = 1, halt_lim = 0.25;
 };
 
 struct plotVars {
