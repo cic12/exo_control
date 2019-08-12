@@ -9,10 +9,8 @@
 #include <thread>
 #include <time.h>
 #include <math.h>
-
 #include "libgrampc.h"
 #include "Definitions.h"
-
 #include "mpc.h"
 #include "motor.h"
 #include "daq.h"
@@ -23,17 +21,29 @@ MyThread::MyThread(QObject *parent)
 {
 }
 
-void MyThread::paramSet(double A_, double B_, double J_, double tau_g_, double w_theta_, double w_tau_, double Thor_) {
-	model0.A = A_; model0.pSys[0] = model0.A;
-	model0.B = B_; model0.pSys[1] = model0.B;
-	model0.J = J_; model0.pSys[2] = model0.J;
-	model0.tau_g = tau_g_; model0.pSys[3] = model0.tau_g;
-	model0.w_theta = w_theta_; model0.pSys[4] = model0.w_theta;
-	model0.w_tau = w_tau_; model0.pSys[5] = model0.w_tau;
+void MyThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
+	double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
+	model0.A = A; model0.pSys[0] = model0.A;
+	model0.B = B; model0.pSys[1] = model0.B;
+	model0.J = J; model0.pSys[2] = model0.J;
+	model0.tau_g = tau_g; model0.pSys[3] = model0.tau_g;
+	model0.w_theta = w_theta; model0.pSys[4] = model0.w_theta;
+	model0.w_tau = w_tau; model0.pSys[5] = model0.w_tau;
 	grampc_->userparam = model0.pSys;
 	
-	mpc0.Thor = Thor_;
+	mpc0.Thor = Thor;
 	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
+
+	fis0.b1 = b1;
+	fis0.b2 = b2;
+	fis0.b3 = b3;
+	fis0.pA = pA;
+	fis0.pR = pR;
+	fis0.sig_h = sig_h;
+	fis0.c_h = c_h;
+	fis0.sig_e = sig_e;
+	fis0.c_e = c_e;
+	fis0.halt_lim = halt_lim;
 }
 
 void MyThread::mpc_init(char emg_string[]) {
@@ -72,7 +82,6 @@ void MyThread::mpc_init(char emg_string[]) {
 	mpcInit(&grampc_, &model0.pSys, mpc0.x0, mpc0.xdes, mpc0.u0, mpc0.udes, mpc0.umax, mpc0.umin, &mpc0.Thor, &mpc0.dt, &t, mpc0.TerminalCost, mpc0.IntegralCost, mpc0.ScaleProblem, mpc0.AugLagUpdateGradientRelTol, mpc0.ConstraintsAbsTol);
 
 	// FIS params
-
 	mpcFile << fixed;
 	mpcFile << setprecision(3);
 
@@ -155,16 +164,14 @@ void MyThread::mpc_loop() {
 		grampc_run(grampc_);
 		if (grampc_->sol->status > 0) {
 			if (grampc_printstatus(grampc_->sol->status, STATUS_LEVEL_ERROR)) {
-				//myPrint("at iteration %i:\n -----\n", iMPC);
+				qDebug() << "at iteration %i:\n -----\n" << iMPC;
 			}
 		}
 		if (test0.Motor) {
-			// Set Current
 			//demandedCurrent = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
 			demandedCurrent = *grampc_->sol->unext * 170;
 		}
-		if (test0.Sim) { // Convert to Sim function
-			// Simulation - heun scheme
+		if (test0.Sim) { // Heun scheme // Convert to Sim function
 			ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 			for (i = 0; i < NX; i++) {
 				grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
@@ -175,7 +182,6 @@ void MyThread::mpc_loop() {
 			}
 		}
 		else {
-			// EICOSI / Mini rig
 			if (test0.Exo) {
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
 			}
@@ -184,12 +190,10 @@ void MyThread::mpc_loop() {
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
-			// Save current states
 			previousPosition = grampc_->sol->xnext[0];
 			previousVelocity = grampc_->sol->xnext[1];
 		}
 		controlFunctions(fis0);
-		//Update state and time
 		t = t + mpc0.dt;
 		if (haltMode) {
 			t_halt = t_halt + mpc0.dt;
@@ -236,22 +240,6 @@ void MyThread::mpc_stop() {
 		closeDevice();
 	}
 }
-
-//void motorComms()
-//{
-//	this_thread::sleep_for(std::chrono::microseconds(500));
-//	while (!mpc_complete)
-//	{
-//		if (test0.Motor) {
-//			setCurrent(demandedCurrent);
-//			inputCurrent = demandedCurrent;
-//			getCurrentPosition(currentPosition);
-//		}
-//		else {
-//			this_thread::sleep_for(std::chrono::microseconds(500));
-//		}
-//	}
-//}
 
 void MyThread::controlFunctions(fisParams fis) {
 	if (test0.aiSim) {

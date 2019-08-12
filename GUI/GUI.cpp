@@ -29,52 +29,86 @@ GUI::GUI(QWidget *parent)
 	ui.plot3->yAxis->setTickLabelFont(font);
 	ui.plot3->legend->setFont(font);
 
+	ui.plot4->setNotAntialiasedElements(QCP::aeAll);
+	ui.plot4->xAxis->setTickLabelFont(font);
+	ui.plot4->yAxis->setTickLabelFont(font);
+	ui.plot4->legend->setFont(font);
+
+	ui.plot5->setNotAntialiasedElements(QCP::aeAll);
+	ui.plot5->xAxis->setTickLabelFont(font);
+	ui.plot5->yAxis->setTickLabelFont(font);
+	ui.plot5->legend->setFont(font);
+
 	// add plots
 	ui.plot->addGraph();
-	ui.plot->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
+	ui.plot->graph(0)->setPen(QPen(Qt::blue));
 	ui.plot->addGraph();
-	ui.plot->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
+	ui.plot->graph(1)->setPen(QPen(Qt::red));
 	ui.plot->addGraph();
-	ui.plot->graph(2)->setPen(QPen(Qt::green)); // line color green for third graph
+	ui.plot->graph(2)->setPen(QPen(Qt::green));
 
 	ui.plot1->addGraph();
-	ui.plot1->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
+	ui.plot1->graph(0)->setPen(QPen(Qt::blue));
 	ui.plot1->addGraph();
-	ui.plot1->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
+	ui.plot1->graph(1)->setPen(QPen(Qt::red));
 	ui.plot1->addGraph();
-	ui.plot1->graph(2)->setPen(QPen(Qt::green)); // line color green for third graphui.plot1->addGraph();
+	ui.plot1->graph(2)->setPen(QPen(Qt::green));
 	
 	ui.plot2->addGraph();
-	ui.plot2->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
+	ui.plot2->graph(0)->setPen(QPen(Qt::blue));
 	ui.plot2->addGraph();
-	ui.plot2->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
+	ui.plot2->graph(1)->setPen(QPen(Qt::red));
 
 	ui.plot3->addGraph();
-	ui.plot3->graph(0)->setPen(QPen(Qt::blue)); // line color blue for first graph
+	ui.plot3->graph(0)->setPen(QPen(Qt::blue));
 	ui.plot3->addGraph();
-	ui.plot3->graph(1)->setPen(QPen(Qt::red)); // line color red for second graph
+	ui.plot3->graph(1)->setPen(QPen(Qt::red));
+
+	ui.plot4->addGraph();
+	ui.plot4->graph(0)->setPen(QPen(Qt::blue));
+
+	ui.plot5->addGraph();
+	ui.plot5->graph(0)->setPen(QPen(Qt::blue));
 
 	// axes settings
 	ui.plot->xAxis->setAutoTickStep(false);
 	ui.plot->xAxis->setTickStep(1);
+	ui.plot->yAxis->setAutoTickStep(false);
+	ui.plot->yAxis->setTickStep(1);
 
 	ui.plot1->xAxis->setAutoTickStep(false);
 	ui.plot1->xAxis->setTickStep(1);
+	ui.plot1->yAxis->setAutoTickStep(false);
+	ui.plot1->yAxis->setTickStep(10);
 
 	ui.plot2->xAxis->setAutoTickStep(false);
 	ui.plot2->xAxis->setTickStep(1);
+	ui.plot2->yAxis->setAutoTickStep(false);
+	ui.plot2->yAxis->setTickStep(0.02);
 
 	ui.plot3->xAxis->setAutoTickStep(false);
 	ui.plot3->xAxis->setTickStep(1);
+	ui.plot3->yAxis->setAutoTickStep(false);
+	ui.plot3->yAxis->setTickStep(0.02);
+
+	ui.plot4->xAxis->setAutoTickStep(false);
+	ui.plot4->xAxis->setTickStep(1);
+	ui.plot4->yAxis->setAutoTickStep(false);
+	ui.plot4->yAxis->setTickStep(0.5);
+
+	ui.plot5->xAxis->setAutoTickStep(false);
+	ui.plot5->xAxis->setTickStep(1);
+	ui.plot5->yAxis->setAutoTickStep(false);
+	ui.plot5->yAxis->setTickStep(0.5);
 
 	ui.plot->yAxis->setRange(ylim[0], ylim[1]);
 	ui.plot1->yAxis->setRange(ylim1[0], ylim1[1]);
 	ui.plot2->yAxis->setRange(ylim2[0], ylim2[1]);
 	ui.plot3->yAxis->setRange(ylim3[0], ylim3[1]);
+	ui.plot4->yAxis->setRange(ylim4[0], ylim4[1]);
+	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
 	mThread = new MyThread(this);
-	//connect(mThread, SIGNAL(mpcIteration(double,double,double,double,double,double,double,double,double,double,double)),
-	//	this, SLOT(onMpcIteration(double,double,double,double,double,double,double,double,double,double,double)));
 	connect(mThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
 	ui.A_box->setValue(mThread->model0.A);
 	ui.B_box->setValue(mThread->model0.B);
@@ -83,9 +117,19 @@ GUI::GUI(QWidget *parent)
 	ui.W_theta_box->setValue(mThread->model0.w_theta);
 	ui.W_tau_box->setValue(mThread->model0.w_tau);
 	ui.Thor_box->setValue(mThread->mpc0.Thor);
+	ui.b1_box->setValue(mThread->fis0.b1);
+	ui.b2_box->setValue(mThread->fis0.b2);
+	ui.b3_box->setValue(mThread->fis0.b3);
+	ui.pA_box->setValue(mThread->fis0.pA);
+	ui.pR_box->setValue(mThread->fis0.pR);
+	ui.sig_h_box->setValue(mThread->fis0.sig_h);
+	ui.c_h_box->setValue(mThread->fis0.c_h);
+	ui.sig_e_box->setValue(mThread->fis0.sig_e);
+	ui.c_e_box->setValue(mThread->fis0.c_e);
+	ui.halt_lim_box->setValue(mThread->fis0.halt_lim);
 }
 
-void GUI::addPoints(plotVars vars) //addPoint(time, theta, thetades, dtheta, tau_e, tau_h_est, tau_e + tau_h_est, AIdata0, AIm0, AIdata1, AIm1);
+void GUI::addPoints(plotVars vars)
 {
 	// Add data
 	ui.plot->graph(0)->addData(vars.time, vars.x1);
@@ -102,6 +146,10 @@ void GUI::addPoints(plotVars vars) //addPoint(time, theta, thetades, dtheta, tau
 	ui.plot3->graph(0)->addData(vars.time, vars.AIdata1);
 	ui.plot3->graph(1)->addData(vars.time, vars.AIm1);
 
+	ui.plot4->graph(0)->addData(vars.time, vars.lambdaA);
+
+	ui.plot5->graph(0)->addData(vars.time, vars.lambdaR);
+
 	// Remove data
 	ui.plot->graph(0)->removeDataBefore(vars.time - t_span);
 	ui.plot->graph(1)->removeDataBefore(vars.time - t_span);
@@ -117,10 +165,16 @@ void GUI::addPoints(plotVars vars) //addPoint(time, theta, thetades, dtheta, tau
 	ui.plot3->graph(0)->removeDataBefore(vars.time - t_span);
 	ui.plot3->graph(1)->removeDataBefore(vars.time - t_span);
 
+	ui.plot4->graph(0)->removeDataBefore(vars.time - t_span);
+
+	ui.plot5->graph(0)->removeDataBefore(vars.time - t_span);
+
 	ui.plot->xAxis->setRange(vars.time, t_span, Qt::AlignRight);
 	ui.plot1->xAxis->setRange(vars.time, t_span, Qt::AlignRight);
 	ui.plot2->xAxis->setRange(vars.time, t_span, Qt::AlignRight);
 	ui.plot3->xAxis->setRange(vars.time, t_span, Qt::AlignRight);
+	ui.plot4->xAxis->setRange(vars.time, t_span, Qt::AlignRight);
+	ui.plot5->xAxis->setRange(vars.time, t_span, Qt::AlignRight);
 }
 
 void GUI::plot()
@@ -129,6 +183,8 @@ void GUI::plot()
 	ui.plot1->replot();
 	ui.plot2->replot();
 	ui.plot3->replot();
+	ui.plot4->replot();
+	ui.plot5->replot();
 }
 
 void GUI::on_btn_start_clicked()
@@ -143,7 +199,23 @@ void GUI::on_btn_stop_clicked()
 
 void GUI::on_btn_set_params_clicked()
 {
-	mThread->paramSet(ui.A_box->value(), ui.B_box->value(), ui.J_box->value(), ui.tau_g_box->value(), ui.W_theta_box->value(), ui.W_tau_box->value(), ui.Thor_box->value());
+	mThread->paramSet(ui.A_box->value(),
+		ui.B_box->value(),
+		ui.J_box->value(),
+		ui.tau_g_box->value(),
+		ui.W_theta_box->value(),
+		ui.W_tau_box->value(),
+		ui.Thor_box->value(),
+		ui.b1_box->value(),
+		ui.b2_box->value(),
+		ui.b3_box->value(),
+		ui.pA_box->value(),
+		ui.pR_box->value(),
+		ui.sig_h_box->value(),
+		ui.c_h_box->value(),
+		ui.sig_e_box->value(),
+		ui.c_e_box->value(),
+		ui.halt_lim_box->value());
 }
 
 void GUI::onMpcIteration() {

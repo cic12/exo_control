@@ -24,7 +24,7 @@ void motorComms()
 			getCurrentPosition(currentPosition);
 		}
 		else {
-			this_thread::sleep_for(std::chrono::microseconds(50));
+			this_thread::sleep_for(std::chrono::microseconds(500));
 		}
 	}
 }

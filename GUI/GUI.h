@@ -11,9 +11,9 @@ class GUI : public QMainWindow
 public:
 	GUI(QWidget *parent = Q_NULLPTR);
 	void addPoints(plotVars);
-		//double, double, double, double, double, double, double, double, double, double, double);
 	void plot();
 	MyThread *mThread;
+
 private:
 	Ui::GUIClass ui;
 	double t_span = 4;
@@ -21,6 +21,9 @@ private:
 	double ylim1[2] = { -15 , 25 };
 	double ylim2[2] = { -0.02 , 0.02 };
 	double ylim3[2] = { -0.02 , 0.02 };
+	double ylim4[2] = { 0 , 1 };
+	double ylim5[2] = { 0 , 1 };
+
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
@@ -28,5 +31,4 @@ private slots:
 
 public slots:
 	void onMpcIteration();
-	//void onMpcIteration(double, double, double, double, double, double, double, double, double, double, double);
 };
