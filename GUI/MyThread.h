@@ -13,8 +13,8 @@
 using namespace std;
 
 struct testParams {
-	//bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
-	bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
+	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
+	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 
 struct mpcParams {
@@ -42,6 +42,12 @@ struct fisParams
 	double b1 = 0.297169536047388, b2 = 1436.64003038666, b3 = -619.933931268223;
 	double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
 };
+
+struct plotVars {
+	double time, x1, x1des, x2, u, hTauEst, mode, AIdata0, AIm0, AIdata1, AIm1, lambdaA, lambdaR;
+		//emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1], 
+		//grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3], AIdata[0] + offset[0], AIm[0], AIdata[1] + offset[1], AIm[1]);
+};
 	
 class MyThread : public QThread
 {
@@ -56,12 +62,13 @@ public:
 	mpcParams mpc0;
 	modelParams model0;
 	fisParams fis0;
+	plotVars vars0;
 
 	void paramSet(double, double, double, double, double, double, double);
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
-	void controllerFunctions(fisParams);
+	void controlFunctions(fisParams);
 private:
 	int i, vec_i;
 	double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
@@ -75,5 +82,6 @@ private:
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 #endif
 signals:
-	void mpcIteration(double, double, double, double, double, double, double, double, double, double, double);
+	void mpcIteration();
+	//void mpcIteration(double, double, double, double, double, double, double, double, double, double, double);
 };

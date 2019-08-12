@@ -8,6 +8,8 @@ using namespace std;
 extern int haltMode;
 extern double mu[4];
 extern double rule[4];
+extern double lambdaA;
+extern double lambdaR;
 
 double gaussmf(double x, double sig, double c);
 double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim);

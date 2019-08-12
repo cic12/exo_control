@@ -1,7 +1,7 @@
 #include "fis.h"
 
 int haltMode;
-double mu[4], rule[4];
+double mu[4], rule[4], lambdaA, lambdaR;
 
 double gaussmf(double x, double sig, double c) {
 	return exp(-((x - c)*(x - c))/(2*sig*sig));
@@ -19,8 +19,8 @@ double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double 
 	rule[2] = mu[0] * mu[3]; // dtheta N * Tau_h P
 	rule[3] = mu[1] * mu[2]; // dtheta P * Tau_h N
 
-	double lambdaA = rule[0] + rule[1];
-	double lambdaR = rule[2] + rule[3];
+	lambdaA = rule[0] + rule[1];
+	lambdaR = rule[2] + rule[3];
 
 	if (lambdaR > halt_lim) {
 		//haltMode = 1;

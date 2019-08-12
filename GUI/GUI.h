@@ -10,7 +10,8 @@ class GUI : public QMainWindow
 
 public:
 	GUI(QWidget *parent = Q_NULLPTR);
-	void addPoint(double, double, double, double, double, double, double, double, double, double, double);
+	void addPoints(plotVars);
+		//double, double, double, double, double, double, double, double, double, double, double);
 	void plot();
 	MyThread *mThread;
 private:
@@ -26,5 +27,6 @@ private slots:
 	void on_btn_set_params_clicked();
 
 public slots:
-	void onMpcIteration(double, double, double, double, double, double, double, double, double, double, double);
+	void onMpcIteration();
+	//void onMpcIteration(double, double, double, double, double, double, double, double, double, double, double);
 };

@@ -188,7 +188,7 @@ void MyThread::mpc_loop() {
 			previousPosition = grampc_->sol->xnext[0];
 			previousVelocity = grampc_->sol->xnext[1];
 		}
-		controllerFunctions(fis0);
+		controlFunctions(fis0);
 		//Update state and time
 		t = t + mpc0.dt;
 		if (haltMode) {
@@ -253,7 +253,7 @@ void MyThread::mpc_stop() {
 //	}
 //}
 
-void MyThread::controllerFunctions(fisParams fis) {
+void MyThread::controlFunctions(fisParams fis) {
 	if (test0.aiSim) {
 		AIm[0] = AImvec[iMPC];
 		AIm[1] = AImvec1[iMPC];
@@ -276,10 +276,22 @@ void MyThread::run()
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
-		if (iMPC % 20 == 0)
+		if (iMPC % 10 == 0)
 		{
-			emit mpcIteration(t, grampc_->sol->xnext[0], grampc_->param->xdes[0], grampc_->sol->xnext[1],
-				grampc_->sol->unext[0], grampc_->sol->xnext[2], grampc_->sol->xnext[3], AIdata[0] + offset[0], AIm[0], AIdata[1] + offset[1], AIm[1]); 
+			vars0.time = t;
+			vars0.x1 = grampc_->sol->xnext[0];
+			vars0.x1des = grampc_->param->xdes[0];
+			vars0.x2 = grampc_->sol->xnext[1];
+			vars0.u = grampc_->sol->unext[0];
+			vars0.hTauEst = grampc_->sol->xnext[2];
+			vars0.mode = grampc_->sol->xnext[3];
+			vars0.AIdata0 = AIdata[0];
+			vars0.AIm0 = AIm[0];
+			vars0.AIdata1 = AIdata[1];
+			vars0.AIm1 = AIm[1];
+			vars0.lambdaA = lambdaA;
+			vars0.lambdaR = lambdaR;
+			emit mpcIteration(); 
 		}
 	}
 	mpc_stop();

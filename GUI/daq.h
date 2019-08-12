@@ -11,7 +11,7 @@
 using namespace std;
 
 extern ofstream aiFile;
-extern float64 AIdata[2], AIm[2], offset[2];
+extern float64 AIdata[2], AIm[2];
 extern int32 error;
 extern char errBuff[2048];
 extern float64 AOdata[2];
