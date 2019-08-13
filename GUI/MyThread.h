@@ -13,8 +13,8 @@
 using namespace std;
 
 struct testParams {
-	//bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
-	bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
+	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
+	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 
 struct mpcParams {
@@ -22,7 +22,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-	const double Tsim = 24.0, dt = 0.002;
+	const double Tsim = 20.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
@@ -30,7 +30,7 @@ struct mpcParams {
 };
 
 struct modelParams {
-	double A = 0.7129, B = 4.2936, J = 0.1744, tau_g = 6.0796, w_theta = 100000, w_tau = 10;
+	double A = 0.7129, B = 4.2936, J = 0.1744, tau_g = 6.0796, w_theta = 100000, w_tau = 10; // w_theta = 100000
 	double x1min = 0.1, x1max = 1.3, x2min = -0.5, x2max = 0.5, umin = -40, umax = 40;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };

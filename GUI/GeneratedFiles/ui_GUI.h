@@ -15,9 +15,9 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 #include "qcustomplot.h"
@@ -79,7 +79,7 @@ public:
     QLabel *label_24;
     QLabel *label_25;
     QLabel *label_26;
-    QTextBrowser *textBrowser;
+    QPlainTextEdit *plainTextEdit;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -88,7 +88,7 @@ public:
     {
         if (GUIClass->objectName().isEmpty())
             GUIClass->setObjectName(QString::fromUtf8("GUIClass"));
-        GUIClass->resize(712, 875);
+        GUIClass->resize(712, 876);
         GUIClass->setFocusPolicy(Qt::NoFocus);
         centralWidget = new QWidget(GUIClass);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
@@ -318,9 +318,10 @@ public:
         label_26 = new QLabel(centralWidget);
         label_26->setObjectName(QString::fromUtf8("label_26"));
         label_26->setGeometry(QRect(210, 700, 61, 16));
-        textBrowser = new QTextBrowser(centralWidget);
-        textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
-        textBrowser->setGeometry(QRect(10, 520, 171, 241));
+        plainTextEdit = new QPlainTextEdit(centralWidget);
+        plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
+        plainTextEdit->setGeometry(QRect(10, 520, 171, 241));
+        plainTextEdit->setReadOnly(true);
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -372,6 +373,7 @@ public:
         label_24->setText(QApplication::translate("GUIClass", "EMG2", nullptr));
         label_25->setText(QApplication::translate("GUIClass", "lambdaA", nullptr));
         label_26->setText(QApplication::translate("GUIClass", "lambdaA", nullptr));
+        plainTextEdit->setPlainText(QString());
     } // retranslateUi
 
 };

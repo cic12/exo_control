@@ -222,4 +222,4 @@ void GUI::onMpcIteration() {
 	ui.label_3->setText(QString::number(mThread->vars0.time, 'f', 2));
 	addPoints(mThread->vars0);
 	plot();
-}
+}\

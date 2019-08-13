@@ -15,7 +15,7 @@ testParams test0;
 
 void motorComms()
 {
-	this_thread::sleep_for(std::chrono::microseconds(200));
+	this_thread::sleep_for(std::chrono::microseconds(500));
 	while (!mpc_complete)
 	{
 		if (test0.Motor) {

@@ -268,7 +268,7 @@ void MyThread::run()
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 	char emg_data[] = "res/emgs/aiER025.csv";
 	mpc_init(emg_data);
-	//std::thread t1(motorComms);
+	std::thread t1(motorComms);
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
@@ -291,6 +291,6 @@ void MyThread::run()
 		}
 	}
 	mpc_stop();
-	//t1.join();
+	t1.join();
 	terminate();
 }
