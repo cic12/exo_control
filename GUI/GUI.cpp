@@ -84,12 +84,12 @@ GUI::GUI(QWidget *parent)
 	ui.plot2->xAxis->setAutoTickStep(false);
 	ui.plot2->xAxis->setTickStep(1);
 	ui.plot2->yAxis->setAutoTickStep(false);
-	ui.plot2->yAxis->setTickStep(0.05);
+	ui.plot2->yAxis->setTickStep(0.1);
 
 	ui.plot3->xAxis->setAutoTickStep(false);
 	ui.plot3->xAxis->setTickStep(1);
 	ui.plot3->yAxis->setAutoTickStep(false);
-	ui.plot3->yAxis->setTickStep(0.05);
+	ui.plot3->yAxis->setTickStep(0.1);
 
 	ui.plot4->xAxis->setAutoTickStep(false);
 	ui.plot4->xAxis->setTickStep(1);
@@ -219,7 +219,7 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration() {
-	ui.label_3->setText(QString::number(mThread->vars0.time, 'f', 3)); // set text label
+	ui.label_3->setText(QString::number(mThread->vars0.time, 'f', 2));
 	addPoints(mThread->vars0);
 	plot();
 }
