@@ -16,7 +16,7 @@ public:
 
 private:
 	Ui::GUIClass ui;
-	double t_span = 8;
+	double t_span = 4;
 	double ylim[2] = { 2 , -2 };
 	double ylim1[2] = { -15 , 25 };
 	double ylim2[2] = { -0.1 , 0.1 };

@@ -63,7 +63,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>0.00</string>
+     <string>0.000</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -827,10 +827,13 @@
      </rect>
     </property>
     <property name="text">
-     <string>lambdaA</string>
+     <string>lambdaR</string>
     </property>
    </widget>
    <widget class="QPlainTextEdit" name="plainTextEdit">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>

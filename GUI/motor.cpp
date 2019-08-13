@@ -15,16 +15,18 @@ testParams test0;
 
 void motorComms()
 {
-	this_thread::sleep_for(std::chrono::microseconds(500));
 	while (!mpc_complete)
 	{
+		this_thread::sleep_for(std::chrono::microseconds(100));
 		if (test0.Motor) {
 			setCurrent(demandedCurrent);
+			this_thread::sleep_for(std::chrono::microseconds(500));
 			inputCurrent = demandedCurrent;
 			getCurrentPosition(currentPosition);
+			this_thread::sleep_for(std::chrono::microseconds(500));
 		}
 		else {
-			this_thread::sleep_for(std::chrono::microseconds(200));
+			this_thread::sleep_for(std::chrono::microseconds(500));
 		}
 	}
 }

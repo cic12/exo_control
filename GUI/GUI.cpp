@@ -219,7 +219,7 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration() {
-	ui.label_3->setText(QString::number(mThread->vars0.time, 'f', 2));
+	ui.label_3->setText(QString::number(mThread->vars0.time, 'f', 3));
 	addPoints(mThread->vars0);
 	plot();
-}\
+}

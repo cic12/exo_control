@@ -153,7 +153,7 @@ void MyThread::mpc_init(char emg_string[]) {
 }
 
 void MyThread::mpc_loop() {
-	this->usleep(500);
+	this->usleep(50);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -265,14 +265,14 @@ void MyThread::controlFunctions(fisParams fis) {
 void MyThread::run()
 {
 	qDebug() << "MyThread::run()";
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
 	char emg_data[] = "res/emgs/aiER025.csv";
 	mpc_init(emg_data);
 	std::thread t1(motorComms);
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
-		if (iMPC % 20 == 0)
+		if (iMPC % 10 == 0)
 		{
 			vars0.time = t;
 			vars0.x1 = grampc_->sol->xnext[0];

@@ -30,14 +30,14 @@ struct mpcParams {
 };
 
 struct modelParams {
-	double A = 0.7129, B = 4.2936, J = 0.1744, tau_g = 6.0796, w_theta = 100000, w_tau = 10; // w_theta = 100000
+	double A = 0.7129, B = 4.2936, J = 0.1744, tau_g = 6.0796, w_theta = 200000, w_tau = 10;
 	double x1min = 0.1, x1max = 1.3, x2min = -0.5, x2max = 0.5, umin = -40, umax = 40;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 
 struct fisParams
 {
-	double b1 = 0.2972, b2 = 1436.6400, b3 = -619.9339;
+	double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
 	double pA = 1, pR = 1, sig_h = 10.6, c_h = 25, sig_e = 0.425, c_e = 1, halt_lim = 0.25;
 };
 
@@ -80,5 +80,4 @@ private:
 #endif
 signals:
 	void mpcIteration();
-	//void mpcIteration(double, double, double, double, double, double, double, double, double, double, double);
 };

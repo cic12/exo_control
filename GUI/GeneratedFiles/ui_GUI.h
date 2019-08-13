@@ -320,6 +320,7 @@ public:
         label_26->setGeometry(QRect(210, 700, 61, 16));
         plainTextEdit = new QPlainTextEdit(centralWidget);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
+        plainTextEdit->setEnabled(false);
         plainTextEdit->setGeometry(QRect(10, 520, 171, 241));
         plainTextEdit->setReadOnly(true);
         GUIClass->setCentralWidget(centralWidget);
@@ -347,7 +348,7 @@ public:
         GUIClass->setWindowTitle(QApplication::translate("GUIClass", "GUI", nullptr));
         btn_start->setText(QApplication::translate("GUIClass", "Start MPC", nullptr));
         btn_stop->setText(QApplication::translate("GUIClass", "Stop MPC", nullptr));
-        label_3->setText(QApplication::translate("GUIClass", "0.00", nullptr));
+        label_3->setText(QApplication::translate("GUIClass", "0.000", nullptr));
         label_4->setText(QApplication::translate("GUIClass", "Time", nullptr));
         label_2->setText(QApplication::translate("GUIClass", "A", nullptr));
         label_5->setText(QApplication::translate("GUIClass", "B", nullptr));
@@ -372,7 +373,7 @@ public:
         label_23->setText(QApplication::translate("GUIClass", "EMG1", nullptr));
         label_24->setText(QApplication::translate("GUIClass", "EMG2", nullptr));
         label_25->setText(QApplication::translate("GUIClass", "lambdaA", nullptr));
-        label_26->setText(QApplication::translate("GUIClass", "lambdaA", nullptr));
+        label_26->setText(QApplication::translate("GUIClass", "lambdaR", nullptr));
         plainTextEdit->setPlainText(QString());
     } // retranslateUi
 
