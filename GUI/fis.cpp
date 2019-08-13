@@ -13,6 +13,8 @@ double gaussmf(double x, double sig, double c) {
 
 double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
 
+	// USE DDTHETA INSTEAD OF DTHETA
+
 	mu[0] = gaussmf(dtheta, sig_e, -c_e); // dtheta N
 	mu[1] = gaussmf(dtheta, sig_e, c_e); // dtheta P
 	mu[2] = gaussmf(Tau_h, sig_h, -c_h); // Tau_h N

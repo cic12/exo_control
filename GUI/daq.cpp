@@ -90,8 +90,8 @@ double highpass2(double X_in)
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
 
 	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "EMG1", DAQmx_Val_RSE, -0.1, 0.1, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "EMG2", DAQmx_Val_RSE, -0.1, 0.1, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "EMG1", DAQmx_Val_RSE, -1, 1, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "EMG2", DAQmx_Val_RSE, -1, 1, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
 	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
 	DAQmxErrChk(DAQmxRegisterDoneEvent(AItaskHandle, 0, DoneCallback, NULL));
@@ -162,9 +162,9 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	AIdata[0] += offset[0];
 	AIdata[1] += offset[1];
 
-	//double lim = 0.05;
-	//AIdata[0] = limEMG(AIdata[0], lim);
-	//AIdata[1] = limEMG(AIdata[1], lim);
+	double lim = 0.1;
+	AIdata[0] = limEMG(AIdata[0], lim);
+	AIdata[1] = limEMG(AIdata[1], lim);
 
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1])));

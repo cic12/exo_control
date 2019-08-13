@@ -192,6 +192,7 @@ void MyThread::mpc_loop() {
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
+			currentAcceleration = (grampc_->sol->xnext[1] - previousVelocity) / mpc0.dt; // USE DESIRED ACC INSTEAD
 			previousPosition = grampc_->sol->xnext[0];
 			previousVelocity = grampc_->sol->xnext[1];
 		}
@@ -258,7 +259,8 @@ void MyThread::controlFunctions(fisParams fis) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		//grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], currentAcceleration, fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
 	}
 }
 

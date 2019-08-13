@@ -13,8 +13,8 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 1; // Exo
-	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
+	//bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 0, Mode = 0, Exo = 1; // Exo
+	bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 
 struct mpcParams {
@@ -38,7 +38,8 @@ struct modelParams {
 struct fisParams
 {
 	double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
-	double pA = 1, pR = 1, sig_h = 6.4, c_h = 10, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
+	//double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
+	double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.085, c_e = 0.02, halt_lim = 0.25; // using ddtheta
 };
 
 struct plotVars {
@@ -68,7 +69,7 @@ public:
 	void controlFunctions(fisParams);
 private:
 	int i, vec_i;
-	double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, alpha = 0.01;
+	double previousPosition = 0.2, currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.001;
 	double t = 0.0, t_halt = 0.0;
 	double task_count = 0, time_counter = 1;
 	clock_t this_time, last_time, start_time, end_time;
