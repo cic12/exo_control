@@ -3,7 +3,6 @@
 
 int main(int argc, char *argv[]) {
 	SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
-	//SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 	QApplication a(argc, argv);
 	GUI w;
 	w.show();

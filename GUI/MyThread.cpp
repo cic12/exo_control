@@ -157,7 +157,7 @@ void MyThread::mpc_init(char emg_string[]) {
 }
 
 void MyThread::mpc_loop() {
-	this->usleep(400);
+	this->usleep(100);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -263,19 +263,19 @@ void MyThread::controlFunctions(fisParams fis) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
 	}
 }
 
 void MyThread::run()
 {
 	qDebug() << "MyThread::run()";
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
-	char emg_data[] = "res/emgs/aiER025.csv";
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+	char emg_data[] = "res/emgs/aiEA025.csv";
 	mpc_init(emg_data);
-	this->msleep(50);
+	this->msleep(10);
 	std::thread t1(motorComms);
-	this->msleep(50);
+	this->msleep(10);
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
