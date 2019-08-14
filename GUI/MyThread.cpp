@@ -112,10 +112,14 @@ void MyThread::mpc_init(char emg_string[]) {
 
 	mpcFile << "                           pA " << fis0.pA << "\n";
 	mpcFile << "                           pR " << fis0.pR << "\n";
-	mpcFile << "                        sig_h " << fis0.sig_h << "\n";
-	mpcFile << "                          c_h " << fis0.c_h << "\n"; 
-	mpcFile << "                        sig_e " << fis0.sig_e << "\n";
-	mpcFile << "                          c_e " << fis0.c_e << "\n";
+	mpcFile << "                        sig_hN " << fis0.sig_hN << "\n";
+	mpcFile << "                          c_hN " << fis0.c_hN << "\n";
+	mpcFile << "                        sig_hP " << fis0.sig_hP << "\n";
+	mpcFile << "                          c_hP " << fis0.c_hP << "\n";
+	mpcFile << "                        sig_eN " << fis0.sig_eN << "\n";
+	mpcFile << "                          c_eN " << fis0.c_eN << "\n";
+	mpcFile << "                        sig_eP " << fis0.sig_eP << "\n";
+	mpcFile << "                          c_eP " << fis0.c_eP << "\n";
 	mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
 
 	mpcFile << "-------------------------------------------------------------\n";
@@ -153,7 +157,7 @@ void MyThread::mpc_init(char emg_string[]) {
 }
 
 void MyThread::mpc_loop() {
-	this->usleep(50);
+	this->usleep(400);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -259,8 +263,7 @@ void MyThread::controlFunctions(fisParams fis) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		//grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
-		grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], currentAcceleration, fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		grampc_->sol->xnext[3] = assistanceMode(grampc_->sol->xnext[2], grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
 	}
 }
 
@@ -270,7 +273,9 @@ void MyThread::run()
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
 	char emg_data[] = "res/emgs/aiER025.csv";
 	mpc_init(emg_data);
+	this->msleep(50);
 	std::thread t1(motorComms);
+	this->msleep(50);
 	while (!Stop && t < mpc0.Tsim)
 	{
 		mpc_loop();
@@ -289,7 +294,7 @@ void MyThread::run()
 			vars0.AIm1 = AIm[1];
 			vars0.lambdaA = lambdaA;
 			vars0.lambdaR = lambdaR;
-			emit mpcIteration(); 
+			emit mpcIteration();
 		}
 	}
 	mpc_stop();

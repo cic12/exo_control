@@ -17,12 +17,15 @@ void motorComms()
 {
 	while (!mpc_complete)
 	{
-		this_thread::sleep_for(std::chrono::microseconds(100));
-		if (test0.Motor) {
+		//this_thread::sleep_for(std::chrono::microseconds(1000));
+		if (test0.Motor ) {
 			setCurrent(demandedCurrent);
-			this_thread::sleep_for(std::chrono::microseconds(500));
+			this_thread::sleep_for(std::chrono::microseconds(10));
 			inputCurrent = demandedCurrent;
 			getCurrentPosition(currentPosition);
+			this_thread::sleep_for(std::chrono::microseconds(10));
+		}
+		else {
 			this_thread::sleep_for(std::chrono::microseconds(500));
 		}
 	}
