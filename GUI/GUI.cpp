@@ -109,6 +109,7 @@ GUI::GUI(QWidget *parent)
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
 	mThread = new MyThread(this);
+
 	connect(mThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
 	ui.A_box->setValue(mThread->model0.A);
 	ui.B_box->setValue(mThread->model0.B);

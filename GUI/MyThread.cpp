@@ -269,15 +269,14 @@ void MyThread::controlFunctions(fisParams fis) {
 
 void MyThread::run()
 {
-	qDebug() << "MyThread::run()";
-	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+	//SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 	char emg_data[] = "res/emgs/aiEA025.csv";
 	mpc_init(emg_data);
-	this->msleep(10);
-	std::thread t1(motorComms);
-	this->msleep(10);
+
 	while (!Stop && t < mpc0.Tsim)
 	{
+		
+		//std::thread t1(motorComms);
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
@@ -296,8 +295,8 @@ void MyThread::run()
 			vars0.lambdaR = lambdaR;
 			emit mpcIteration();
 		}
+		//t1.join();
 	}
 	mpc_stop();
-	t1.join();
 	terminate();
 }
