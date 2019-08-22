@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QThread>
+#include "motor.h"
 
 class MotorThread : public QThread
 {

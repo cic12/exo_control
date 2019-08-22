@@ -6,5 +6,5 @@ MotorThread::MotorThread(QObject *parent)
 }
 
 void MotorThread::run() {
-
+	motorComms();
 }

@@ -10,6 +10,7 @@ extern short inputCurrent;
 extern long currentPosition, homePosition;
 extern testParams test0;
 
+extern bool mpc_initialised;
 extern bool mpc_complete;
 
 void motorComms();

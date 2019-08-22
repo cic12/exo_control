@@ -80,7 +80,7 @@ void MyThread::mpc_init(char emg_string[]) {
 		}
 	}  
 	mpcInit(&grampc_, &model0.pSys, mpc0.x0, mpc0.xdes, mpc0.u0, mpc0.udes, mpc0.umax, mpc0.umin, &mpc0.Thor, &mpc0.dt, &t, mpc0.TerminalCost, mpc0.IntegralCost, mpc0.ScaleProblem, mpc0.AugLagUpdateGradientRelTol, mpc0.ConstraintsAbsTol);
-
+	mpc_initialised = 1;
 	//RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
 
 	// FIS params

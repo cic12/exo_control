@@ -3,6 +3,7 @@
 #include <QtWidgets/QMainWindow>
 #include "ui_GUI.h"
 #include "MyThread.h"
+#include "MotorThread.h"
 
 class GUI : public QMainWindow
 {
@@ -13,6 +14,7 @@ public:
 	void addPoints(plotVars);
 	void plot();
 	MyThread *mThread;
+	MotorThread *motorThread;
 
 private:
 	Ui::GUIClass ui;

@@ -109,6 +109,7 @@ GUI::GUI(QWidget *parent)
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
 	mThread = new MyThread(this);
+	motorThread = new MotorThread(this);
 
 	connect(mThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
 	ui.A_box->setValue(mThread->model0.A);
@@ -191,6 +192,7 @@ void GUI::plot()
 void GUI::on_btn_start_clicked()
 {
 	mThread->start();
+	//motorThread->start();
 }
 
 void GUI::on_btn_stop_clicked()

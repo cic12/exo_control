@@ -7,18 +7,19 @@ __int8 mode;
 
 using namespace std;
 
-bool mpc_complete = 0;
+bool mpc_initialised = 0, mpc_complete = 0;
 short demandedCurrent = 0;
 short inputCurrent = 0;
 long currentPosition = 0, homePosition = 0;
 testParams test0;
 
-void motorComms()
-{
-	if (test0.Motor) {
-		setCurrent(demandedCurrent);
-		inputCurrent = demandedCurrent;
-		getCurrentPosition(currentPosition);
+void motorComms() {
+	if (mpc_initialised) {
+		if (test0.Motor) {
+			setCurrent(demandedCurrent);
+			inputCurrent = demandedCurrent;
+			getCurrentPosition(currentPosition);
+		}
 	}
 }
 
