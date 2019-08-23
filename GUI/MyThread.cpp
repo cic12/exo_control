@@ -174,8 +174,13 @@ void MyThread::mpc_loop() {
 			}
 		}
 		if (test0.Motor) {
-			//demandedCurrent = sin(0.25 * 2 * M_PI * t) * 5; // OPEN LOOP
-			demandedCurrent = *grampc_->sol->unext * 170;
+
+			if (test0.Exo) {
+				demandedCurrent = *grampc_->sol->unext * 170;
+			}
+			else {
+				demandedCurrent = *grampc_->sol->unext * 100;
+			}
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
 			ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
@@ -226,6 +231,7 @@ void MyThread::mpc_stop() {
 	end_time = clock();
 	double duration = (double)(end_time - start_time);
 	qDebug() << duration;
+	qDebug() << motor_comms_count;
 	if (!test0.aiSim) {
 		if (AItaskHandle != 0) {
 			DAQmxStopTask(AItaskHandle);

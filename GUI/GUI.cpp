@@ -191,8 +191,8 @@ void GUI::plot()
 
 void GUI::on_btn_start_clicked()
 {
-	mThread->start();
-	//motorThread->start();
+	mThread->start(QThread::TimeCriticalPriority);
+	motorThread->start(QThread::LowPriority);
 }
 
 void GUI::on_btn_stop_clicked()

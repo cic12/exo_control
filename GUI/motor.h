@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Definitions.h"
 #include "MyThread.h"
+#include <windows.h> // for Sleep
 
 extern short demandedCurrent;
 extern short inputCurrent;
@@ -12,6 +13,7 @@ extern testParams test0;
 
 extern bool mpc_initialised;
 extern bool mpc_complete;
+extern double motor_comms_count;
 
 void motorComms();
 void enableDevice();
