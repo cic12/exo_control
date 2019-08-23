@@ -157,7 +157,7 @@ void MyThread::mpc_init(char emg_string[]) {
 }
 
 void MyThread::mpc_loop() {
-	this->usleep(100);
+	this->usleep(50);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;

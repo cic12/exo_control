@@ -19,10 +19,8 @@ void motorComms() {
 		if (mpc_initialised) {
 			if (test0.Motor) {
 				setCurrent(demandedCurrent);
-				Sleep(1);
 				inputCurrent = demandedCurrent;
 				getCurrentPosition(currentPosition);
-				//Sleep(1);
 				motor_comms_count++;
 			}
 		}
