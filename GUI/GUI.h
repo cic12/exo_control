@@ -13,7 +13,7 @@ public:
 	GUI(QWidget *parent = Q_NULLPTR);
 	void addPoints(plotVars);
 	void plot();
-	MyThread *mThread;
+	MyThread *mpcThread;
 	MotorThread *motorThread;
 
 private:

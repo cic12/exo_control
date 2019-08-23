@@ -15,14 +15,12 @@ long currentPosition = 0, homePosition = 0;
 testParams test0;
 
 void motorComms() {
-	while (!mpc_complete) {
-		if (mpc_initialised) {
-			if (test0.Motor) {
-				setCurrent(demandedCurrent);
-				inputCurrent = demandedCurrent;
-				getCurrentPosition(currentPosition);
-				motor_comms_count++;
-			}
+	if (mpc_initialised) {
+		if (test0.Motor) {
+			setCurrent(demandedCurrent);
+			inputCurrent = demandedCurrent;
+			getCurrentPosition(currentPosition);
+			motor_comms_count++;
 		}
 	}
 }

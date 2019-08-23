@@ -230,8 +230,6 @@ void MyThread::mpc_loop() {
 void MyThread::mpc_stop() {
 	end_time = clock();
 	double duration = (double)(end_time - start_time);
-	qDebug() << duration;
-	qDebug() << motor_comms_count;
 	if (!test0.aiSim) {
 		if (AItaskHandle != 0) {
 			DAQmxStopTask(AItaskHandle);
@@ -252,6 +250,8 @@ void MyThread::mpc_stop() {
 	if (test0.Motor) {
 		closeDevice();
 	}
+	qDebug() << duration;
+	qDebug() << motor_comms_count;
 }
 
 void MyThread::controlFunctions(fisParams fis) {
@@ -263,7 +263,7 @@ void MyThread::controlFunctions(fisParams fis) {
 		else {
 			AIm[0] = 0;
 			AIm[1] = 0;
-		}	
+		}
 	}
 	if (test0.tauEst) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
@@ -275,14 +275,10 @@ void MyThread::controlFunctions(fisParams fis) {
 
 void MyThread::run()
 {
-	//SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 	char emg_data[] = "res/emgs/aiEA025.csv";
 	mpc_init(emg_data);
-
 	while (!Stop && t < mpc0.Tsim)
 	{
-		
-		//std::thread t1(motorComms);
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
@@ -301,7 +297,6 @@ void MyThread::run()
 			vars0.lambdaR = lambdaR;
 			emit mpcIteration();
 		}
-		//t1.join();
 	}
 	mpc_stop();
 	terminate();

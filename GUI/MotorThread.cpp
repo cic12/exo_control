@@ -6,5 +6,8 @@ MotorThread::MotorThread(QObject *parent)
 }
 
 void MotorThread::run() {
-	motorComms();
+	while (!mpc_complete) {
+		motorComms();
+		this->usleep(1);
+	}
 }

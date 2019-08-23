@@ -108,27 +108,28 @@ GUI::GUI(QWidget *parent)
 	ui.plot4->yAxis->setRange(ylim4[0], ylim4[1]);
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
-	mThread = new MyThread(this);
+	mpcThread = new MyThread(this);
 	motorThread = new MotorThread(this);
 
-	connect(mThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
-	ui.A_box->setValue(mThread->model0.A);
-	ui.B_box->setValue(mThread->model0.B);
-	ui.J_box->setValue(mThread->model0.J);
-	ui.tau_g_box->setValue(mThread->model0.tau_g);
-	ui.W_theta_box->setValue(mThread->model0.w_theta);
-	ui.W_tau_box->setValue(mThread->model0.w_tau);
-	ui.Thor_box->setValue(mThread->mpc0.Thor);
-	ui.b1_box->setValue(mThread->fis0.b1);
-	ui.b2_box->setValue(mThread->fis0.b2);
-	ui.b3_box->setValue(mThread->fis0.b3);
-	ui.pA_box->setValue(mThread->fis0.pA);
-	ui.pR_box->setValue(mThread->fis0.pR);
-	ui.sig_h_box->setValue(mThread->fis0.sig_h);
-	ui.c_h_box->setValue(mThread->fis0.c_h);
-	ui.sig_e_box->setValue(mThread->fis0.sig_e);
-	ui.c_e_box->setValue(mThread->fis0.c_e);
-	ui.halt_lim_box->setValue(mThread->fis0.halt_lim);
+	connect(mpcThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
+
+	ui.A_box->setValue(mpcThread->model0.A);
+	ui.B_box->setValue(mpcThread->model0.B);
+	ui.J_box->setValue(mpcThread->model0.J);
+	ui.tau_g_box->setValue(mpcThread->model0.tau_g);
+	ui.W_theta_box->setValue(mpcThread->model0.w_theta);
+	ui.W_tau_box->setValue(mpcThread->model0.w_tau);
+	ui.Thor_box->setValue(mpcThread->mpc0.Thor);
+	ui.b1_box->setValue(mpcThread->fis0.b1);
+	ui.b2_box->setValue(mpcThread->fis0.b2);
+	ui.b3_box->setValue(mpcThread->fis0.b3);
+	ui.pA_box->setValue(mpcThread->fis0.pA);
+	ui.pR_box->setValue(mpcThread->fis0.pR);
+	ui.sig_h_box->setValue(mpcThread->fis0.sig_h);
+	ui.c_h_box->setValue(mpcThread->fis0.c_h);
+	ui.sig_e_box->setValue(mpcThread->fis0.sig_e);
+	ui.c_e_box->setValue(mpcThread->fis0.c_e);
+	ui.halt_lim_box->setValue(mpcThread->fis0.halt_lim);
 }
 
 void GUI::addPoints(plotVars vars)
@@ -191,18 +192,18 @@ void GUI::plot()
 
 void GUI::on_btn_start_clicked()
 {
-	mThread->start(QThread::NormalPriority);
+	mpcThread->start(QThread::TimeCriticalPriority);
 	motorThread->start(QThread::IdlePriority);
 }
 
 void GUI::on_btn_stop_clicked()
 {
-	mThread->Stop = true;
+	mpcThread->Stop = true;
 }
 
 void GUI::on_btn_set_params_clicked()
 {
-	mThread->paramSet(ui.A_box->value(),
+	mpcThread->paramSet(ui.A_box->value(),
 		ui.B_box->value(),
 		ui.J_box->value(),
 		ui.tau_g_box->value(),
@@ -222,7 +223,7 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration() {
-	ui.label_3->setText(QString::number(mThread->vars0.time, 'f', 3));
-	addPoints(mThread->vars0);
+	ui.label_3->setText(QString::number(mpcThread->vars0.time, 'f', 3));
+	addPoints(mpcThread->vars0);
 	plot();
 }
