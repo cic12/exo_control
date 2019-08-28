@@ -1,4 +1,4 @@
-#include "MyThread.h"
+#include "mpcThread.h"
 #include <QtCore>
 #include <QFile>
 #include <QStringList>

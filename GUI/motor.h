@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "Definitions.h"
-#include "MyThread.h"
+#include "mpcThread.h"
 #include <windows.h> // for Sleep
 
 extern short demandedCurrent;

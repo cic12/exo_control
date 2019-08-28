@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_GUI.h"
-#include "MyThread.h"
+#include "mpcThread.h"
 #include "MotorThread.h"
 
 class GUI : public QMainWindow

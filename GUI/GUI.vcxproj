@@ -217,7 +217,7 @@
     <ClCompile Include="motor.cpp" />
     <ClCompile Include="MotorThread.cpp" />
     <ClCompile Include="mpc.cpp" />
-    <ClCompile Include="MyThread.cpp" />
+    <ClCompile Include="mpcThread.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -251,7 +251,7 @@
     <ClInclude Include="motor.h" />
     <QtMoc Include="MotorThread.h" />
     <ClInclude Include="mpc.h" />
-    <QtMoc Include="MyThread.h" />
+    <QtMoc Include="mpcThread.h" />
     <ClInclude Include="NIDAQmx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
