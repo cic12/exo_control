@@ -215,7 +215,7 @@
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="motor.cpp" />
-    <ClCompile Include="MotorThread.cpp" />
+    <ClCompile Include="motorThread.cpp" />
     <ClCompile Include="mpc.cpp" />
     <ClCompile Include="mpcThread.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
@@ -249,7 +249,7 @@
     <ClInclude Include="Definitions.h" />
     <ClInclude Include="fis.h" />
     <ClInclude Include="motor.h" />
-    <QtMoc Include="MotorThread.h" />
+    <QtMoc Include="motorThread.h" />
     <ClInclude Include="mpc.h" />
     <QtMoc Include="mpcThread.h" />
     <ClInclude Include="NIDAQmx.h" />

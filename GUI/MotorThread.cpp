@@ -1,4 +1,4 @@
-#include "MotorThread.h"
+#include "motorThread.h"
 
 MotorThread::MotorThread(QObject *parent)
 	: QThread(parent)

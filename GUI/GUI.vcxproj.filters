@@ -51,10 +51,10 @@
     <ClCompile Include="mpc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MotorThread.cpp">
+    <ClCompile Include="mpcThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mpcThread.cpp">
+    <ClCompile Include="motorThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,10 +65,10 @@
     <QtMoc Include="qcustomplot.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="MotorThread.h">
+    <QtMoc Include="mpcThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="mpcThread.h">
+    <QtMoc Include="motorThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
