@@ -241,11 +241,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="EposCmd.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="EposCmd.lib" />
-    <Library Include="NIDAQmx.lib" />
+    <Library Include="..\EICOSI\EposCmd64.lib" />
+    <Library Include="..\EICOSI\NIDAQmx.lib" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="daq.h" />
@@ -256,6 +253,9 @@
     <ClInclude Include="mpc.h" />
     <QtMoc Include="mpcThread.h" />
     <ClInclude Include="NIDAQmx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\EICOSI\EposCmd64.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
