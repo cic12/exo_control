@@ -173,7 +173,6 @@ void MyThread::mpc_loop() {
 				qDebug() << "at iteration %i:\n -----\n" << iMPC;
 			}
 		}
-		demandedCurrent = *grampc_->sol->unext; // HEBI
 		if (test0.Motor) {
 
 			if (test0.Exo) {
@@ -185,7 +184,7 @@ void MyThread::mpc_loop() {
 			else {
 				//QMutex mutex;
 				//mutex.lock();
-				demandedCurrent = *grampc_->sol->unext * 100;
+				demandedCurrent = *grampc_->sol->unext * 1;
 				//mutex.unlock();
 			}
 		}
