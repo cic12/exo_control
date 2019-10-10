@@ -83,10 +83,6 @@
     </QtRcc>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\EICOSI\NIDAQmx.lib" />
-    <Library Include="..\EICOSI\EposCmd64.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="daq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -107,6 +103,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\EICOSI\EposCmd64.dll" />
+    <None Include="EposCmd64.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="EposCmd64.lib" />
+    <Library Include="NIDAQmx.lib" />
   </ItemGroup>
 </Project>
