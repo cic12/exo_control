@@ -6,7 +6,7 @@ MotorThread::MotorThread(QObject *parent)
 } 
 
 void MotorThread::run() {
-	//Lookup lookup;
+	Lookup lookup;
 	while (!mpc_complete) {
 		motorComms();
 	}
