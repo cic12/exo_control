@@ -173,13 +173,20 @@ void MyThread::mpc_loop() {
 				qDebug() << "at iteration %i:\n -----\n" << iMPC;
 			}
 		}
+		demandedCurrent = *grampc_->sol->unext; // HEBI
 		if (test0.Motor) {
 
 			if (test0.Exo) {
+				//QMutex mutex;
+				//mutex.lock();
 				demandedCurrent = *grampc_->sol->unext * 170;
+				//mutex.unlock();
 			}
 			else {
+				//QMutex mutex;
+				//mutex.lock();
 				demandedCurrent = *grampc_->sol->unext * 100;
+				//mutex.unlock();
 			}
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
@@ -194,10 +201,16 @@ void MyThread::mpc_loop() {
 		}
 		else {
 			if (test0.Exo) {
+				//QMutex mutex;
+				//mutex.lock();
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
+				//mutex.unlock();
 			}
 			else {
+				//QMutex mutex;
+				//mutex.lock();
 				grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
+				//mutex.unlock();
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed

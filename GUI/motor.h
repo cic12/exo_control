@@ -6,6 +6,13 @@
 #include "mpcThread.h"
 #include <windows.h> // for Sleep
 
+//#include "lookup.hpp"
+//#include "group_command.hpp"
+//#include "group_feedback.hpp"
+//#include "log_file.hpp"
+//
+//using namespace hebi;
+
 extern short demandedCurrent;
 extern short inputCurrent;
 extern long currentPosition, homePosition;

@@ -13,7 +13,7 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 0; // Exo // Mini-rig config
+	bool Sim = 1, Motor = 0, aiSim = 0, tauEst = 1, Mode = 1, Exo = 0; // Exo // Mini-rig config
 	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 
@@ -22,7 +22,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-	const double Tsim = 10.0, dt = 0.002;
+	const double Tsim = 100.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
