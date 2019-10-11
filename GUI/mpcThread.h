@@ -13,7 +13,7 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, Motor = 1, aiSim = 0, tauEst = 1, Mode = 1, Exo = 0; // Exo // Mini-rig config
+	bool Sim = 1, Motor = 1, aiSim = 0, tauEst = 0, Mode = 0, Exo = 0; // Exo // Mini-rig config
 	//bool Sim = 1, Motor = 0, aiSim = 1, tauEst = 1, Mode = 1, Exo = 1; // Sim
 };
 

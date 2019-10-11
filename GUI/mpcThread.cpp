@@ -48,13 +48,13 @@ void MyThread::paramSet(double A, double B, double J, double tau_g, double w_the
 
 void MyThread::mpc_init(char emg_string[]) {
 	if (test0.Motor) {
-		openDevice();
-		if (!test0.Exo) {
-			definePosition(homePosition); // Mini rig
-		}
-		currentMode();
-		getCurrentPosition(currentPosition);
-		previousPosition = currentPosition / 168000.f + M_PI / 2;
+		//openDevice();
+		//if (!test0.Exo) {
+		//	definePosition(homePosition); // Mini rig
+		//}
+		//currentMode();
+		//getCurrentPosition(currentPosition);
+		//previousPosition = currentPosition / 168000.f + M_PI / 2;
 	}
 	aiFile.open("res/ai.txt");
 	if (test0.aiSim) {
@@ -176,16 +176,16 @@ void MyThread::mpc_loop() {
 		if (test0.Motor) {
 
 			if (test0.Exo) {
-				//QMutex mutex;
-				//mutex.lock();
+				QMutex mutex;
+				mutex.lock();
 				demandedCurrent = *grampc_->sol->unext * 170;
-				//mutex.unlock();
+				mutex.unlock();
 			}
 			else {
-				//QMutex mutex;
-				//mutex.lock();
+				QMutex mutex;
+				mutex.lock();
 				demandedCurrent = *grampc_->sol->unext * 1;
-				//mutex.unlock();
+				mutex.unlock();
 			}
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
@@ -200,16 +200,16 @@ void MyThread::mpc_loop() {
 		}
 		else {
 			if (test0.Exo) {
-				//QMutex mutex;
-				//mutex.lock();
+				QMutex mutex;
+				mutex.lock();
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-				//mutex.unlock();
+				mutex.unlock();
 			}
 			else {
-				//QMutex mutex;
-				//mutex.lock();
+				QMutex mutex;
+				mutex.lock();
 				grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
-				//mutex.unlock();
+				mutex.unlock();
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed

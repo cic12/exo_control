@@ -56,6 +56,8 @@ void MotorThread::run() {
 				efforts[0] = demandedCurrent;
 				group_command.setEffort(efforts);
 				group->sendCommand(group_command);
+
+				//currentPosition = 
 			}
 		}
 		// Stop logging
