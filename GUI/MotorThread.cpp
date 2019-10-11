@@ -30,6 +30,7 @@ void MotorThread::run() {
 		Eigen::VectorXd efforts(1);
 		// Allocate feedback
 		GroupFeedback group_feedback(group->size());
+		group->setFeedbackFrequencyHz(500); // Change to 500 Hz
 
 		// Start logging in the background
 		std::string log_path = group->startLog("./logs");
@@ -53,11 +54,16 @@ void MotorThread::run() {
 				//	getCurrentPosition(currentPosition);
 				//	motor_comms_count++;
 				//}
+
+				group->getNextFeedback(group_feedback);
+
 				efforts[0] = demandedCurrent;
 				group_command.setEffort(efforts);
 				group->sendCommand(group_command);
 
-				//currentPosition = 
+				
+				auto pos = group_feedback.getPosition();
+				currentPosition = pos[0]*10000;
 			}
 		}
 		// Stop logging
