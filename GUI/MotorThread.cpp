@@ -46,24 +46,19 @@ void MotorThread::run() {
 
 		while (!mpc_complete) {
 			//motorComms();
-
 			if (mpc_initialised) {
-				//if (test0.Motor) {
-				//	setCurrent(demandedCurrent);
-				//	inputCurrent = demandedCurrent; // for debugging
-				//	getCurrentPosition(currentPosition);
-				//	motor_comms_count++;
-				//}
-
-				group->getNextFeedback(group_feedback);
+				if (!group->getNextFeedback(group_feedback)) {
+					continue;
+				}
+				//group->getNextFeedback(group_feedback);
 
 				efforts[0] = demandedCurrent;
+
 				group_command.setEffort(efforts);
 				group->sendCommand(group_command);
 
-				
 				auto pos = group_feedback.getPosition();
-				currentPosition = pos[0]*10000;
+				currentPosition = pos[0];
 			}
 		}
 		// Stop logging

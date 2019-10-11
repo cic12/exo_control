@@ -209,7 +209,7 @@ void MyThread::mpc_loop() {
 				QMutex mutex;
 				mutex.lock();
 				//grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
-				grampc_->sol->xnext[0] = (double)currentPosition/10000.f + M_PI / 2;
+				grampc_->sol->xnext[0] = currentPosition + M_PI / 2;
 				mutex.unlock();
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system

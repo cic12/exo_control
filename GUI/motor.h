@@ -13,9 +13,9 @@
 //
 //using namespace hebi;
 
-extern short demandedCurrent;
+extern double demandedCurrent;
 extern short inputCurrent;
-extern long currentPosition, homePosition;
+extern double currentPosition, homePosition;
 extern testParams test0;
 
 extern bool mpc_initialised;

@@ -9,9 +9,9 @@ using namespace std;
 
 bool mpc_initialised = 0, mpc_complete = 0;
 double motor_comms_count = 0;
-short demandedCurrent = 0;
+double demandedCurrent = 0; // was short
 short inputCurrent = 0;
-long currentPosition = 0, homePosition = 0;
+double currentPosition = 0, homePosition = 0; // was long
 testParams test0;
 
 void motorComms() {
@@ -19,7 +19,7 @@ void motorComms() {
 		if (test0.Motor) {
 			setCurrent(demandedCurrent);
 			inputCurrent = demandedCurrent; // for debugging
-			getCurrentPosition(currentPosition);
+			//getCurrentPosition(currentPosition); // wrong data type
 			motor_comms_count++;
 		}
 	}
