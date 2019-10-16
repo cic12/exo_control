@@ -91,7 +91,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>C:\Users\prince\EICOSI\libgrampc\x64\Debug;$(QTDIR)\lib;C:\Users\prince\EICOSI\libgrampc;..\hebicpp\hebi-cpp\hebi\lib\win_x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\libgrampc;..\libgrampc\x64\Debug;..\hebicpp\hebi-cpp\hebi\lib\win_x64;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5PrintSupportd.lib;Qt5Widgetsd.lib;EposCmd64.lib;hebi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX64</TargetMachine>
