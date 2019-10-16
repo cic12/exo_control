@@ -11,19 +11,8 @@ bool mpc_initialised = 0, mpc_complete = 0;
 double motor_comms_count = 0;
 double demandedCurrent = 0; // was short
 short inputCurrent = 0;
-double currentPosition = 0, homePosition = 0; // was long
+double currentPosition = 0, homePosition = 0, previousPosition = 0.2; // was long
 testParams test0;
-
-void motorComms() {
-	if (mpc_initialised) {
-		if (test0.Motor) {
-			setCurrent(demandedCurrent);
-			inputCurrent = demandedCurrent; // for debugging
-			//getCurrentPosition(currentPosition); // wrong data type
-			motor_comms_count++;
-		}
-	}
-}
 
 void enableDevice()
 {
@@ -105,6 +94,7 @@ void openDevice()
 
 	if (keyHandle == 0)
 	{
+		
 		cout << "Open device failure, error code=" << errorCode << endl;
 	}
 	else

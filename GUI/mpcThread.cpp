@@ -47,15 +47,6 @@ void MyThread::paramSet(double A, double B, double J, double tau_g, double w_the
 }
 
 void MyThread::mpc_init(char emg_string[]) {
-	if (test0.Motor) {
-		//openDevice();
-		//if (!test0.Exo) {
-		//	definePosition(homePosition); // Mini rig
-		//}
-		//currentMode();
-		//getCurrentPosition(currentPosition);
-		//previousPosition = currentPosition / 168000.f + M_PI / 2;
-	}
 	aiFile.open("res/ai.txt");
 	if (test0.aiSim) {
 		QFile myQfile(emg_string);
@@ -127,7 +118,7 @@ void MyThread::mpc_init(char emg_string[]) {
 	mpcFile << "-------------------------------------------------------------\n";
 
 	mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
-	mpcFile << "                        Motor " << (test0.Motor == 1 ? "on" : "off") << "\n";
+	//mpcFile << "                        Motor " << (test0.Motor == 1 ? "on" : "off") << "\n";
 	mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
 
 	if (test0.aiSim) {
@@ -173,20 +164,11 @@ void MyThread::mpc_loop() {
 				qDebug() << "at iteration %i:\n -----\n" << iMPC;
 			}
 		}
-		if (test0.Motor) {
-
-			if (test0.Exo) {
-				QMutex mutex;
-				mutex.lock();
-				demandedCurrent = *grampc_->sol->unext * 170;
-				mutex.unlock();
-			}
-			else {
-				QMutex mutex;
-				mutex.lock();
-				demandedCurrent = *grampc_->sol->unext * 1;
-				mutex.unlock();
-			}
+		if (test0.Device == 2) {
+			demandedCurrent = *grampc_->sol->unext * 170;
+		}
+		else if (test0.Device == 1) {
+			demandedCurrent = *grampc_->sol->unext;
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
 			ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
@@ -199,18 +181,11 @@ void MyThread::mpc_loop() {
 			}
 		}
 		else {
-			if (test0.Exo) {
-				QMutex mutex;
-				mutex.lock();
+			if (test0.Device == 2) {
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-				mutex.unlock();
 			}
-			else {
-				QMutex mutex;
-				mutex.lock();
-				//grampc_->sol->xnext[0] = (double)currentPosition / 3600.f + 0.2; // Mini rig
+			else if (test0.Device == 1) {
 				grampc_->sol->xnext[0] = currentPosition + M_PI / 2;
-				mutex.unlock();
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
@@ -260,7 +235,7 @@ void MyThread::mpc_stop() {
 #ifdef PRINTRES
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
 #endif
-	if (test0.Motor) {
+	if (test0.Device == 2) {
 		closeDevice();
 	}
 	qDebug() << duration;
