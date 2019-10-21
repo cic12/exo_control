@@ -13,8 +13,8 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, aiSim = 0, tauEst = 0, Mode = 0;
-	int Device = 1;
+	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
+	int Device = 0;
 };
 
 struct mpcParams {
@@ -30,7 +30,7 @@ struct mpcParams {
 };
 
 struct modelParams {
-	double A = 0.7129, B = 4.2936, J = 0.1744, tau_g = 6.0796, w_theta = 10000, w_tau = 25;
+	double A = 0.7129, B = 4.2936, J = 0.1744, tau_g = 6.0796, w_theta = 1000000, w_tau = 25;
 	double x1min = 0.1, x1max = 1.3, x2min = -0.5, x2max = 0.5, umin = -40, umax = 40;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
