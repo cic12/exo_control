@@ -62,13 +62,13 @@
     <QtMoc Include="GUI.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="qcustomplot.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="mpcThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="motorThread.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="qcustomplot.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -86,9 +86,6 @@
     <ClInclude Include="daq.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Definitions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="fis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -98,15 +95,5 @@
     <ClInclude Include="mpc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NIDAQmx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="EposCmd64.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="EposCmd64.lib" />
-    <Library Include="NIDAQmx.lib" />
   </ItemGroup>
 </Project>

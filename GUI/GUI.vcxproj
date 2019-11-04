@@ -81,7 +81,7 @@
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Debug;..\hebicpp\hebi-cpp\Eigen;..\hebicpp\hebi-cpp\src;..\hebicpp\hebi-cpp\hebi\include;..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\EposCmd\include;..\Debug;..\hebicpp\hebi-cpp\Eigen;..\hebicpp\hebi-cpp\src;..\NIDAQmx\include;..\hebicpp\hebi-cpp\hebi\include;..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -91,15 +91,15 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>..\libgrampc;..\libgrampc\x64\Debug;..\hebicpp\hebi-cpp\hebi\lib\win_x64;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\NIDAQmx\lib;..\EposCmd\lib;..\hebicpp\hebi-cpp\hebi\lib\win_x64;$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5PrintSupportd.lib;Qt5Widgetsd.lib;EposCmd64.lib;hebi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5PrintSupportd.lib;Qt5Widgetsd.lib;hebi.lib;NIDAQmx.lib;EposCmd64.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
     <QtMoc>
       <OutputFile>.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</OutputFile>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
-      <IncludePath>..\Debug;..\hebicpp\hebi-cpp\Eigen;..\hebicpp\hebi-cpp\src;..\hebicpp\hebi-cpp\hebi\include;..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</IncludePath>
+      <IncludePath>..\EposCmd\include;..\Debug;..\hebicpp\hebi-cpp\Eigen;..\hebicpp\hebi-cpp\src;..\NIDAQmx\include;..\hebicpp\hebi-cpp\hebi\include;..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets;%(AdditionalIncludeDirectories)</IncludePath>
       <Define>UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_CORE_LIB;QT_GUI_LIB;QT_PRINTSUPPORT_LIB;QT_WIDGETS_LIB;%(PreprocessorDefinitions)</Define>
     </QtMoc>
     <QtUic>
@@ -111,7 +111,8 @@
       <OutputFile>.\GeneratedFiles\qrc_%(Filename).cpp</OutputFile>
     </QtRcc>
     <PostBuildEvent>
-      <Command>xcopy /i /y "..\hebicpp\hebi-cpp\hebi\lib\win_x64\hebi.dll" "$(OutDir)"</Command>
+      <Command>xcopy /i /y "..\hebicpp\hebi-cpp\hebi\lib\win_x64\hebi.dll" "$(OutDir)"
+xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -234,9 +235,6 @@
     <QtRcc Include="GUI.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="qcustomplot.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\hebicpp\hebicpp.vcxproj">
       <Project>{270fa69e-28bd-4a1e-ae5f-313298c5b8df}</Project>
     </ProjectReference>
@@ -246,20 +244,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="daq.h" />
-    <ClInclude Include="Definitions.h" />
     <ClInclude Include="fis.h" />
     <ClInclude Include="motor.h" />
+    <QtMoc Include="qcustomplot.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\hebicpp;.\..\hebicpp\hebi-cpp\src;.\..\hebicpp\hebi-cpp\hebi\include;.\..\hebicpp\hebi-cpp\Eigen;.\..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\..\Debug;.\..\hebicpp\hebi-cpp\Eigen;.\..\hebicpp\hebi-cpp\src;.\..\hebicpp\hebi-cpp\hebi\include;.\..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets</IncludePath>
+    </QtMoc>
     <QtMoc Include="motorThread.h" />
     <ClInclude Include="mpc.h" />
     <QtMoc Include="mpcThread.h" />
-    <ClInclude Include="NIDAQmx.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="EposCmd64.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="EposCmd64.lib" />
-    <Library Include="NIDAQmx.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
