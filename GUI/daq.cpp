@@ -177,7 +177,7 @@ Error:
 		DAQmxGetExtendedErrorInfo(errBuff, 2048);
 		DAQmxStopTask(taskHandle);
 		DAQmxClearTask(taskHandle);
-		printf("DAQmx Error: %s\n", errBuff);
+		//printf("DAQmx Error: %s\n", errBuff);
 	}
 	return 0;
 }
@@ -192,7 +192,7 @@ Error:
 	if (DAQmxFailed(error)) {
 		DAQmxGetExtendedErrorInfo(errBuff, 2048);
 		DAQmxClearTask(taskHandle);
-		printf("DAQmx Error: %s\n", errBuff);
+		//printf("DAQmx Error: %s\n", errBuff);
 	}
 	return 0;
 }

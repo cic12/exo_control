@@ -33,4 +33,5 @@ private slots:
 
 public slots:
 	void onMpcIteration();
+	void onGUIPrint(QString);
 };

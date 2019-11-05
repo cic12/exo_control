@@ -84,4 +84,5 @@ private:
 #endif
 signals:
 	void mpcIteration();
+	void GUIPrint(QString);
 };

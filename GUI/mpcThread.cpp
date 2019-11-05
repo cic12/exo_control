@@ -47,6 +47,7 @@ void MyThread::paramSet(double A, double B, double J, double tau_g, double w_the
 }
 
 void MyThread::mpc_init(char emg_string[]) {
+	emit GUIPrint("Start");
 	aiFile.open("res/ai.txt");
 	if (test0.aiSim) {
 		QFile myQfile(emg_string);

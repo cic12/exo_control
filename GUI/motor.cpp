@@ -23,7 +23,7 @@ void enableDevice()
 	{
 		if (IsInFault && !VCS_ClearFault(keyHandle, 1, &errorCode))
 		{
-			cout << "Clear fault failed! , error code=" << errorCode << endl;
+			//cout << "Clear fault failed! , error code=" << errorCode << endl;
 			return;
 		}
 
@@ -34,17 +34,17 @@ void enableDevice()
 		{
 			if (!IsEnabled && !VCS_SetEnableState(keyHandle, nodeID, &errorCode))
 			{
-				cout << "Set enable state failed!, error code=" << errorCode << endl;
+				//cout << "Set enable state failed!, error code=" << errorCode << endl;
 			}
 			else
 			{
-				cout << "Enable succeeded!" << endl;
+				//cout << "Enable succeeded!" << endl;
 			}
 		}
 	}
 	else
 	{
-		cout << "Get fault state failed!, error code, error code=" << errorCode << endl;
+		//cout << "Get fault state failed!, error code, error code=" << errorCode << endl;
 	}
 }
 
@@ -56,7 +56,7 @@ void disableDevice() {
 	{
 		if (IsInFault && !VCS_ClearFault(keyHandle, nodeID, &errorCode))
 		{
-			cout << "Clear fault failed!, error code=" << errorCode << endl;
+			//cout << "Clear fault failed!, error code=" << errorCode << endl;
 			return;
 		}
 
@@ -65,17 +65,17 @@ void disableDevice() {
 		{
 			if (IsEnabled && !VCS_SetDisableState(keyHandle, nodeID, &errorCode))
 			{
-				cout << "Set disable state failed!, error code=" << errorCode << endl;
+				//cout << "Set disable state failed!, error code=" << errorCode << endl;
 			}
 			else
 			{
-				cout << "Set disable state succeeded!" << endl;
+				//cout << "Set disable state succeeded!" << endl;
 			}
 		}
 	}
 	else
 	{
-		cout << "Get fault state failed!, error code=" << errorCode << endl;
+		//cout << "Get fault state failed!, error code=" << errorCode << endl;
 	}
 }
 
@@ -95,18 +95,18 @@ void openDevice()
 	if (keyHandle == 0)
 	{
 		
-		cout << "Open device failure, error code=" << errorCode << endl;
+		//cout << "Open device failure, error code=" << errorCode << endl;
 	}
 	else
 	{
-		cout << "Open device success!" << endl;
+		//cout << "Open device success!" << endl;
 	}
 
 	errorCode = 0;
 
 	if (!VCS_SetProtocolStackSettings(keyHandle, baudRate, timeOut, &errorCode))
 	{
-		cout << "Set protocol stack settings failed!, error code=" << errorCode << endl;
+		//cout << "Set protocol stack settings failed!, error code=" << errorCode << endl;
 		closeDevice();
 	}
 
@@ -119,7 +119,7 @@ void closeDevice()
 
 	errorCode = 0;
 
-	cout << "Closing Device!" << endl;
+	//cout << "Closing Device!" << endl;
 
 	if (keyHandle != 0) {
 		VCS_CloseDevice(keyHandle, &errorCode);
@@ -130,16 +130,16 @@ void closeDevice()
 void getOperationMode() {
 	errorCode = 0;
 	if (!VCS_GetOperationMode(keyHandle, nodeID, &mode, &errorCode)) {
-		cout << " error while getting operation mode , error code=" << errorCode << endl;
+		//cout << " error while getting operation mode , error code=" << errorCode << endl;
 	}
-	cout << "Operation Mode: " << static_cast<int>(mode) << endl;
+	//cout << "Operation Mode: " << static_cast<int>(mode) << endl;
 }
 
 void currentMode() {
 	errorCode = 0;
 	if (!VCS_ActivateCurrentMode(keyHandle, nodeID, &errorCode))
 	{
-		cout << "Activate current mode failed!" << endl;
+		//cout << "Activate current mode failed!" << endl;
 	}
 }
 
@@ -147,27 +147,27 @@ void setCurrent(short TargetCurrent) {
 	errorCode = 0;
 	if (!VCS_SetCurrentMust(keyHandle, nodeID, TargetCurrent, &errorCode))
 	{
-		cout << "Setting current failed!, error code=" << errorCode << endl;
+		//cout << "Setting current failed!, error code=" << errorCode << endl;
 	}
 }
 
 void getCurrentPosition(long& CurrentPosition) {
 	errorCode = 0;
 	if (!VCS_GetPositionIs(keyHandle, nodeID, &CurrentPosition, &errorCode)) {
-		cout << " error while getting current position , error code=" << errorCode << endl;
+		//cout << " error while getting current position , error code=" << errorCode << endl;
 	}
 }
 
 void getCurrentVelocity(long& CurrentVelocity) {
 	errorCode = 0;
 	if (!VCS_GetVelocityIsAveraged(keyHandle, nodeID, &CurrentVelocity, &errorCode)) {
-		cout << " error while getting current velocity , error code=" << errorCode << endl;
+		//cout << " error while getting current velocity , error code=" << errorCode << endl;
 	}
 }
 
 void definePosition(long& HomePosition) {
 	errorCode = 0;
 	if (!VCS_DefinePosition(keyHandle, nodeID, HomePosition, &errorCode)) {
-		cout << " error while defining position , error code=" << errorCode << endl;
+		//cout << " error while defining position , error code=" << errorCode << endl;
 	}
 }

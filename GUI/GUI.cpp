@@ -112,6 +112,7 @@ GUI::GUI(QWidget *parent)
 	motorThread = new MotorThread(this);
 
 	connect(mpcThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
+	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString)));
 
 	ui.A_box->setValue(mpcThread->model0.A);
 	ui.B_box->setValue(mpcThread->model0.B);
@@ -226,4 +227,9 @@ void GUI::onMpcIteration() {
 	ui.label_3->setText(QString::number(mpcThread->vars0.time, 'f', 3));
 	addPoints(mpcThread->vars0);
 	plot();
+}
+
+void GUI::onGUIPrint(QString message)
+{
+	ui.plainTextEdit->insertPlainText(message);
 }
