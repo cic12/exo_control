@@ -16,7 +16,6 @@
 #include "daq.h"
 #include "mpc.h"
 
-#define PRINTRES
 #define NX    	4
 #define NU  	1
 #define NH      4
@@ -79,10 +78,14 @@ public:
 
 	void paramSet(double, double, double, double, double, double, double,
 		double, double, double, double, double, double, double, double, double, double);
+	void configFiles(char emg_string[]);
+	void aiSimProcess(char emg_string[]);
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
 	void mpc_stop();
 	void controlFunctions(fisParams);
+	void plantSim();
+	void print2Files();
 private:
 	int i, vec_i;
 	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.01;
@@ -92,9 +95,9 @@ private:
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	typeGRAMPC *grampc_;
 	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
-#ifdef PRINTRES
+
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
-#endif
+
 signals:
 	void mpcIteration();
 	void GUIPrint(QString);

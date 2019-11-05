@@ -32,36 +32,12 @@ void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_th
 	fis0.halt_lim = halt_lim;
 }
 
-void MPCThread::mpc_init(char emg_string[]) {
-	emit GUIPrint("Start");
+void MPCThread::configFiles(char emg_string[]) {
 	aiFile.open("res/ai.txt");
 	if (test0.aiSim) {
-		QFile myQfile(emg_string);
-		if (!myQfile.open(QIODevice::ReadOnly)) {
-			return;
-		}
-		QStringList wordList;
-		QStringList wordList1;
-		while (!myQfile.atEnd()) {
-			QByteArray line = myQfile.readLine();
-			wordList.append(line.split(',').at(0));
-			wordList1.append(line.split(',').at(1));
-		}
-		aiFile << aivec[0] << "," << aivec1[0] << "," << AImvec[0] << "," << AImvec1[0] << "\n";
-		int len = wordList.length();
-		for (int i = 0; i < len; i++) {
-			aivec.append(wordList.at(i).toDouble());
-			aivec1.append(wordList1.at(i).toDouble());
-			AImvec.append(lowpass1(abs(highpass1(aivec[i]))));
-			AImvec1.append(lowpass2(abs(highpass2(aivec1[i]))));
-			aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
-		}
-	}  
-	mpcInit(&grampc_, &model0.pSys, mpc0.x0, mpc0.xdes, mpc0.u0, mpc0.udes, mpc0.umax, mpc0.umin, &mpc0.Thor, &mpc0.dt, &t, mpc0.TerminalCost, mpc0.IntegralCost, mpc0.ScaleProblem, mpc0.AugLagUpdateGradientRelTol, mpc0.ConstraintsAbsTol);
-	mpc_initialised = 1;
-	//RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
+		aiSimProcess(emg_string);
+	}
 
-	// FIS params
 	mpcFile << fixed;
 	mpcFile << setprecision(3);
 
@@ -105,16 +81,11 @@ void MPCThread::mpc_init(char emg_string[]) {
 	mpcFile << "-------------------------------------------------------------\n";
 
 	mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
-	//mpcFile << "                        Motor " << (test0.Motor == 1 ? "on" : "off") << "\n";
 	mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
-
-	if (test0.aiSim) {
-		mpcFile << "                          EMG " << emg_string << "\n";
-	}
+	mpcFile << "                          EMG " << emg_string << "\n";
 
 	mpcFile.close();
 
-#ifdef PRINTRES
 	openFile(&file_x, "res/xvec.txt");
 	openFile(&file_xdes, "res/xdesvec.txt");
 	openFile(&file_u, "res/uvec.txt");
@@ -123,13 +94,61 @@ void MPCThread::mpc_init(char emg_string[]) {
 	openFile(&file_Ncfct, "res/cost.txt");
 	openFile(&file_mu, "res/mu.txt");
 	openFile(&file_rule, "res/rule.txt");
-#endif
+}
+
+void MPCThread::aiSimProcess(char emg_string[]) {
+	QFile myQfile(emg_string);
+	if (!myQfile.open(QIODevice::ReadOnly)) {
+		return;
+	}
+	QStringList wordList;
+	QStringList wordList1;
+	while (!myQfile.atEnd()) {
+		QByteArray line = myQfile.readLine();
+		wordList.append(line.split(',').at(0));
+		wordList1.append(line.split(',').at(1));
+	}
+	aiFile << aivec[0] << "," << aivec1[0] << "," << AImvec[0] << "," << AImvec1[0] << "\n";
+	int len = wordList.length();
+	for (int i = 0; i < len; i++) {
+		aivec.append(wordList.at(i).toDouble());
+		aivec1.append(wordList1.at(i).toDouble());
+		AImvec.append(lowpass1(abs(highpass1(aivec[i]))));
+		AImvec1.append(lowpass2(abs(highpass2(aivec1[i]))));
+		aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
+	}
+}
+
+void MPCThread::mpc_init(char emg_string[]) {
+	mpcInit(&grampc_,
+		&model0.pSys, 
+		mpc0.x0,
+		mpc0.xdes,
+		mpc0.u0,
+		mpc0.udes,
+		mpc0.umax,
+		mpc0.umin,
+		&mpc0.Thor,
+		&mpc0.dt,
+		&t,
+		mpc0.TerminalCost,
+		mpc0.IntegralCost,
+		mpc0.ScaleProblem,
+		mpc0.AugLagUpdateGradientRelTol,
+		mpc0.ConstraintsAbsTol);
+	mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
+
+	configFiles(emg_string);
+	
 	if (!test0.aiSim) {
 		AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
 		AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
 		AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
 		AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 	}
+
+	emit GUIPrint("Init Complete\n");
+
 	last_time = clock();
 	start_time = last_time;
 }
@@ -158,14 +177,7 @@ void MPCThread::mpc_loop() {
 			demandedCurrent = *grampc_->sol->unext;
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
-			ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
-			for (i = 0; i < NX; i++) {
-				grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
-			}
-			ffct(mpc0.rwsReferenceIntegration + NX, t + mpc0.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
-			for (i = 0; i < NX; i++) {
-				grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * (mpc0.rwsReferenceIntegration[i] + mpc0.rwsReferenceIntegration[i + NX]) / 2;
-			}
+			plantSim();
 		}
 		else {
 			if (test0.Device == 2) {
@@ -187,16 +199,9 @@ void MPCThread::mpc_loop() {
 		}
 		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 		iMPC++;
-#ifdef PRINTRES
-		printNumVector2File(file_x, grampc_->sol->xnext, NX);
-		printNumVector2File(file_xdes, grampc_->param->xdes, NX);
-		printNumVector2File(file_u, grampc_->sol->unext, NU);
-		printNumVector2File(file_t, &t, 1);
-		printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
-		printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
-		printNumVector2File(file_mu, mu, 4);
-		printNumVector2File(file_rule, rule, 4);
-#endif
+
+		print2Files();
+
 		time_counter -= (double)(mpc0.dt * CLOCKS_PER_SEC);
 		task_count++;
 	}
@@ -219,9 +224,7 @@ void MPCThread::mpc_stop() {
 	mpc_complete = 1;
 	grampc_free(&grampc_);
 	aiFile.close();
-#ifdef PRINTRES
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
-#endif
 	if (test0.Device == 2) {
 		closeDevice();
 	}
@@ -246,6 +249,28 @@ void MPCThread::controlFunctions(fisParams fis) {
 	if (test0.Mode) {
 		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
 	}
+}
+
+void MPCThread::plantSim() {
+	ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+	for (i = 0; i < NX; i++) {
+		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
+	}
+	ffct(mpc0.rwsReferenceIntegration + NX, t + mpc0.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+	for (i = 0; i < NX; i++) {
+		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * (mpc0.rwsReferenceIntegration[i] + mpc0.rwsReferenceIntegration[i + NX]) / 2;
+	}
+}
+
+void MPCThread::print2Files() {
+	printNumVector2File(file_x, grampc_->sol->xnext, NX);
+	printNumVector2File(file_xdes, grampc_->param->xdes, NX);
+	printNumVector2File(file_u, grampc_->sol->unext, NU);
+	printNumVector2File(file_t, &t, 1);
+	printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
+	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
+	printNumVector2File(file_mu, mu, 4);
+	printNumVector2File(file_rule, rule, 4);
 }
 
 void MPCThread::run()
