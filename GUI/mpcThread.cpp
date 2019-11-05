@@ -1,10 +1,5 @@
 #include "mpcThread.h"
-
-#include "libgrampc.h"
-#include "Definitions.h"
-#include "mpc.h"
 #include "motor.h"
-#include "daq.h"
 
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)

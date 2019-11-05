@@ -7,6 +7,7 @@
 #include <QVector>
 #include <QDebug>
 #include <stdio.h>
+#include <iostream>
 #include <fstream>
 #include <thread>
 #include <time.h>
@@ -16,6 +17,8 @@
 #include "libgrampc.h"
 #include "NIDAQmx.h"
 #include "fis.h"
+#include "daq.h"
+#include "mpc.h"
 
 #define PRINTRES
 #define NX    	4

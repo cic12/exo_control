@@ -1,5 +1,4 @@
 #include "mpc.h"
-#include "libgrampc.h"
 
 ofstream	mpcFile;
 

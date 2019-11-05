@@ -1,12 +1,11 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
-#include <iostream>
-#include "Definitions.h"
 #include "mpcThread.h"
 
+#include "Definitions.h"
 #include "hebi.h"
-#include "lookup.hpp"
+#include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
 #include "group_command.hpp"
 #include "group_feedback.hpp"
 #include "log_file.hpp"

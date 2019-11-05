@@ -1,10 +1,10 @@
 #ifndef DAQ_H_
 #define DAQ_H_
 
+#include <QtCore>
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <QtCore>
 #include "NIDAQmx.h"
 
 #define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
