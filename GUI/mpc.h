@@ -1,7 +1,6 @@
 #ifndef MPC_H_
 #define MPC_H_
-#include <stdio.h>
-#include <iostream>
+
 #include <fstream>
 #include <iomanip>
 #include "libgrampc.h"

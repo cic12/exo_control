@@ -5,9 +5,6 @@
 #include <QFile>
 #include <QStringList>
 #include <QVector>
-#include <QDebug>
-#include <stdio.h>
-#include <iostream>
 #include <fstream>
 #include <thread>
 #include <time.h>
