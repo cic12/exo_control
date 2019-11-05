@@ -108,7 +108,7 @@ GUI::GUI(QWidget *parent)
 	ui.plot4->yAxis->setRange(ylim4[0], ylim4[1]);
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
-	mpcThread = new MyThread(this);
+	mpcThread = new MPCThread(this);
 	motorThread = new MotorThread(this);
 
 	connect(mpcThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));

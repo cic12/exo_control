@@ -1,8 +1,7 @@
 #pragma once
 
 #include <QThread>
-#include "motor.h"
-#include "mpcThread.h"
+#include "mpcThread.h" // For test config and motor refs
 
 using namespace hebi;
 

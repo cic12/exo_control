@@ -14,8 +14,6 @@
 #include <math.h>
 
 #include "ui_GUI.h"
-#include "libgrampc.h"
-#include "NIDAQmx.h"
 #include "motor.h"
 #include "fis.h"
 #include "daq.h"
@@ -66,12 +64,12 @@ struct plotVars {
 	double time, x1, x1des, x2, u, hTauEst, mode, AIdata0, AIm0, AIdata1, AIm1, lambdaA, lambdaR;
 };
 	
-class MyThread : public QThread
+class MPCThread : public QThread
 {
 	Q_OBJECT
 
 public:
-	MyThread(QObject *parent);
+	MPCThread(QObject *parent);
 	
 	void run();
 	bool Stop = false;

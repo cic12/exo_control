@@ -2,12 +2,12 @@
 
 testParams test0;
 
-MyThread::MyThread(QObject *parent)
+MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
 }
 
-void MyThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
+void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
 	double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
 	model0.A = A; model0.pSys[0] = model0.A;
 	model0.B = B; model0.pSys[1] = model0.B;
@@ -32,7 +32,7 @@ void MyThread::paramSet(double A, double B, double J, double tau_g, double w_the
 	fis0.halt_lim = halt_lim;
 }
 
-void MyThread::mpc_init(char emg_string[]) {
+void MPCThread::mpc_init(char emg_string[]) {
 	emit GUIPrint("Start");
 	aiFile.open("res/ai.txt");
 	if (test0.aiSim) {
@@ -134,7 +134,7 @@ void MyThread::mpc_init(char emg_string[]) {
 	start_time = last_time;
 }
 
-void MyThread::mpc_loop() {
+void MPCThread::mpc_loop() {
 	this->usleep(50);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
@@ -202,7 +202,7 @@ void MyThread::mpc_loop() {
 	}
 }
 
-void MyThread::mpc_stop() {
+void MPCThread::mpc_stop() {
 	end_time = clock();
 	double duration = (double)(end_time - start_time);
 	if (!test0.aiSim) {
@@ -229,7 +229,7 @@ void MyThread::mpc_stop() {
 	qDebug() << motor_comms_count;
 }
 
-void MyThread::controlFunctions(fisParams fis) {
+void MPCThread::controlFunctions(fisParams fis) {
 	if (test0.aiSim) {
 		if (t < 20) {
 			AIm[0] = AImvec[iMPC];
@@ -248,7 +248,7 @@ void MyThread::controlFunctions(fisParams fis) {
 	}
 }
 
-void MyThread::run()
+void MPCThread::run()
 {
 	char emg_data[] = "res/emgs/aiEA025.csv";
 	mpc_init(emg_data);

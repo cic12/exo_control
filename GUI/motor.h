@@ -1,14 +1,12 @@
 #ifndef MOTOR_H_
 #define MOTOR_H_
 
-#include "mpcThread.h"
-
-#include "Definitions.h"
+#include "Definitions.h" // Maxon Epos header
 #include "hebi.h"
 #include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
-#include "group_command.hpp"
-#include "group_feedback.hpp"
-#include "log_file.hpp"
+#include "group_command.hpp" // "
+#include "group_feedback.hpp" // "
+#include "log_file.hpp" // "
 
 extern double demandedCurrent;
 extern short inputCurrent;
