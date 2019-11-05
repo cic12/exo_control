@@ -13,7 +13,6 @@
 extern double demandedCurrent;
 extern short inputCurrent;
 extern double currentPosition, homePosition, previousPosition;
-extern testParams test0;
 
 extern bool mpc_initialised;
 extern bool mpc_complete;

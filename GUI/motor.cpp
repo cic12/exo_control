@@ -12,7 +12,6 @@ double motor_comms_count = 0;
 double demandedCurrent = 0; // was short
 short inputCurrent = 0;
 double currentPosition = 0, homePosition = 0, previousPosition = 0.2; // was long
-testParams test0;
 
 void enableDevice()
 {

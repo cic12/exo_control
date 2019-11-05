@@ -1,5 +1,6 @@
 #include "mpcThread.h"
-#include "motor.h"
+
+testParams test0;
 
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)

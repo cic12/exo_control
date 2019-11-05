@@ -16,6 +16,7 @@
 #include "ui_GUI.h"
 #include "libgrampc.h"
 #include "NIDAQmx.h"
+#include "motor.h"
 #include "fis.h"
 #include "daq.h"
 #include "mpc.h"
@@ -31,6 +32,8 @@ struct testParams {
 	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
 	int Device = 0;
 };
+
+extern testParams test0;
 
 struct mpcParams {
 	double rwsReferenceIntegration[2 * NX];

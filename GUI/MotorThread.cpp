@@ -3,7 +3,7 @@
 MotorThread::MotorThread(QObject *parent)
 	: QThread(parent)
 {
-} 
+}
 
 void MotorThread::run() {
 	if (test0.Device == 2) {

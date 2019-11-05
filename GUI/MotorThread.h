@@ -2,6 +2,7 @@
 
 #include <QThread>
 #include "motor.h"
+#include "mpcThread.h"
 
 using namespace hebi;
 
