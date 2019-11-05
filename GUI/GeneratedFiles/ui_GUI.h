@@ -97,10 +97,10 @@ public:
         plot->setGeometry(QRect(200, 30, 501, 121));
         btn_start = new QPushButton(centralWidget);
         btn_start->setObjectName(QString::fromUtf8("btn_start"));
-        btn_start->setGeometry(QRect(10, 800, 75, 23));
+        btn_start->setGeometry(QRect(10, 800, 71, 23));
         btn_stop = new QPushButton(centralWidget);
         btn_stop->setObjectName(QString::fromUtf8("btn_stop"));
-        btn_stop->setGeometry(QRect(110, 800, 75, 23));
+        btn_stop->setGeometry(QRect(110, 800, 71, 23));
         label_3 = new QLabel(centralWidget);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         label_3->setGeometry(QRect(50, 770, 41, 20));

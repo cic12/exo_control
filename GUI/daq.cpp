@@ -101,6 +101,7 @@ Error:
 		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
 		DAQmxStopTask(AItaskHandle);
 		DAQmxClearTask(AItaskHandle);
+		//emit GUIPrint(errBuff);
 		//printf("DAQmx Error: %s\n", errBuff);
 	}
 	return AItaskHandle;

@@ -1,10 +1,22 @@
 #pragma once
 
 #include <QThread>
+#include <QtCore>
+#include <QFile>
+#include <QStringList>
+#include <QVector>
+#include <QDebug>
+#include <stdio.h>
+#include <fstream>
+#include <thread>
+#include <time.h>
+#include <math.h>
+
 #include "ui_GUI.h"
 #include "libgrampc.h"
 #include "NIDAQmx.h"
 #include "fis.h"
+
 #define PRINTRES
 #define NX    	4
 #define NU  	1

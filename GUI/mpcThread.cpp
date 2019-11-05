@@ -1,20 +1,10 @@
 #include "mpcThread.h"
-#include <QtCore>
-#include <QFile>
-#include <QStringList>
-#include <QVector>
-#include <QDebug>
-#include <stdio.h>
-#include <fstream>
-#include <thread>
-#include <time.h>
-#include <math.h>
+
 #include "libgrampc.h"
 #include "Definitions.h"
 #include "mpc.h"
 #include "motor.h"
 #include "daq.h"
-#include "fis.h"
 
 MyThread::MyThread(QObject *parent)
 	:QThread(parent)
