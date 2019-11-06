@@ -93,7 +93,7 @@ void openDevice()
 
 	if (keyHandle == 0)
 	{
-		
+		throw "Maxon Error";
 		//cout << "Open device failure, error code=" << errorCode << endl;
 	}
 	else

@@ -94,15 +94,13 @@ TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
 	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "EMG2", DAQmx_Val_RSE, -1, 1, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
 	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
-	DAQmxErrChk(DAQmxRegisterDoneEvent(AItaskHandle, 0, DoneCallback, NULL));
 
 Error:
 	if (DAQmxFailed(error)) {
 		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
 		DAQmxStopTask(AItaskHandle);
 		DAQmxClearTask(AItaskHandle);
-		//emit GUIPrint(errBuff);
-		//printf("DAQmx Error: %s\n", errBuff);
+		throw errBuff;
 	}
 	return AItaskHandle;
 }
@@ -120,6 +118,7 @@ Error:
 		DAQmxStopTask(AOtaskHandle);
 		DAQmxClearTask(AOtaskHandle);
 		//printf("DAQmx Error: %s\n", errBuff);
+		//throw errBuff;
 	}
 	return AOtaskHandle;
 }
@@ -134,6 +133,7 @@ Error:
 		DAQmxStopTask(taskHandle);
 		DAQmxClearTask(taskHandle);
 		//printf("DAQmx Error: %s\n", errBuff);
+		//throw errBuff;
 	}
 	return taskHandle;
 }
@@ -179,21 +179,7 @@ Error:
 		DAQmxStopTask(taskHandle);
 		DAQmxClearTask(taskHandle);
 		//printf("DAQmx Error: %s\n", errBuff);
-	}
-	return 0;
-}
-
-int32 CVICALLBACK DoneCallback(TaskHandle taskHandle, int32 status, void *callbackData)
-{
-	int32   error = 0;
-	char    errBuff[2048] = { '\0' };
-	DAQmxErrChk(status);
-
-Error:
-	if (DAQmxFailed(error)) {
-		DAQmxGetExtendedErrorInfo(errBuff, 2048);
-		DAQmxClearTask(taskHandle);
-		//printf("DAQmx Error: %s\n", errBuff);
+		//throw errBuff;
 	}
 	return 0;
 }

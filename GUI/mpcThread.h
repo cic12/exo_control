@@ -24,7 +24,7 @@ using namespace std;
 
 struct testParams {
 	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
-	int Device = 0;
+	int Device = 2; // 0 - None, 1 - Maxon, 2 - HEBI
 };
 
 extern testParams test0;

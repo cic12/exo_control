@@ -55,7 +55,7 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, c
 
 	// MPC params
 
-	mpcFile.open("res/mpcDetails.txt");
+	mpcFile.open("../res/mpcDetails.txt");
 
 	mpcFile << fixed;
 	mpcFile << setprecision(0);

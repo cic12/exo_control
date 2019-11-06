@@ -33,7 +33,8 @@ void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_th
 }
 
 void MPCThread::configFiles(char emg_string[]) {
-	aiFile.open("res/ai.txt");
+	
+	aiFile.open("../res/ai.txt");
 	if (test0.aiSim) {
 		aiSimProcess(emg_string);
 	}
@@ -86,14 +87,14 @@ void MPCThread::configFiles(char emg_string[]) {
 
 	mpcFile.close();
 
-	openFile(&file_x, "res/xvec.txt");
-	openFile(&file_xdes, "res/xdesvec.txt");
-	openFile(&file_u, "res/uvec.txt");
-	openFile(&file_mode, "res/mode.txt");
-	openFile(&file_t, "res/tvec.txt");
-	openFile(&file_Ncfct, "res/cost.txt");
-	openFile(&file_mu, "res/mu.txt");
-	openFile(&file_rule, "res/rule.txt");
+	openFile(&file_x, "../res/xvec.txt");
+	openFile(&file_xdes, "../res/xdesvec.txt");
+	openFile(&file_u, "../res/uvec.txt");
+	openFile(&file_mode, "../res/mode.txt");
+	openFile(&file_t, "../res/tvec.txt");
+	openFile(&file_Ncfct, "../res/cost.txt");
+	openFile(&file_mu, "../res/mu.txt");
+	openFile(&file_rule, "../res/rule.txt");
 }
 
 void MPCThread::aiSimProcess(char emg_string[]) {
@@ -141,10 +142,15 @@ void MPCThread::mpc_init(char emg_string[]) {
 	configFiles(emg_string);
 	
 	if (!test0.aiSim) {
-		AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
-		AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
-		AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
-		AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
+		try {
+			AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
+			AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
+			AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
+			AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
+		}
+		catch (char* msg) {
+			//GUIPrint("DAQmx Error:"+QString(msg)); // not currently reached
+		}
 	}
 
 	emit GUIPrint("Init Complete\n");
@@ -275,7 +281,7 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "res/emgs/aiEA025.csv";
+	char emg_data[] = "../res/emgs/aiEA025.csv";
 	mpc_init(emg_data);
 	while (!Stop && t < mpc0.Tsim)
 	{
