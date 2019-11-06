@@ -180,5 +180,57 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, c
 	mpcFile << "             ConvergenceCheck " << ((*grampc_)->opt->ConvergenceCheck == INT_ON ? "on" : "off") << "\n";
 	mpcFile << "    ConvergenceGradientRelTol " << (*grampc_)->opt->ConvergenceGradientRelTol << "\n";
 
+
+
+	//mpcFile.close();
+}
+
+void filesInit() {
+	//mpcFile << fixed;
+	//mpcFile << setprecision(3);
+
+	//mpcFile << "-------------------------------------------------------------\n";
+	//mpcFile << "                  Model Param " << "Value" << "\n";
+	//mpcFile << "-------------------------------------------------------------\n";
+
+	//mpcFile << "                            A " << model0.A << "\n";
+	//mpcFile << "                            B " << model0.B << "\n";
+	//mpcFile << "                            J " << model0.J << "\n";
+	//mpcFile << "                        tau_g " << model0.tau_g << "\n";
+	//mpcFile << "                      w_theta " << model0.w_theta << "\n";
+	//mpcFile << "                        w_tau " << model0.w_tau << "\n";
+
+	//mpcFile << setprecision(15);
+
+	//mpcFile << "-------------------------------------------------------------\n";
+	//mpcFile << "                    FIS Param " << "Value" << "\n";
+	//mpcFile << "-------------------------------------------------------------\n";
+
+	//mpcFile << "                           b1 " << fis0.b1 << "\n";
+	//mpcFile << "                           b2 " << fis0.b2 << "\n";
+	//mpcFile << "                           b3 " << fis0.b3 << "\n";
+
+	//mpcFile << setprecision(3);
+
+	//mpcFile << "                           pA " << fis0.pA << "\n";
+	//mpcFile << "                           pR " << fis0.pR << "\n";
+	//mpcFile << "                        sig_hN " << fis0.sig_hN << "\n";
+	//mpcFile << "                          c_hN " << fis0.c_hN << "\n";
+	//mpcFile << "                        sig_hP " << fis0.sig_hP << "\n";
+	//mpcFile << "                          c_hP " << fis0.c_hP << "\n";
+	//mpcFile << "                        sig_eN " << fis0.sig_eN << "\n";
+	//mpcFile << "                          c_eN " << fis0.c_eN << "\n";
+	//mpcFile << "                        sig_eP " << fis0.sig_eP << "\n";
+	//mpcFile << "                          c_eP " << fis0.c_eP << "\n";
+	//mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
+
+	//mpcFile << "-------------------------------------------------------------\n";
+	//mpcFile << "                  Test Option " << "Setting" << "\n";
+	//mpcFile << "-------------------------------------------------------------\n";
+
+	//mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
+	//mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
+	//mpcFile << "                          EMG " << emg_string << "\n";
+
 	//mpcFile.close();
 }

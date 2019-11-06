@@ -139,6 +139,8 @@ void MPCThread::mpc_init(char emg_string[]) {
 		mpc0.ConstraintsAbsTol);
 	mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
 
+	filesInit();
+
 	configFiles(emg_string);
 	
 	if (!test0.aiSim) {
@@ -157,6 +159,7 @@ void MPCThread::mpc_init(char emg_string[]) {
 
 	last_time = clock();
 	start_time = last_time;
+	//timer->
 }
 
 void MPCThread::mpc_loop() {
@@ -234,8 +237,8 @@ void MPCThread::mpc_stop() {
 	if (test0.Device == 2) {
 		closeDevice();
 	}
-	qDebug() << duration;
-	qDebug() << motor_comms_count;
+	GUIPrint("Real Duration, ms :"+QString::number(duration, 'f', 0)+"\n");
+	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0)+"\n");
 }
 
 void MPCThread::controlFunctions(fisParams fis) {
@@ -283,9 +286,12 @@ void MPCThread::run()
 {
 	char emg_data[] = "../res/emgs/aiEA025.csv";
 	mpc_init(emg_data);
+	//QTimer *timer = new QTimer(this); // Switch to QTimer for mpcloop event
+	//connect(timer, &QTimer::timeout, this, SLOT(mpc_loop()));
+	//timer->start(1);
 	while (!Stop && t < mpc0.Tsim)
 	{
-		mpc_loop();
+		//mpc_loop();
 		if (iMPC % 10 == 0)
 		{
 			vars0.time = t;
@@ -304,6 +310,7 @@ void MPCThread::run()
 			emit mpcIteration();
 		}
 	}
+	//timer->stop();
 	mpc_stop();
 	terminate();
 }

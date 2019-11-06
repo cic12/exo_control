@@ -24,17 +24,15 @@ using namespace std;
 
 struct testParams {
 	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
-	int Device = 2; // 0 - None, 1 - Maxon, 2 - HEBI
-};
-
-extern testParams test0;
+	int Device = 0; // 0 - None, 1 - Maxon, 2 - HEBI
+}; extern testParams test0;
 
 struct mpcParams {
 	double rwsReferenceIntegration[2 * NX];
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -40.0 }, umax[NU] = { 40.0 }; // set in inequality constraints
-	const double Tsim = 100.0, dt = 0.002;
+	const double Tsim = 5.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
@@ -50,7 +48,6 @@ struct modelParams {
 struct fisParams
 {
 	double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
-	//double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.85, c_e = 2, halt_lim = 0.25;
 	double sig_hN = 5, c_hN = -7.5, sig_hP = 15, c_hP = 30;
 	double sig_eN = 0.4, c_eN = -1, sig_eP = 0.4, c_eP = 1;  // using dtheta
 	double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.085, c_e = 0.02, halt_lim = 0.2; // using ddtheta
@@ -81,7 +78,7 @@ public:
 	void configFiles(char emg_string[]);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init(char emg_string[]);
-	void mpc_loop();
+	
 	void mpc_stop();
 	void controlFunctions(fisParams);
 	void plantSim();
@@ -98,6 +95,8 @@ private:
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 
+private slots:
+	void mpc_loop();
 signals:
 	void mpcIteration();
 	void GUIPrint(QString);
