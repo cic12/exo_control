@@ -16,6 +16,8 @@
 #include "daq.h"
 #include "mpc.h"
 
+//#include "mpcTimer.h"
+
 #define NX    	4
 #define NU  	1
 #define NH      4
@@ -78,11 +80,12 @@ public:
 	void configFiles(char emg_string[]);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init(char emg_string[]);
-	
+	void mpc_loop();
 	void mpc_stop();
 	void controlFunctions(fisParams);
 	void plantSim();
 	void print2Files();
+	void mpc_plot();
 private:
 	int i, vec_i;
 	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.01;
@@ -95,9 +98,10 @@ private:
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 
-private slots:
-	void mpc_loop();
 signals:
 	void mpcIteration();
 	void GUIPrint(QString);
+
+//public slots:
+	//void mpc_plot();
 };

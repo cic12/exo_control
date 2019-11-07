@@ -233,3 +233,8 @@ void GUI::onGUIPrint(QString message)
 {
 	ui.plainTextEdit->insertPlainText(message);
 }
+
+void GUI::onTimeout()
+{
+	onGUIPrint("Timeout");
+}

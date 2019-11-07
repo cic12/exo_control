@@ -159,7 +159,6 @@ void MPCThread::mpc_init(char emg_string[]) {
 
 	last_time = clock();
 	start_time = last_time;
-	//timer->
 }
 
 void MPCThread::mpc_loop() {
@@ -286,12 +285,18 @@ void MPCThread::run()
 {
 	char emg_data[] = "../res/emgs/aiEA025.csv";
 	mpc_init(emg_data);
-	//QTimer *timer = new QTimer(this); // Switch to QTimer for mpcloop event
-	//connect(timer, &QTimer::timeout, this, SLOT(mpc_loop()));
-	//timer->start(1);
-	while (!Stop && t < mpc0.Tsim)
-	{
-		//mpc_loop();
+
+	//QTimer *timer = new QTimer(this);
+	//connect(timer, &QTimer::timeout, this, QOverload<>::of(&MPCThread::mpc_loop));
+	//timer->setTimerType(Qt::PreciseTimer);
+
+	//timer->start(2); 
+
+	//timer->stop();
+
+	while (!Stop && t < mpc0.Tsim) {
+		
+		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
 			vars0.time = t;
@@ -310,7 +315,6 @@ void MPCThread::run()
 			emit mpcIteration();
 		}
 	}
-	//timer->stop();
 	mpc_stop();
 	terminate();
 }
