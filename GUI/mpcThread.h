@@ -98,6 +98,8 @@ private:
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 
+	QMutex mutex;
+
 signals:
 	void mpcIteration();
 	void GUIPrint(QString);

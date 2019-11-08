@@ -26,6 +26,8 @@ private:
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 
+	QMutex mutex;
+
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();

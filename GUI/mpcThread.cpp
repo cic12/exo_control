@@ -162,7 +162,7 @@ void MPCThread::mpc_init(char emg_string[]) {
 }
 
 void MPCThread::mpc_loop() {
-	this->usleep(50);
+	this->usleep(500);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -294,11 +294,13 @@ void MPCThread::run()
 
 	//timer->stop();
 
+	
 	while (!Stop && t < mpc0.Tsim) {
 		
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
+			mutex.lock();
 			vars0.time = t;
 			vars0.x1 = grampc_->sol->xnext[0];
 			vars0.x1des = grampc_->param->xdes[0];
@@ -312,6 +314,7 @@ void MPCThread::run()
 			vars0.AIm1 = AIm[1];
 			vars0.lambdaA = lambdaA;
 			vars0.lambdaR = lambdaR;
+			mutex.unlock();
 			emit mpcIteration();
 		}
 	}

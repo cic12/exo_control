@@ -224,8 +224,10 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration() {
+	mutex.lock();
 	ui.label_3->setText(QString::number(mpcThread->vars0.time, 'f', 3));
 	addPoints(mpcThread->vars0);
+	mutex.unlock();
 	plot();
 }
 
