@@ -168,6 +168,22 @@ void MPCThread::mpc_loop() {
 	last_time = this_time;
 	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
+		//// Model ID
+		//if (t <= 20) {
+		//	mpc0.xdes[0] = (cos((0.1 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		//}
+		//else if (t <= 40) {
+		//	mpc0.xdes[0] = (cos((0.2 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		//}
+		//else if (t <= 60) {
+		//	mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		//}
+		//else if (t <= 80) {
+		//	mpc0.xdes[0] = (cos((0.5 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		//}
+		//else {
+		//	mpc0.xdes[0] = (cos((1.0 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		//}
 		// Setpoint
 		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
 		grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
