@@ -58,11 +58,11 @@ void MotorThread::run() {
 					if (!group->getNextFeedback(group_feedback)) {
 						continue;
 					}
-					efforts[0] = demandedCurrent;
+					efforts[0] = -demandedCurrent;
 					group_command.setEffort(efforts);
 					group->sendCommand(group_command);
 					auto pos = group_feedback.getPosition();
-					currentPosition = pos[0];
+					currentPosition = -pos[0];
 					motor_comms_count++;
 				}
 			}

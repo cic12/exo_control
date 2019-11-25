@@ -193,8 +193,8 @@ void GUI::plot()
 
 void GUI::on_btn_start_clicked()
 {
-	mpcThread->start();//QThread::IdlePriority);
-	motorThread->start();// QThread::IdlePriority);
+	mpcThread->start();
+	motorThread->start(QThread::IdlePriority);
 }
 
 void GUI::on_btn_stop_clicked()

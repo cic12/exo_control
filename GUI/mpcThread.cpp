@@ -192,7 +192,7 @@ void MPCThread::mpc_loop() {
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
 			}
 			else if (test0.Device == 1) {
-				grampc_->sol->xnext[0] = currentPosition + M_PI / 2;
+				grampc_->sol->xnext[0] = currentPosition - M_PI / 8 + M_PI / 2;
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
