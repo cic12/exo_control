@@ -5,19 +5,20 @@ MotorThread::MotorThread(QObject *parent)
 {
 }
 
-void MotorThread::run() {
-	if (test0.Device == 2) {
-		openDevice();
-		long home = homePosition;
-		definePosition(home); // Mini rig
-		currentMode();
-		long pos;
-		getCurrentPosition(pos);
-		currentPosition = pos;
-		previousPosition = currentPosition / 168000.f + M_PI / 2;
-	}
-	else if (test0.Device == 1) {
+void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
+	//if (test0.Device == 2) { 
+	//	openDevice();
+	//	long home = homePosition;
+	//	definePosition(home); // Mini rig
+	//	currentMode();
+	//	long pos;
+	//	getCurrentPosition(pos);
+	//	currentPosition = pos;
+	//	previousPosition = currentPosition / 168000.f + M_PI / 2;
+	//}
+	//else if (test0.Device == 1) { // statement requires mutex for syncing
 		//Get group
+
 		Lookup lookup;
 		auto group = lookup.getGroupFromNames({ "X8-9" }, { "X-80768" });
 		if (!group) {
@@ -41,33 +42,42 @@ void MotorThread::run() {
 			//	<< "HINT: Remember that the path declared in 'group->startLog()' "
 			//	<< "is relative to your current working directory...\n";
 			//return 1;
+			throw "HEBI Log Error";
 			terminate();
 		}
+
+		motor_init = 1;
 
 		long pos;
 		while (!mpc_complete) {
 			if (mpc_initialised) {
-				if (test0.Device == 2) {
-					setCurrent(demandedCurrent);
-					inputCurrent = demandedCurrent; // for debugging
-					getCurrentPosition(pos); // wrong data type
-					currentPosition = pos;
-					motor_comms_count++;
-				}
-				else if (test0.Device == 1) {
+				//if (test0.Device == 2) {
+				//	setCurrent(demandedCurrent);
+				//	inputCurrent = demandedCurrent; // for debugging
+				//	getCurrentPosition(pos); // wrong data type
+				//	currentPosition = pos;
+				//	motor_comms_count++;
+				//}
+				//else if (test0.Device == 1) {
 					if (!group->getNextFeedback(group_feedback)) {
 						continue;
 					}
+					mutex.lock();
 					efforts[0] = -demandedCurrent;
 					group_command.setEffort(efforts);
 					group->sendCommand(group_command);
 					auto pos = group_feedback.getPosition();
 					currentPosition = -pos[0];
+					mutex.unlock();
 					motor_comms_count++;
 				}
 			}
+		auto log_file = group->stopLog();
 		}
 		// Stop logging
-		auto log_file = group->stopLog();
-	}
-}
+		
+	//}
+	//else {
+	//	this->sleep(1000);
+	//}
+//}

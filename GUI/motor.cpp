@@ -7,7 +7,7 @@ __int8 mode;
 
 using namespace std;
 
-bool mpc_initialised = 0, mpc_complete = 0;
+bool mpc_initialised = 0, mpc_complete = 0, motor_init = 0;
 double motor_comms_count = 0;
 double demandedCurrent = 0; // was short
 short inputCurrent = 0;

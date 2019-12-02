@@ -12,4 +12,7 @@ class MotorThread : public QThread
 public:
 	MotorThread(QObject *parent);
 	void run();
+
+private:
+	QMutex mutex;
 };

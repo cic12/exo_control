@@ -15,6 +15,7 @@ extern double currentPosition, homePosition, previousPosition;
 extern bool mpc_initialised;
 extern bool mpc_complete;
 extern double motor_comms_count;
+extern bool motor_init;
 
 void enableDevice();
 void disableDevice();

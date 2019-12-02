@@ -184,8 +184,10 @@ void MPCThread::mpc_loop() {
 		//else {
 		//	mpc0.xdes[0] = (cos((1.0 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
 		//}
+
 		// Setpoint
 		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+
 		grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
 		// Grampc
 		grampc_run(grampc_);
@@ -309,7 +311,7 @@ void MPCThread::run()
 	//timer->start(2); 
 
 	//timer->stop();
-
+	while (!motor_init);
 	
 	while (!Stop && t < mpc0.Tsim) {
 		
