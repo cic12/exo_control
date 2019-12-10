@@ -1,9 +1,17 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
+
+#include <QtCharts/QChartView>
+#include <QtCharts/QChart>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QLineSeries>
+
 #include "ui_GUI.h"
 #include "mpcThread.h"
 #include "motorThread.h"
+
+using namespace QtCharts;
 
 class GUI : public QMainWindow
 {
@@ -21,8 +29,8 @@ private:
 	double t_span = 4;
 	double ylim[2] = { 2 , -2 };
 	double ylim1[2] = { -15 , 25 };
-	double ylim2[2] = { -0.1 , 0.1 };
-	double ylim3[2] = { -0.1 , 0.1 };
+	double ylim2[2] = { 0 , 2 };
+	double ylim3[2] = { 0 , 2 };
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 

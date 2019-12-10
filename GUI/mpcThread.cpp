@@ -109,7 +109,9 @@ void MPCThread::aiSimProcess(char emg_string[]) {
 		wordList.append(line.split(',').at(0));
 		wordList1.append(line.split(',').at(1));
 	}
+
 	aiFile << aivec[0] << "," << aivec1[0] << "," << AImvec[0] << "," << AImvec1[0] << "\n";
+	
 	int len = wordList.length();
 	for (int i = 0; i < len; i++) {
 		aivec.append(wordList.at(i).toDouble());
@@ -301,16 +303,9 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "../res/emgs/aiEA025.csv";
+	char emg_data[] = "../res/emgs/emgEA.csv";
 	mpc_init(emg_data);
 
-	//QTimer *timer = new QTimer(this);
-	//connect(timer, &QTimer::timeout, this, QOverload<>::of(&MPCThread::mpc_loop));
-	//timer->setTimerType(Qt::PreciseTimer);
-
-	//timer->start(2); 
-
-	//timer->stop();
 	while (!motor_init);
 	
 	while (!Stop && t < mpc0.Tsim) {

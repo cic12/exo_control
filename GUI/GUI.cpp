@@ -193,8 +193,14 @@ void GUI::plot()
 
 void GUI::on_btn_start_clicked()
 {
-	mpcThread->start(); // Priority?
-	motorThread->start(); // Priority?
+	mpcThread->start(QThread::NormalPriority);
+	if (test0.Device > 0) {
+		motorThread->start(QThread::LowPriority);
+	}
+	else
+	{
+		motor_init = 1;
+	}
 }
 
 void GUI::on_btn_stop_clicked()
