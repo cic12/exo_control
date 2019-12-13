@@ -95,6 +95,8 @@ public:
 	void controlFunctions(fisParams);
 	void plantSim();
 	void print2Files();
+
+	QMutex mutexMPC;
 private:
 	int i, vec_i;
 	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.01;
@@ -106,8 +108,6 @@ private:
 	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
-
-	QMutex mutex;
 
 signals:
 	void mpcIteration();

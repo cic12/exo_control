@@ -2,16 +2,9 @@
 
 #include <QtWidgets/QMainWindow>
 
-#include <QtCharts/QChartView>
-#include <QtCharts/QChart>
-#include <QtCharts/QValueAxis>
-#include <QtCharts/QLineSeries>
-
 #include "ui_GUI.h"
 #include "mpcThread.h"
 #include "motorThread.h"
-
-using namespace QtCharts;
 
 class GUI : public QMainWindow
 {

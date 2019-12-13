@@ -20,6 +20,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
+#include "qchart.h"
 #include "qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
@@ -80,6 +81,7 @@ public:
     QLabel *label_25;
     QLabel *label_26;
     QPlainTextEdit *plainTextEdit;
+    QChart *chart;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -187,11 +189,11 @@ public:
         plot4 = new QCustomPlot(centralWidget);
         plot4->setObjectName(QString::fromUtf8("plot4"));
         plot4->setEnabled(false);
-        plot4->setGeometry(QRect(200, 590, 501, 101));
+        plot4->setGeometry(QRect(200, 590, 241, 101));
         plot5 = new QCustomPlot(centralWidget);
         plot5->setObjectName(QString::fromUtf8("plot5"));
         plot5->setEnabled(false);
-        plot5->setGeometry(QRect(200, 720, 501, 101));
+        plot5->setGeometry(QRect(460, 590, 241, 101));
         label_12 = new QLabel(centralWidget);
         label_12->setObjectName(QString::fromUtf8("label_12"));
         label_12->setGeometry(QRect(110, 260, 61, 16));
@@ -317,12 +319,15 @@ public:
         label_25->setGeometry(QRect(210, 570, 61, 16));
         label_26 = new QLabel(centralWidget);
         label_26->setObjectName(QString::fromUtf8("label_26"));
-        label_26->setGeometry(QRect(210, 700, 61, 16));
+        label_26->setGeometry(QRect(470, 570, 61, 16));
         plainTextEdit = new QPlainTextEdit(centralWidget);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
         plainTextEdit->setEnabled(false);
         plainTextEdit->setGeometry(QRect(10, 520, 171, 241));
         plainTextEdit->setReadOnly(true);
+        chart = new QChart(centralWidget);
+        chart->setObjectName(QString::fromUtf8("chart"));
+        chart->setGeometry(QRect(200, 710, 501, 101));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));

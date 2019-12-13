@@ -108,6 +108,8 @@ GUI::GUI(QWidget *parent)
 	ui.plot4->yAxis->setRange(ylim4[0], ylim4[1]);
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
+	//ui.
+
 	mpcThread = new MPCThread(this);
 	motorThread = new MotorThread(this);
 
@@ -230,10 +232,10 @@ void GUI::on_btn_set_params_clicked()
 }
 
 void GUI::onMpcIteration() {
-	mutex.lock();
+	mpcThread->mutexMPC.lock();
 	time = mpcThread->vars0.time;
 	plot_vars = mpcThread->vars0;
-	mutex.unlock();
+	mpcThread->mutexMPC.unlock();
 	ui.label_3->setText(QString::number(time, 'f', 3));
 	addPoints(plot_vars);
 	plot();
