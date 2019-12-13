@@ -27,14 +27,17 @@ public:
 private:
 	Ui::GUIClass ui;
 	double t_span = 4;
-	double ylim[2] = { 2 , -2 };
-	double ylim1[2] = { -15 , 25 };
-	double ylim2[2] = { 0 , 2 };
-	double ylim3[2] = { 0 , 2 };
+	double ylim[2] = { -2 , 1.4 };
+	double ylim1[2] = { -20 , 20};
+	double ylim2[2] = { -0.3 , 0.3 };
+	double ylim3[2] = { -0.3 , 0.3 };
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 
+	double time;
+	plotVars plot_vars;
 	QMutex mutex;
+
 
 private slots:
 	void on_btn_start_clicked();

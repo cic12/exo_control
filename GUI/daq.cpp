@@ -3,7 +3,7 @@
 char errBuff[2048] = { '\0' };
 int32 error = 0;
 ofstream aiFile;
-float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { -0.0 , -0.0 };
+float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { -2.325 , -2.340 };
 
 struct lowpass_para {
 	double x[3];
@@ -163,9 +163,9 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	AIdata[0] += offset[0];
 	AIdata[1] += offset[1];
 
-	//double lim = 0.1;
-	//AIdata[0] = limEMG(AIdata[0], lim);
-	//AIdata[1] = limEMG(AIdata[1], lim);
+	double lim = 0.25;
+	AIdata[0] = limEMG(AIdata[0], lim);
+	AIdata[1] = limEMG(AIdata[1], lim);
 
 	AIm[0] = lowpass1(abs(highpass1(AIdata[0])));
 	AIm[1] = lowpass2(abs(highpass2(AIdata[1])));
