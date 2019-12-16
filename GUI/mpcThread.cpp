@@ -313,7 +313,7 @@ void MPCThread::run()
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
-			mutexMPC.lock();
+			mutex.lock();
 			vars0.time = t;
 			vars0.x1 = grampc_->sol->xnext[0];
 			vars0.x1des = grampc_->param->xdes[0];
@@ -327,8 +327,8 @@ void MPCThread::run()
 			vars0.AIm1 = AIm[1];
 			vars0.lambdaA = lambdaA;
 			vars0.lambdaR = lambdaR;
-			mutexMPC.unlock();
-			emit mpcIteration();
+			mutex.unlock();
+			//emit mpcIteration(vars0);
 		}
 	}
 	mpc_stop();

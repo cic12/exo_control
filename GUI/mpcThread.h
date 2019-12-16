@@ -66,7 +66,11 @@ struct fisParams
 };
 
 struct plotVars {
-	double time, x1, x1des, x2, u, hTauEst, mode, AIdata0, AIm0, AIdata1, AIm1, lambdaA, lambdaR;
+	double time = 0,
+		x1 = 0, x1des = 0, x2 = 0,
+		u = 0, hTauEst = 0, mode = 1,
+		AIdata0 = 0, AIm0 = 0, AIdata1 = 0, AIm1 = 0,
+		lambdaA = 0, lambdaR = 0;
 };
 	
 class MPCThread : public QThread
@@ -85,6 +89,8 @@ public:
 	fisParams fis0;
 	plotVars vars0;
 
+	QMutex mutex;
+
 	void paramSet(double, double, double, double, double, double, double,
 		double, double, double, double, double, double, double, double, double, double);
 	void configFiles(char emg_string[]);
@@ -95,8 +101,6 @@ public:
 	void controlFunctions(fisParams);
 	void plantSim();
 	void print2Files();
-
-	QMutex mutexMPC;
 private:
 	int i, vec_i;
 	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.01;
@@ -108,9 +112,8 @@ private:
 	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
-
 signals:
-	void mpcIteration();
+	void mpcIteration(plotVars);
 	void GUIPrint(QString);
 
 //public slots:

@@ -108,12 +108,13 @@ GUI::GUI(QWidget *parent)
 	ui.plot4->yAxis->setRange(ylim4[0], ylim4[1]);
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
-	//ui.
-
 	mpcThread = new MPCThread(this);
 	motorThread = new MotorThread(this);
 
-	connect(mpcThread, SIGNAL(mpcIteration()), this, SLOT(onMpcIteration()));
+	timer = new QTimer(this);
+	timer->setTimerType(Qt::PreciseTimer);
+
+	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout));
 	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString)));
 
 	ui.A_box->setValue(mpcThread->model0.A);
@@ -203,6 +204,7 @@ void GUI::on_btn_start_clicked()
 	{
 		motor_init = 1;
 	}
+	timer->start(20); // Timer period controls GUI update frequency
 }
 
 void GUI::on_btn_stop_clicked()
@@ -231,16 +233,6 @@ void GUI::on_btn_set_params_clicked()
 		ui.halt_lim_box->value());
 }
 
-void GUI::onMpcIteration() {
-	mpcThread->mutexMPC.lock();
-	time = mpcThread->vars0.time;
-	plot_vars = mpcThread->vars0;
-	mpcThread->mutexMPC.unlock();
-	ui.label_3->setText(QString::number(time, 'f', 3));
-	addPoints(plot_vars);
-	plot();
-}
-
 void GUI::onGUIPrint(QString message)
 {
 	ui.plainTextEdit->insertPlainText(message);
@@ -248,5 +240,14 @@ void GUI::onGUIPrint(QString message)
 
 void GUI::onTimeout()
 {
-	onGUIPrint("Timeout");
+	mpcThread->mutex.lock();
+	plot_vars = mpcThread->vars0;
+	if (mpc_complete) {
+		timer->stop();
+	}
+	mpcThread->mutex.unlock();
+
+	ui.label_3->setText(QString::number(plot_vars.time, 'f', 3));
+	addPoints(plot_vars);
+	plot();
 }

@@ -16,7 +16,7 @@ public:
 	void plot();
 	MPCThread *mpcThread;
 	MotorThread *motorThread;
-
+	QTimer *timer;
 private:
 	Ui::GUIClass ui;
 	double t_span = 4;
@@ -29,8 +29,6 @@ private:
 
 	double time;
 	plotVars plot_vars;
-	QMutex mutex;
-
 
 private slots:
 	void on_btn_start_clicked();
@@ -38,7 +36,6 @@ private slots:
 	void on_btn_set_params_clicked();
 
 public slots:
-	void onMpcIteration();
 	void onGUIPrint(QString);
 	void onTimeout();
 };
