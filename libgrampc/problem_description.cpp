@@ -95,7 +95,7 @@ extern "C"
 		ctypeRNum M = x[3];
 
 		out[0] = M * w_theta * POW2((x[0] - xdes[0])) +
-			w_tau * POW2((u[0] - udes[0]));
+			w_tau / M * POW2((u[0] - udes[0]));
 	}
 	void dldx(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *xdes, ctypeRNum *udes, typeUSERPARAM* userparam)
 	{
@@ -109,8 +109,9 @@ extern "C"
 	{
 		ctypeRNum *pCost = (ctypeRNum*)userparam;
 		ctypeRNum w_tau = pCost[5];
+		ctypeRNum M = x[3];
 
-		out[0] = 2 * w_tau * (u[0] - udes[0]);
+		out[0] = 2 * w_tau / M * (u[0] - udes[0]);
 	}
 	void dldp(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *xdes, ctypeRNum *udes, typeUSERPARAM* userparam)
 	{

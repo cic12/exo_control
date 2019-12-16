@@ -116,8 +116,10 @@ void MPCThread::aiSimProcess(char emg_string[]) {
 	for (int i = 0; i < len; i++) {
 		aivec.append(wordList.at(i).toDouble());
 		aivec1.append(wordList1.at(i).toDouble());
-		AImvec.append(lowpass1(abs(highpass1(aivec[i]))));
-		AImvec1.append(lowpass2(abs(highpass2(aivec1[i]))));
+		//AImvec.append(lowpass1(abs(highpass1(aivec[i]))));
+		//AImvec1.append(lowpass2(abs(highpass2(aivec1[i]))));
+		AImvec.append(aivec[i]);
+		AImvec1.append(aivec1[i]);
 		aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 	}
 }
@@ -164,7 +166,7 @@ void MPCThread::mpc_init(char emg_string[]) {
 }
 
 void MPCThread::mpc_loop() {
-	this->usleep(500);
+	this->usleep(100);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -189,8 +191,11 @@ void MPCThread::mpc_loop() {
 
 		// Setpoint
 		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		mpc0.xdes[1] = (mpc0.xdes[0] - xdes_previous) / mpc0.dt;
 
 		grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
+		xdes_previous = mpc0.xdes[0];
+
 		// Grampc
 		grampc_run(grampc_);
 		if (grampc_->sol->status > 0) {
@@ -275,7 +280,7 @@ void MPCThread::controlFunctions(fisParams fis) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), grampc_->sol->xnext[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
 	}
 }
 
@@ -303,7 +308,7 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "../res/emgs/emgEA.csv";
+	char emg_data[] = "../res/emgs/emgFA.csv";
 	mpc_init(emg_data);
 
 	while (!motor_init);

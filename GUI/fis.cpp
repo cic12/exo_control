@@ -32,7 +32,7 @@ double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double 
 	lambdaR = rule[2] + rule[3];
 
 	if (lambdaR > halt_lim) { // halt_lim should evaluate tau_h alone or with a vaiable that isn't dtheta as halting reduces lambdaR
-		haltMode = 1;
+		//haltMode = 1;
 	}
 	else {
 		haltMode = 0;

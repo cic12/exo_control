@@ -34,7 +34,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double Tsim = 10.0, dt = 0.002;
+	const double Tsim = 20.0, dt = 0.002;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
@@ -52,14 +52,14 @@ struct modelParams {
 	double A = 0.0000 + A_h[test0.Human];
 	double tau_g = 1.7536 + tau_g_h[test0.Human];
 			
-	double w_theta = 100000, w_tau = 20; // max 100000
+	double w_theta = 100000, w_tau = 10; // max 100000
 	double x1min = 0.1, x1max = 1.3, x2min = -0.5, x2max = 0.5, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 
-struct fisParams
-{
-	double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
+struct fisParams {
+	//double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
+	double b1 = 0, b2 = 1436.6400/2, b3 = -619.9339/2;
 	double sig_hN = 5, c_hN = -7.5, sig_hP = 15, c_hP = 30;
 	double sig_eN = 0.4, c_eN = -1, sig_eP = 0.4, c_eP = 1;  // using dtheta
 	double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.085, c_e = 0.02, halt_lim = 0.2; // using ddtheta
@@ -103,7 +103,7 @@ public:
 	void print2Files();
 private:
 	int i, vec_i;
-	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.01;
+	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.05, xdes_previous = 0.2, xdes1_previous = 0.0;
 	double t = 0.0, t_halt = 0.0;
 	double task_count = 0, time_counter = 1;
 	clock_t this_time, last_time, start_time, end_time;

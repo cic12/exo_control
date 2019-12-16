@@ -65,10 +65,10 @@ GUI::GUI(QWidget *parent)
 	ui.plot3->graph(1)->setPen(QPen(Qt::red));
 
 	ui.plot4->addGraph();
-	ui.plot4->graph(0)->setPen(QPen(Qt::blue));
+	ui.plot4->graph(0)->setPen(QPen(Qt::black));
 
 	ui.plot5->addGraph();
-	ui.plot5->graph(0)->setPen(QPen(Qt::blue));
+	ui.plot5->graph(0)->setPen(QPen(Qt::black));
 
 	// axes settings
 	ui.plot->xAxis->setAutoTickStep(false);
