@@ -9,6 +9,7 @@
 using namespace QtCharts;
 
 int main(int argc, char *argv[]) {
+	SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	QApplication a(argc, argv);
 	GUI w;
 	w.show();

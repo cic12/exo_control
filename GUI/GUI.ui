@@ -849,7 +849,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QChart" name="chart" native="true">
+   <widget class="QWidget" name="chart" native="true">
     <property name="geometry">
      <rect>
       <x>200</x>
@@ -886,12 +886,6 @@
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
    <header>qcustomplot.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QChart</class>
-   <extends>QWidget</extends>
-   <header>qchart.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

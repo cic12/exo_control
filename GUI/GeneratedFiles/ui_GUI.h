@@ -20,7 +20,6 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
-#include "qchart.h"
 #include "qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
@@ -81,7 +80,7 @@ public:
     QLabel *label_25;
     QLabel *label_26;
     QPlainTextEdit *plainTextEdit;
-    QChart *chart;
+    QWidget *chart;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -325,7 +324,7 @@ public:
         plainTextEdit->setEnabled(false);
         plainTextEdit->setGeometry(QRect(10, 520, 171, 241));
         plainTextEdit->setReadOnly(true);
-        chart = new QChart(centralWidget);
+        chart = new QWidget(centralWidget);
         chart->setObjectName(QString::fromUtf8("chart"));
         chart->setGeometry(QRect(200, 710, 501, 101));
         GUIClass->setCentralWidget(centralWidget);
