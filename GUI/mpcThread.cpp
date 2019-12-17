@@ -219,6 +219,9 @@ void MPCThread::mpc_loop() {
 			else if (test0.Device == 1) {
 				grampc_->sol->xnext[0] = currentPosition - M_PI / 8 + M_PI / 2;
 			}
+			if (iMPC == 0) {
+				previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
+			}
 			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
 			currentAcceleration = (grampc_->sol->xnext[1] - previousVelocity) / mpc0.dt; // USE DESIRED ACC INSTEAD

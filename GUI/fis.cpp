@@ -11,15 +11,14 @@ double gaussmf(double x, double sig, double c) {
 	return exp(-((x - c)*(x - c))/(2*sig*sig));
 }
 
-double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
+double assistanceMode(double Tau_h, double dtheta_des, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
 
 	// USE DDTHETA INSTEAD OF DTHETA
 	double sig_hN = 5, c_hN = -7.5, sig_hP = 15, c_hP = 30;
-	double sig_eN = 0.4, c_eN = -1, sig_eP = 0.4, c_eP = 1;  // using dtheta
-	//double sig_eN = 0.0140, c_eN = -0.0177, sig_eP = 0.0152, c_eP = 0.0169;  // using ddtheta
-	
-	mu[0] = gaussmf(dtheta, sig_eN, c_eN); // dtheta N
-	mu[1] = gaussmf(dtheta, sig_eP, c_eP); // dtheta P
+	double sig_eN = 0.4, c_eN = -1, sig_eP = 0.4, c_eP = 1;  // using dtheta_des
+
+	mu[0] = gaussmf(dtheta_des, sig_eN, c_eN); // dtheta N
+	mu[1] = gaussmf(dtheta_des, sig_eP, c_eP); // dtheta P
 	mu[2] = gaussmf(Tau_h, sig_hN, c_hN); // Tau_h N
 	mu[3] = gaussmf(Tau_h, sig_hP, c_hP); // Tau_h P
 
