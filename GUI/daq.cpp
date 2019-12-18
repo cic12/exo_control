@@ -3,7 +3,7 @@
 char errBuff[2048] = { '\0' };
 int32 error = 0;
 ofstream aiFile;
-float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { -2.325 , -2.340 };
+float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { -0 , -0 };
 
 struct lowpass_para {
 	double x[3];
@@ -87,11 +87,29 @@ double highpass2(double X_in)
 	return high_para2.y[0];
 }
 
+//TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
+//
+//	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
+//	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "EMG1", DAQmx_Val_RSE, -0.1, 0.1 , DAQmx_Val_Volts, NULL));
+//	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "EMG2", DAQmx_Val_RSE, -0.1, 0.1 , DAQmx_Val_Volts, NULL));
+//	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
+//	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
+//
+//Error:
+//	if (DAQmxFailed(error)) {
+//		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+//		DAQmxStopTask(AItaskHandle);
+//		DAQmxClearTask(AItaskHandle);
+//		throw errBuff;
+//	}
+//	return AItaskHandle;
+//}
+
 TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle) {
 
 	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "EMG1", DAQmx_Val_RSE, -1, 5, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "EMG2", DAQmx_Val_RSE, -1, 5 , DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "ai0diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "ai1diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", 500, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
 	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
 
@@ -117,8 +135,7 @@ Error:
 		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
 		DAQmxStopTask(AOtaskHandle);
 		DAQmxClearTask(AOtaskHandle);
-		//printf("DAQmx Error: %s\n", errBuff);
-		//throw errBuff;
+		throw errBuff;
 	}
 	return AOtaskHandle;
 }

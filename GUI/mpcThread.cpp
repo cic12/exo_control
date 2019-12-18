@@ -150,8 +150,8 @@ void MPCThread::mpc_init(char emg_string[]) {
 	if (!test0.aiSim) {
 		try {
 			AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
-			AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
-			AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
+			//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
+			//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
 			AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 		}
 		catch (char* msg) {
