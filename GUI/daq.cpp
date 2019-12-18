@@ -180,7 +180,7 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	AIdata[0] += offset[0];
 	AIdata[1] += offset[1];
 
-	double lim = 2.0;
+	double lim = 0.1;
 	AIdata[0] = limEMG(AIdata[0], lim);
 	AIdata[1] = limEMG(AIdata[1], lim);
 

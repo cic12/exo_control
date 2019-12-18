@@ -141,7 +141,7 @@ void MPCThread::mpc_init(char emg_string[]) {
 		mpc0.ScaleProblem,
 		mpc0.AugLagUpdateGradientRelTol,
 		mpc0.ConstraintsAbsTol);
-	mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
+	
 
 	filesInit();
 
@@ -160,6 +160,8 @@ void MPCThread::mpc_init(char emg_string[]) {
 	}
 
 	emit GUIPrint("Init Complete\n");
+
+	mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
 
 	last_time = clock();
 	start_time = last_time;
