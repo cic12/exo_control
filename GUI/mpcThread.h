@@ -24,9 +24,9 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, aiSim = 0, tauEst = 1, Mode = 1;
-	int Device = 1; // 0 - None, 1 - HEBI, 2 - Maxon
-	int Human = 0; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
+	bool Sim = 0, aiSim = 1, tauEst = 0, Mode = 0;
+	int Device = 0; // 0 - None, 1 - HEBI, 2 - Maxon
+	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
 }; extern testParams test0;
 
 struct mpcParams {
@@ -52,8 +52,8 @@ struct modelParams {
 	double A = 0.0000 + A_h[test0.Human];
 	double tau_g = 1.7536 + tau_g_h[test0.Human];
 			
-	double w_theta = 10000, w_tau = 25;
-	double x1min = 0.1, x1max = 1.3, x2min = -0.5, x2max = 0.5, umin = -20, umax = 20;
+	double w_theta = 80000, w_tau = 50;
+	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 

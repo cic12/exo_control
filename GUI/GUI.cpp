@@ -84,12 +84,12 @@ GUI::GUI(QWidget *parent)
 	ui.plot2->xAxis->setAutoTickStep(false);
 	ui.plot2->xAxis->setTickStep(1);
 	ui.plot2->yAxis->setAutoTickStep(false);
-	ui.plot2->yAxis->setTickStep(0.1);
+	ui.plot2->yAxis->setTickStep(1);
 
 	ui.plot3->xAxis->setAutoTickStep(false);
 	ui.plot3->xAxis->setTickStep(1);
 	ui.plot3->yAxis->setAutoTickStep(false);
-	ui.plot3->yAxis->setTickStep(0.1);
+	ui.plot3->yAxis->setTickStep(1);
 
 	ui.plot4->xAxis->setAutoTickStep(false);
 	ui.plot4->xAxis->setTickStep(1);
@@ -148,10 +148,10 @@ void GUI::addPoints(plotVars vars)
 	ui.plot1->graph(2)->addData(vars.time, vars.u + vars.hTauEst);
 
 	ui.plot2->graph(0)->addData(vars.time, vars.AIdata0);
-	ui.plot2->graph(1)->addData(vars.time, vars.AIm0);
+	ui.plot2->graph(1)->addData(vars.time, vars.AIm0*10);
 
 	ui.plot3->graph(0)->addData(vars.time, vars.AIdata1);
-	ui.plot3->graph(1)->addData(vars.time, vars.AIm1);
+	ui.plot3->graph(1)->addData(vars.time, vars.AIm1*10);
 
 	ui.plot4->graph(0)->addData(vars.time, vars.lambdaA);
 
