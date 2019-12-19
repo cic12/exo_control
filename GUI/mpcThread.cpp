@@ -97,7 +97,7 @@ void MPCThread::configFiles(char emg_string[]) {
 	openFile(&file_rule, "../res/rule.txt");
 }
 
-void MPCThread::aiSimProcess(char emg_string[]) {
+void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
 	QFile myQfile(emg_string);
 	if (!myQfile.open(QIODevice::ReadOnly)) {
 		return;
@@ -110,16 +110,15 @@ void MPCThread::aiSimProcess(char emg_string[]) {
 		wordList1.append(line.split(',').at(1));
 	}
 
-	aiFile << aivec[0] << "," << aivec1[0] << "," << AImvec[0] << "," << AImvec1[0] << "\n";
-	
 	int len = wordList.length();
+
 	for (int i = 0; i < len; i++) {
 		aivec.append(wordList.at(i).toDouble());
 		aivec1.append(wordList1.at(i).toDouble());
-		//AImvec.append(lowpass1(abs(highpass1(aivec[i]))));
-		//AImvec1.append(lowpass2(abs(highpass2(aivec1[i]))));
-		AImvec.append(aivec[i]);
-		AImvec1.append(aivec1[i]);
+
+		AImvec.append(emgProcess(aivec[i],0));
+		AImvec1.append(emgProcess(aivec1[i],1));
+
 		aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 	}
 }
@@ -149,7 +148,7 @@ void MPCThread::mpc_init(char emg_string[]) {
 	
 	if (!test0.aiSim) {
 		try {
-			AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle);
+			AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, mpc0.AIsamplingRate);
 			//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
 			//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
 			AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
@@ -313,7 +312,7 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "../res/emgs/emgFA.csv";
+	char emg_data[] = "../res/emgs/ai_blank_shake_contract.csv";
 	mpc_init(emg_data);
 
 	while (!motor_init);
