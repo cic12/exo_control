@@ -134,6 +134,8 @@ GUI::GUI(QWidget *parent)
 	ui.sig_e_box->setValue(mpcThread->fis0.sig_e);
 	ui.c_e_box->setValue(mpcThread->fis0.c_e);
 	ui.halt_lim_box->setValue(mpcThread->fis0.halt_lim);
+
+	TMSiController tmsi;
 }
 
 void GUI::addPoints(plotVars vars)

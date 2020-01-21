@@ -14,8 +14,7 @@
 #include "fis.h"
 #include "daq.h"
 #include "mpc.h"
-
-//#include "mpcTimer.h"
+#include "tmsicontroller.h"
 
 #define NX    	4
 #define NU  	1

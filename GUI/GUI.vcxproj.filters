@@ -57,6 +57,9 @@
     <ClCompile Include="motorThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tmsicontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GUI.h">
@@ -93,6 +96,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mpc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tmsicontroller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
