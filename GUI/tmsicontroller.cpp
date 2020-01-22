@@ -8,7 +8,19 @@ TMSiController::TMSiController()
 	bool connected = connect();
 	bool getFormat = getSignalFormatCall();
 	int* signaltypes = queryPortTypes();
-	bool sampleRate = setSampleRate(MAX_SAMPLE_RATE);
+	setSampleRate(MAX_SAMPLE_RATE);
+	ULONG sampleRate = getSampleRate();
+	QString filePath = generateFilePath();
+	bool streamStarted = startStream();
+	Sleep(100);
+	bool createRecording = createRecordingFile(filePath);
+	for (long int i = 0; i < 5000; i++) {
+		addRecordingLine(currentReadTime, currentSample);
+		Sleep(1);
+	}
+	bool recordingEnded = endRecordingFile();
+	bool streamEnded = endStream();
+	reset();
 }
 
 bool TMSiController::locateDLL()
@@ -137,15 +149,19 @@ QString TMSiController::generateFilePath()
 
 	QString sessionString = "session_" + settings.value("boot-time").toString();
 	QString session = settings.value("session").toString() == "_NONE_" ? sessionString : settings.value("session").toString();
+
 	QString fullPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "//TMSiLite//" + project + "//" + session;
-	if (!QDir().exists(fullPath))
-		qDebug() << QDir().mkdir(fullPath);
-	QString patient = settings.value("patient").toString() == "_NONE_" ? "NoPatient" : settings.value("patient").toString();
 
-	fullPath += "//" + patient;
-	QDir().mkdir(fullPath);
+	//fullPath += nowString; // ADDED
 
-	fullPath += "//" + recording + ".csv";
+	//if (!QDir().exists(fullPath))
+		//qDebug() << QDir().mkdir(fullPath);
+	//QString patient = settings.value("patient").toString() == "_NONE_" ? "NoPatient" : settings.value("patient").toString();
+
+	//fullPath += "//" + patient;
+	//Dir().mkdir(fullPath);
+
+	fullPath += "//test.csv";
 	qDebug() << fullPath;
 	return fullPath;
 }
@@ -257,7 +273,6 @@ bool TMSiController::createRecordingFile(QString fileName)
 		}
 	}
 
-
 	QFile file(fileName);
 	file.open(QFile::ReadWrite);
 	writeStream.open(utf8_text);
@@ -266,7 +281,7 @@ bool TMSiController::createRecordingFile(QString fileName)
 	writeStream << "TIME(ms),";
 	for (int i = 0; i < 32; i++)
 	{
-		QString name = "not defined";//names[i];
+		QString name = "<name>";//names[i];
 		writeStream << name.toLatin1().data() << ",";
 	}
 	writeStream << std::endl;
