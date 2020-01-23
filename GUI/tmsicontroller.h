@@ -76,6 +76,7 @@ private:
 	int previousSaw = 63;
 	QVector<int> *record = new QVector<int>();
 	bool safeStart = true;
+	bool createdRecording = false;
 
 	PLIBRARYINIT libraryInit;
 	PGETDEVICELIST getDeviceList;

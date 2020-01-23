@@ -12,12 +12,12 @@ TMSiController::TMSiController()
 	ULONG sampleRate = getSampleRate();
 	QString filePath = generateFilePath();
 	bool streamStarted = startStream();
+	bool refCalc = setRefCalculation(1);
 	Sleep(100);
-	bool createRecording = createRecordingFile(filePath);
-	for (long int i = 0; i < 5000; i++) {
-		addRecordingLine(currentReadTime, currentSample);
-		Sleep(1);
-	}
+	createdRecording = createRecordingFile(filePath);
+
+	Sleep(20000);
+
 	bool recordingEnded = endRecordingFile();
 	bool streamEnded = endStream();
 	reset();
@@ -229,6 +229,9 @@ void TMSiController::streamProcess()
 				timeStampsC.push_back(currentReadTime.load());
 
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
+				if (createdRecording) {
+					addRecordingLine(currentReadTime, currentSample);
+				}
 			}
 		}
 	}
