@@ -10,17 +10,17 @@ TMSiController::TMSiController()
 	int* signaltypes = queryPortTypes();
 	setSampleRate(MAX_SAMPLE_RATE);
 	ULONG sampleRate = getSampleRate();
-	QString filePath = generateFilePath();
-	bool streamStarted = startStream();
-	bool refCalc = setRefCalculation(1);
-	Sleep(100);
-	createdRecording = createRecordingFile(filePath);
+	//filePath = generateFilePath();
+	//bool streamStarted = startStream();
+	//bool refCalc = setRefCalculation(1);
+	//Sleep(100);
+	//createdRecording = createRecordingFile(filePath);
 
-	Sleep(20000);
+	//Sleep(20000);
 
-	bool recordingEnded = endRecordingFile();
-	bool streamEnded = endStream();
-	reset();
+	//bool recordingEnded = endRecordingFile();
+	//bool streamEnded = endStream();
+	//reset();
 }
 
 bool TMSiController::locateDLL()
@@ -228,9 +228,17 @@ void TMSiController::streamProcess()
 				}
 				timeStampsC.push_back(currentReadTime.load());
 
+				AIdata[0] = (double)currentSample[16] / 1000;
+				AIdata[1] = (double)currentSample[17] / 1000;
+
+				AIm[0] = emgProcess(AIdata[0], 0);
+				AIm[1] = emgProcess(AIdata[1], 1);
+
+				aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
+
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
 				if (createdRecording) {
-					addRecordingLine(currentReadTime, currentSample);
+					//addRecordingLine(currentReadTime, currentSample);
 				}
 			}
 		}

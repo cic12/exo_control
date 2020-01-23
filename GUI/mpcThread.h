@@ -23,7 +23,7 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, aiSim = 1, tauEst = 0, Mode = 0;
+	bool Sim = 1, aiSim = 0, tauEst = 0, Mode = 0;
 	int Device = 0; // 0 - None, 1 - HEBI, 2 - Maxon
 	int Human = 0; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
 }; extern testParams test0;
@@ -33,7 +33,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double Tsim = 20.0, dt = 0.002;
+	const double Tsim = 4.0, dt = 0.002;
 	const int AIsamplingRate = 10000;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
@@ -110,6 +110,8 @@ private:
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	typeGRAMPC *grampc_;
 	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
+
+	TMSiController *TMSi;
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
 signals:

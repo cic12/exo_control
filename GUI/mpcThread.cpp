@@ -33,7 +33,6 @@ void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_th
 }
 
 void MPCThread::configFiles(char emg_string[]) {
-	
 	aiFile.open("../res/ai.txt");
 	if (test0.aiSim) {
 		aiSimProcess(emg_string);
@@ -147,15 +146,19 @@ void MPCThread::mpc_init(char emg_string[]) {
 	configFiles(emg_string);
 	
 	if (!test0.aiSim) {
-		try {
-			AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, mpc0.AIsamplingRate);
+		//try {
+			//AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, mpc0.AIsamplingRate);
 			//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
 			//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
-			AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
-		}
-		catch (char* msg) {
-			//GUIPrint("DAQmx Error:"+QString(msg)); // not currently reached
-		}
+			//AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
+		TMSi->startStream();
+		TMSi->setRefCalculation(1);
+
+		//TMSi->createdRecording = TMSi->createRecordingFile(TMSi->filePath);
+		//}
+		//catch (char* msg) {
+		//	//GUIPrint("DAQmx Error:"+QString(msg)); // not currently reached
+		//}
 	}
 
 	emit GUIPrint("Init Complete\n");
@@ -164,6 +167,34 @@ void MPCThread::mpc_init(char emg_string[]) {
 
 	last_time = clock();
 	start_time = last_time;
+}
+
+void MPCThread::mpc_stop() {
+	end_time = clock();
+	double duration = (double)(end_time - start_time);
+	if (!test0.aiSim) {
+		//if (AItaskHandle != 0) {
+		//	DAQmxStopTask(AItaskHandle);
+		//	DAQmxClearTask(AItaskHandle);
+		//}
+		//if (AOtaskHandle != 0) {
+		//	DAQmxStopTask(AOtaskHandle);
+		//	DAQmxClearTask(AOtaskHandle);
+		//}
+		//TMSi->endRecordingFile();
+		TMSi->endStream();
+		TMSi->reset();
+	}
+	Stop = 1;
+	mpc_complete = 1;
+	grampc_free(&grampc_);
+	aiFile.close();
+	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
+	if (test0.Device == 2) {
+		closeDevice();
+	}
+	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
+	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0) + "\n");
 }
 
 void MPCThread::mpc_loop() {
@@ -244,31 +275,6 @@ void MPCThread::mpc_loop() {
 	}
 }
 
-void MPCThread::mpc_stop() {
-	end_time = clock();
-	double duration = (double)(end_time - start_time);
-	if (!test0.aiSim) {
-		if (AItaskHandle != 0) {
-			DAQmxStopTask(AItaskHandle);
-			DAQmxClearTask(AItaskHandle);
-		}
-		if (AOtaskHandle != 0) {
-			DAQmxStopTask(AOtaskHandle);
-			DAQmxClearTask(AOtaskHandle);
-		}
-	}
-	Stop = 1;
-	mpc_complete = 1;
-	grampc_free(&grampc_);
-	aiFile.close();
-	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
-	if (test0.Device == 2) {
-		closeDevice();
-	}
-	GUIPrint("Real Duration, ms :"+QString::number(duration, 'f', 0)+"\n");
-	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0)+"\n");
-}
-
 void MPCThread::controlFunctions(fisParams fis) {
 	if (test0.aiSim) {
 		if (t < 20) {
@@ -313,6 +319,7 @@ void MPCThread::print2Files() {
 void MPCThread::run()
 {
 	char emg_data[] = "../res/emgs/ai_blank_shake_contract.csv";
+	TMSi = new TMSiController();
 	mpc_init(emg_data);
 
 	while (!motor_init);

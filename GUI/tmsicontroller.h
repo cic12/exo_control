@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tmsisdk.h"
+#include "daq.h"
 #include <thread>
 #include <QDebug>
 #include <iomanip>
@@ -41,9 +42,9 @@ public:
 	std::atomic<bool> recording;
 	int initialSample = 1;
 	int currentSample[34];
-
+	bool createdRecording = false;
+	QString filePath;
 	QString generateFilePath();
-
 private:
 	void streamProcess();
 
@@ -76,7 +77,6 @@ private:
 	int previousSaw = 63;
 	QVector<int> *record = new QVector<int>();
 	bool safeStart = true;
-	bool createdRecording = false;
 
 	PLIBRARYINIT libraryInit;
 	PGETDEVICELIST getDeviceList;

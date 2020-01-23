@@ -12,9 +12,9 @@ struct filter_para {
 
 double lowpass1(double X_in, int emg)
 {
-	double a1 = -1.647459981076977;
-	double a2 = 0.700896781188403;
-	double k = 0.013359200027856;
+	double a1 = -0.043134450881076;
+	double a2 = 0.171901801714236;
+	double k = 0.282191837708290;
 
 	low_para1.x[0][emg] = X_in;
 
@@ -48,9 +48,9 @@ double lowpass2(double X_in, int emg)
 
 double highpass1(double X_in, int emg)
 {
-	double a1 = -1.982228929792529;
-	double a2 = 0.982385450614125;
-	double k = 0.991153595101664;
+	double a1 = -1.783787708559230;
+	double a2 = 0.804982594421399;
+	double k = 0.897192575745157;
 
 	high_para1.x[0][emg] = X_in;
 
@@ -129,9 +129,9 @@ double noiseLimEMG(double emg, double lim) {
 
 double emgProcess(double AI,int i)
 {
-	double clip1 = 0.002;
-	double clip2 = 0.00005;
-	double clip3 = 0.001;
+	double clip1 = 2;// 0.002;
+	double clip2 = 0.02; // 0.00005;
+	double clip3 = 1.5;// 0.001;
 
 	return lowpass2(abs(clipLimEMG(noiseLimEMG(lowpass1(clipLimEMG(highpass1((AI + offset[i]),i),clip1),i),clip2),clip3)),i);
 }
