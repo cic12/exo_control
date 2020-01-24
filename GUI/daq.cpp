@@ -30,9 +30,9 @@ double lowpass1(double X_in, int emg)
 
 double lowpass2(double X_in, int emg)
 {
-	double a1 = -1.998222847291842;
-	double a2 = 0.998224425026401;
-	double k = 3.944336396943804e-07;
+	double a1 = -1.978307072742137;
+	double a2 = 0.978539852992783;
+	double k = 5.819506266166452e-05;
 
 	low_para2.x[0][emg] = X_in;
 

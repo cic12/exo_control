@@ -23,9 +23,9 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, aiSim = 0, tauEst = 0, Mode = 0;
-	int Device = 0; // 0 - None, 1 - HEBI, 2 - Maxon
-	int Human = 0; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
+	bool Sim = 0, aiSim = 0, tauEst = 0, Mode = 0;
+	int Device = 1; // 0 - None, 1 - HEBI, 2 - Maxon
+	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
 }; extern testParams test0;
 
 struct mpcParams {
@@ -33,7 +33,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double Tsim = 4.0, dt = 0.002;
+	const double Tsim = 24.0, dt = 0.002;
 	const int AIsamplingRate = 10000;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
@@ -52,7 +52,9 @@ struct modelParams {
 	double A = 0.0000 + A_h[test0.Human];
 	double tau_g = 1.7536 + tau_g_h[test0.Human];
 			
-	double w_theta = 1000, w_tau = 50;
+	//double w_theta = 20000, w_tau = 100;
+	double w_theta = 100000, w_tau = 20; // Human
+
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };

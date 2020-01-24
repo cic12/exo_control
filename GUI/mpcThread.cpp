@@ -249,7 +249,7 @@ void MPCThread::mpc_loop() {
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
 			}
 			else if (test0.Device == 1) {
-				grampc_->sol->xnext[0] = currentPosition - M_PI / 8 + M_PI / 2;
+				grampc_->sol->xnext[0] = currentPosition - M_PI / 8 + M_PI / 2 + M_PI;
 			}
 			if (iMPC == 0) {
 				previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
