@@ -10,6 +10,7 @@
 #include <math.h>
 
 #include "ui_GUI.h"
+#include "motorThread.h"
 #include "motor.h"
 #include "fis.h"
 #include "daq.h"
@@ -113,6 +114,7 @@ private:
 	typeGRAMPC *grampc_;
 	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
+	MotorThread *motorThread;
 	TMSiController *TMSi;
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;

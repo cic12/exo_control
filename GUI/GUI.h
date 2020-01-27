@@ -4,7 +4,6 @@
 
 #include "ui_GUI.h"
 #include "mpcThread.h"
-#include "motorThread.h"
 
 class GUI : public QMainWindow
 {
@@ -15,7 +14,6 @@ public:
 	void addPoints(plotVars);
 	void plot();
 	MPCThread *mpcThread;
-	MotorThread *motorThread;
 	QTimer *timer;
 private:
 	Ui::GUIClass ui;

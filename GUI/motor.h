@@ -2,6 +2,7 @@
 #define MOTOR_H_
 
 #include "Definitions.h" // Maxon Epos header
+
 #include "hebi.h"
 #include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
 #include "group_command.hpp" // "

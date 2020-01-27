@@ -5,6 +5,14 @@ testParams test0;
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
+	motorThread = new MotorThread(this);
+	//if (test0.Device > 0) {
+	//	motorThread->start(QThread::LowPriority);
+	//}
+	//else
+	//{
+	//	motor_init = 1;
+	//}
 }
 
 void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
@@ -164,7 +172,15 @@ void MPCThread::mpc_init(char emg_string[]) {
 
 	emit GUIPrint("Init Complete\n");
 
-	mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
+	//mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
+
+	if (test0.Device > 0) {
+		motorThread->start(QThread::LowPriority);
+	}
+	else
+	{
+		motor_init = 1;
+	}
 
 	last_time = clock();
 	start_time = last_time;
@@ -322,6 +338,9 @@ void MPCThread::print2Files() {
 void MPCThread::run()
 {
 	char emg_data[] = "../res/emgs/emgR.csv";
+
+	motorThread = new MotorThread(this);
+
 	if (!test0.aiSim) {
 		TMSi = new TMSiController();
 	}
