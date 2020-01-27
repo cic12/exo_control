@@ -1,5 +1,11 @@
 #include "motorThread.h"
 
+bool mpc_initialised = 0, mpc_complete = 0, motor_init = 0;
+double motor_comms_count = 0;
+double demandedCurrent = 0; // was short
+short inputCurrent = 0;
+double currentPosition = M_PI / 8 - M_PI / 2 - M_PI, homePosition = 0, previousPosition = 0; // was long
+
 MotorThread::MotorThread(QObject *parent)
 	: QThread(parent)
 {

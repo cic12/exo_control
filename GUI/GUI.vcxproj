@@ -219,7 +219,6 @@ xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
     <ClCompile Include="fis.cpp" />
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="motor.cpp" />
     <ClCompile Include="motorThread.cpp" />
     <ClCompile Include="mpc.cpp" />
     <ClCompile Include="mpcThread.cpp" />
@@ -246,7 +245,6 @@ xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClInclude Include="daq.h" />
     <ClInclude Include="fis.h" />
-    <ClInclude Include="motor.h" />
     <ClInclude Include="tmsicontroller.h" />
     <QtMoc Include="qcustomplot.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\hebicpp;.\..\hebicpp\hebi-cpp\src;.\..\hebicpp\hebi-cpp\hebi\include;.\..\hebicpp\hebi-cpp\Eigen;.\..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets</IncludePath>

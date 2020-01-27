@@ -11,7 +11,7 @@
 
 #include "ui_GUI.h"
 #include "motorThread.h"
-#include "motor.h"
+//#include "motor.h"
 #include "fis.h"
 #include "daq.h"
 #include "mpc.h"

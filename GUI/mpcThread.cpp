@@ -207,9 +207,9 @@ void MPCThread::mpc_stop() {
 	aiFile.close();
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
-	if (test0.Device == 2) {
-		closeDevice();
-	}
+	//if (test0.Device == 2) {
+	//	closeDevice();
+	//}
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0) + "\n");
 }

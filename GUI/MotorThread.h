@@ -2,7 +2,6 @@
 
 #include <QThread>
 #include <QMutex>
-#include "motor.h"
 
 #include "hebi.h"
 #include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
@@ -11,6 +10,15 @@
 #include "log_file.hpp" // "
 
 using namespace hebi;
+
+extern double demandedCurrent;
+extern short inputCurrent;
+extern double currentPosition, homePosition, previousPosition;
+
+extern bool mpc_initialised;
+extern bool mpc_complete;
+extern double motor_comms_count;
+extern bool motor_init;
 
 class MotorThread : public QThread
 {
