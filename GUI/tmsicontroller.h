@@ -2,6 +2,7 @@
 
 #include "tmsisdk.h"
 #include "daq.h"
+
 #include <thread>
 #include <QDebug>
 #include <iomanip>

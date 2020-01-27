@@ -321,8 +321,10 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "../res/emgs/ai_blank_shake_contract.csv";
-	TMSi = new TMSiController();
+	char emg_data[] = "../res/emgs/emgR.csv";
+	if (!test0.aiSim) {
+		TMSi = new TMSiController();
+	}
 	mpc_init(emg_data);
 
 	while (!motor_init);
