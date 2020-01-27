@@ -3,11 +3,9 @@
 
 #include "Definitions.h" // Maxon Epos header
 
-#include "hebi.h"
-#include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
-#include "group_command.hpp" // "
-#include "group_feedback.hpp" // "
-#include "log_file.hpp" // "
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 extern double demandedCurrent;
 extern short inputCurrent;

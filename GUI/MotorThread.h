@@ -1,7 +1,8 @@
 #pragma once
 
 #include <QThread>
-#include "mpcThread.h" // For test config and motor refs
+#include <QMutex>
+#include "motor.h"
 
 #include "hebi.h"
 #include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
