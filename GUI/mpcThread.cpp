@@ -33,7 +33,7 @@ void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_th
 }
 
 void MPCThread::configFiles(char emg_string[]) {
-	aiFile.open("../res/ai.txt");
+	aiFile.open("../res/ai_daq.txt");
 	if (test0.aiSim) {
 		aiSimProcess(emg_string);
 	}
@@ -94,6 +94,7 @@ void MPCThread::configFiles(char emg_string[]) {
 	openFile(&file_Ncfct, "../res/cost.txt");
 	openFile(&file_mu, "../res/mu.txt");
 	openFile(&file_rule, "../res/rule.txt");
+	openFile(&file_ai, "../res/rule.txt");
 }
 
 void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
@@ -187,9 +188,9 @@ void MPCThread::mpc_stop() {
 	}
 	Stop = 1;
 	mpc_complete = 1;
-	grampc_free(&grampc_);
 	aiFile.close();
-	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule);
+	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
+	grampc_free(&grampc_);
 	if (test0.Device == 2) {
 		closeDevice();
 	}
@@ -314,6 +315,8 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
 	printNumVector2File(file_mu, mu, 4);
 	printNumVector2File(file_rule, rule, 4);
+	double aiVec[4] = { AIm[0], AIm[1], AIdata[0], AIdata[1] };
+	printNumVector2File(file_ai, aiVec, 4);
 }
 
 void MPCThread::run()

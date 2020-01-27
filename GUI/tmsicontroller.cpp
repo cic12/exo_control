@@ -9,6 +9,7 @@ TMSiController::TMSiController()
 	bool getFormat = getSignalFormatCall();
 	int* signaltypes = queryPortTypes();
 	setSampleRate(MAX_SAMPLE_RATE);
+	//setSampleRate(2000);
 	ULONG sampleRate = getSampleRate();
 	//filePath = generateFilePath();
 	//bool streamStarted = startStream();

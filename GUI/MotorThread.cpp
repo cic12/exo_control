@@ -31,7 +31,7 @@ void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 	GroupCommand group_command(group->size());
 	Eigen::VectorXd efforts(1);
 	GroupFeedback group_feedback(group->size());
-	group->setFeedbackFrequencyHz(500); // Change to 500 Hz
+	group->setFeedbackFrequencyHz(500);
 
 	// Start logging in the background
 	std::string log_path = group->startLog("../res/logs"); // exception handling

@@ -22,8 +22,8 @@ private:
 	double t_span = 4;
 	double ylim[2] = { -2 , 1.4 };
 	double ylim1[2] = { -20 , 20 };
-	double ylim2[2] = { -0.05 , 0.05 };
-	double ylim3[2] = { -0.05 , 0.05 };
+	double ylim2[2] = { 0 , 0.2 };
+	double ylim3[2] = { 0 , 0.2 };
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 

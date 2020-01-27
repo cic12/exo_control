@@ -115,7 +115,7 @@ private:
 
 	TMSiController *TMSi;
 
-	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule;
+	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:
 	void mpcIteration(plotVars);
 	void GUIPrint(QString);
