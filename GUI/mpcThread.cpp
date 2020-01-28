@@ -5,14 +5,18 @@ testParams test0;
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
-	motorThread = new MotorThread(this);
-	//if (test0.Device > 0) {
-	//	motorThread->start(QThread::LowPriority);
-	//}
-	//else
-	//{
-	//	motor_init = 1;
-	//}
+	if (test0.Device > 0) {
+		motorThread = new MotorThread(this);
+		motorThread->start(QThread::LowPriority);
+	}
+	else
+	{
+		motor_init = 1;
+	}
+
+	if (!test0.aiSim) {
+		TMSi = new TMSiController();
+	}
 }
 
 void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
@@ -174,14 +178,6 @@ void MPCThread::mpc_init(char emg_string[]) {
 
 	//mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
 
-	if (test0.Device > 0) {
-		motorThread->start(QThread::LowPriority);
-	}
-	else
-	{
-		motor_init = 1;
-	}
-
 	last_time = clock();
 	start_time = last_time;
 }
@@ -294,7 +290,7 @@ void MPCThread::mpc_loop() {
 
 void MPCThread::controlFunctions(fisParams fis) {
 	if (test0.aiSim) {
-		if (t < 20) {
+		if (t < 24) {
 			AIm[0] = AImvec[iMPC];
 			AIm[1] = AImvec1[iMPC];
 		}
@@ -337,13 +333,8 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "../res/emgs/emgR.csv";
+	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
 
-	motorThread = new MotorThread(this);
-
-	if (!test0.aiSim) {
-		TMSi = new TMSiController();
-	}
 	mpc_init(emg_data);
 
 	while (!motor_init);

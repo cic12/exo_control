@@ -11,7 +11,6 @@
 
 #include "ui_GUI.h"
 #include "motorThread.h"
-//#include "motor.h"
 #include "fis.h"
 #include "daq.h"
 #include "mpc.h"
@@ -24,9 +23,9 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, aiSim = 1, tauEst = 0, Mode = 0;
-	int Device = 0; // 0 - None, 1 - HEBI, 2 - Maxon
-	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
+	bool Sim = 0, aiSim = 1, tauEst = 0, Mode = 0;
+	int Device = 1; // 0 - None, 1 - HEBI, 2 - Maxon
+	int Human = 0; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
 }; extern testParams test0;
 
 struct mpcParams {
@@ -53,8 +52,8 @@ struct modelParams {
 	double A = 0.0000 + A_h[test0.Human];
 	double tau_g = 1.7536 + tau_g_h[test0.Human];
 			
-	//double w_theta = 20000, w_tau = 100;
-	double w_theta = 100000, w_tau = 20; // Human
+	double w_theta = 200, w_tau = 100;
+	//double w_theta = 100000, w_tau = 20; // Human
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
@@ -62,7 +61,7 @@ struct modelParams {
 
 struct fisParams {
 	//double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
-	double b1 = 0, b2 = 1436.6400/2, b3 = -619.9339/2;
+	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
 	double sig_hN = 5, c_hN = -7.5, sig_hP = 15, c_hP = 30;
 	double sig_eN = 0.4, c_eN = -1, sig_eP = 0.4, c_eP = 1;  // using dtheta
 	double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.085, c_e = 0.02, halt_lim = 0.2; // using ddtheta
@@ -121,7 +120,4 @@ private:
 signals:
 	void mpcIteration(plotVars);
 	void GUIPrint(QString);
-
-//public slots:
-	//void mpc_plot();
 };
