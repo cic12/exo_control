@@ -29,7 +29,8 @@ public:
 	void run();
 
 private:
-	//std::shared_ptr<hebi::Group> group;
+	Lookup lookup;
+	std::shared_ptr<hebi::Group> group;
 	//GroupCommand *group_command;
 	//GroupFeedback *group_feedback;
 	//Eigen::VectorXd efforts;

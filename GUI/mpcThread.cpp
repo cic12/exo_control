@@ -5,9 +5,8 @@ testParams test0;
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
-	if (test0.Device > 0) {
+	if (test0.Device) {
 		motorThread = new MotorThread(this);
-		motorThread->start(QThread::LowPriority);
 	}
 	else
 	{
@@ -174,11 +173,6 @@ void MPCThread::mpc_init(char emg_string[]) {
 	}
 
 	emit GUIPrint("Init Complete\n");
-
-	//mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
-
-	last_time = clock();
-	start_time = last_time;
 }
 
 void MPCThread::mpc_stop() {
@@ -254,10 +248,7 @@ void MPCThread::mpc_loop() {
 			plantSim();
 		}
 		else {
-			if (test0.Device == 2) {
-				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-			}
-			else if (test0.Device == 1) {
+			if (test0.Device) {
 				grampc_->sol->xnext[0] = currentPosition - 0.125 * M_PI - 0.5 * M_PI;
 			}
 			if (iMPC == 0) {
@@ -331,10 +322,14 @@ void MPCThread::run()
 {
 	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
 
-	mpc_init(emg_data);
+	motorThread->start(QThread::LowPriority);
 
+	mpc_init(emg_data);
+	
 	while (!motor_init);
 	
+	last_time = clock();
+	start_time = last_time;
 	while (!Stop && t < mpc0.Tsim) {
 		
 		mpc_loop();
