@@ -321,7 +321,7 @@ void MPCThread::print2Files() {
 
 void MPCThread::run()
 {
-	char emg_data[] = "../res/emgs/emgR.csv";
+	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
 	if (!test0.aiSim) {
 		TMSi = new TMSiController();
 	}
