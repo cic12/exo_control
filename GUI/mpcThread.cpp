@@ -5,6 +5,16 @@ testParams test0;
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
+	if (test0.Device) {
+		motorThread = new MotorThread(this);
+	}
+	else
+	{
+		motor_init = 1;
+	}
+	if (!test0.aiSim) {
+		TMSi = new TMSiController();
+	}
 }
 
 void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
@@ -163,11 +173,6 @@ void MPCThread::mpc_init(char emg_string[]) {
 	}
 
 	emit GUIPrint("Init Complete\n");
-
-	mpc_initialised = 1; //RESET MODEL PARAMS HERE???? ALSO INTRODUCE MODEL UNCERTAINTY FOR SIM?
-
-	last_time = clock();
-	start_time = last_time;
 }
 
 void MPCThread::mpc_stop() {
@@ -191,9 +196,9 @@ void MPCThread::mpc_stop() {
 	aiFile.close();
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
-	if (test0.Device == 2) {
-		closeDevice();
-	}
+	//if (test0.Device == 2) {
+	//	closeDevice();
+	//}
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0) + "\n");
 }
@@ -236,21 +241,15 @@ void MPCThread::mpc_loop() {
 				qDebug() << "at iteration %i:\n -----\n" << iMPC;
 			}
 		}
-		if (test0.Device == 2) {
-			demandedCurrent = *grampc_->sol->unext * 170;
-		}
-		else if (test0.Device == 1) {
+		if (test0.Device) {
 			demandedCurrent = *grampc_->sol->unext;
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
 			plantSim();
 		}
 		else {
-			if (test0.Device == 2) {
-				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
-			}
-			else if (test0.Device == 1) {
-				grampc_->sol->xnext[0] = currentPosition - M_PI / 8 + M_PI / 2 + M_PI;
+			if (test0.Device) {
+				grampc_->sol->xnext[0] = currentPosition - 0.125 * M_PI - 0.5 * M_PI;
 			}
 			if (iMPC == 0) {
 				previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
@@ -278,7 +277,7 @@ void MPCThread::mpc_loop() {
 
 void MPCThread::controlFunctions(fisParams fis) {
 	if (test0.aiSim) {
-		if (t < 20) {
+		if (t < 24) {
 			AIm[0] = AImvec[iMPC];
 			AIm[1] = AImvec1[iMPC];
 		}
@@ -322,13 +321,15 @@ void MPCThread::print2Files() {
 void MPCThread::run()
 {
 	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
-	if (!test0.aiSim) {
-		TMSi = new TMSiController();
-	}
-	mpc_init(emg_data);
 
+	motorThread->start(QThread::LowPriority);
+
+	mpc_init(emg_data);
+	
 	while (!motor_init);
 	
+	last_time = clock();
+	start_time = last_time;
 	while (!Stop && t < mpc0.Tsim) {
 		
 		mpc_loop();

@@ -45,9 +45,6 @@
     <ClCompile Include="fis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="motor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mpc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -90,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fis.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="motor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mpc.h">

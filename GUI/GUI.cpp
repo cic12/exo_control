@@ -109,7 +109,6 @@ GUI::GUI(QWidget *parent)
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 
 	mpcThread = new MPCThread(this);
-	motorThread = new MotorThread(this);
 
 	timer = new QTimer(this);
 	timer->setTimerType(Qt::PreciseTimer);
@@ -197,13 +196,6 @@ void GUI::plot()
 void GUI::on_btn_start_clicked()
 {
 	mpcThread->start(QThread::NormalPriority);
-	if (test0.Device > 0) {
-		motorThread->start(QThread::LowPriority);
-	}
-	else
-	{
-		motor_init = 1;
-	}
 	timer->start(20); // Timer period controls GUI update frequency
 }
 
