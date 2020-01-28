@@ -13,7 +13,6 @@ MPCThread::MPCThread(QObject *parent)
 	{
 		motor_init = 1;
 	}
-
 	if (!test0.aiSim) {
 		TMSi = new TMSiController();
 	}
@@ -248,10 +247,7 @@ void MPCThread::mpc_loop() {
 				qDebug() << "at iteration %i:\n -----\n" << iMPC;
 			}
 		}
-		if (test0.Device == 2) {
-			demandedCurrent = *grampc_->sol->unext * 170;
-		}
-		else if (test0.Device == 1) {
+		if (test0.Device) {
 			demandedCurrent = *grampc_->sol->unext;
 		}
 		if (test0.Sim) { // Heun scheme // Convert to Sim function
@@ -262,7 +258,7 @@ void MPCThread::mpc_loop() {
 				grampc_->sol->xnext[0] = (double)currentPosition / 168000.f + M_PI / 2; // EICOSI
 			}
 			else if (test0.Device == 1) {
-				grampc_->sol->xnext[0] = currentPosition - M_PI / 8 + M_PI / 2 + M_PI;
+				grampc_->sol->xnext[0] = currentPosition - 0.125 * M_PI - 0.5 * M_PI;
 			}
 			if (iMPC == 0) {
 				previousPosition = grampc_->sol->xnext[0]; // takes initial position into account

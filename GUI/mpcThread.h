@@ -52,7 +52,7 @@ struct modelParams {
 	double A = 0.0000 + A_h[test0.Human];
 	double tau_g = 1.7536 + tau_g_h[test0.Human];
 			
-	double w_theta = 200, w_tau = 100;
+	double w_theta = 2000, w_tau = 20;
 	//double w_theta = 100000, w_tau = 20; // Human
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;

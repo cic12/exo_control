@@ -4,7 +4,7 @@ bool mpc_initialised = 0, mpc_complete = 0, motor_init = 0;
 double motor_comms_count = 0;
 double demandedCurrent = 0; // was short
 short inputCurrent = 0;
-double currentPosition = M_PI / 8 - M_PI / 2 - M_PI, homePosition = 0, previousPosition = 0; // was long
+double currentPosition = 0, homePosition = 0, previousPosition = 0; // was long
 
 MotorThread::MotorThread(QObject *parent)
 	: QThread(parent)
@@ -12,19 +12,6 @@ MotorThread::MotorThread(QObject *parent)
 }
 
 void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
-	//if (test0.Device == 2) { 
-	//	openDevice();
-	//	long home = homePosition;
-	//	definePosition(home); // Mini rig
-	//	currentMode();
-	//	long pos;
-	//	getCurrentPosition(pos);
-	//	currentPosition = pos;
-	//	previousPosition = currentPosition / 168000.f + M_PI / 2;
-	//}
-	//else if (test0.Device == 1) { // statement requires mutex for syncing
-		//Get group
-
 	Lookup lookup;
 	auto group = lookup.getGroupFromNames({ "X8-9" }, { "X-80768" });
 	if (!group) {
