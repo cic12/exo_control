@@ -23,8 +23,8 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, aiSim = 1, tauEst = 0, Mode = 0;
-	int Device = 1; // 0 - None, 1 - HEBI
+	bool Sim = 1, aiSim = 1, tauEst = 0, Mode = 0;
+	int Device = 0; // 0 - None, 1 - HEBI
 	int Human = 0; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
 }; extern testParams test0;
 
@@ -33,7 +33,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double Tsim = 1.0, dt = 0.002;
+	const double Tsim = 20.0, dt = 0.002;
 	const int AIsamplingRate = 10000;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
@@ -59,14 +59,6 @@ struct modelParams {
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 
-struct fisParams {
-	//double b1 = 0, b2 = 1436.6400, b3 = -619.9339; //b1 = 0.2972
-	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
-	double sig_hN = 5, c_hN = -7.5, sig_hP = 15, c_hP = 30;
-	double sig_eN = 0.4, c_eN = -1, sig_eP = 0.4, c_eP = 1;  // using dtheta
-	double pA = 1, pR = 1, sig_h = 10.4, c_h = 25, sig_e = 0.085, c_e = 0.02, halt_lim = 0.2; // using ddtheta
-};
-
 struct plotVars {
 	double time = 0,
 		x1 = 0, x1des = 0, x2 = 0,
@@ -88,13 +80,11 @@ public:
 
 	mpcParams mpc0;
 	modelParams model0;
-	fisParams fis0;
 	plotVars vars0;
 
 	QMutex mutex;
 
-	void paramSet(double, double, double, double, double, double, double,
-		double, double, double, double, double, double, double, double, double, double);
+	void paramSet(double* params);
 	void configFiles(char emg_string[]);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init(char emg_string[]);

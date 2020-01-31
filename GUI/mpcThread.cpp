@@ -17,29 +17,20 @@ MPCThread::MPCThread(QObject *parent)
 	}
 }
 
-void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
-	double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
-	model0.A = A; model0.pSys[0] = model0.A;
-	model0.B = B; model0.pSys[1] = model0.B;
-	model0.J = J; model0.pSys[2] = model0.J;
-	model0.tau_g = tau_g; model0.pSys[3] = model0.tau_g;
-	model0.w_theta = w_theta; model0.pSys[4] = model0.w_theta;
-	model0.w_tau = w_tau; model0.pSys[5] = model0.w_tau;
+void MPCThread::paramSet(double* params)
+{
+	//A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
+	//double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
+	model0.A = params[0]; model0.pSys[0] = model0.A;
+	model0.B = params[1]; model0.pSys[1] = model0.B;
+	model0.J = params[2]; model0.pSys[2] = model0.J;
+	model0.tau_g = params[3]; model0.pSys[3] = model0.tau_g;
+	model0.w_theta = params[3]; model0.pSys[4] = model0.w_theta;
+	model0.w_tau = params[3]; model0.pSys[5] = model0.w_tau;
 	grampc_->userparam = model0.pSys;
 	
-	mpc0.Thor = Thor;
+	mpc0.Thor = params[3];
 	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
-
-	fis0.b1 = b1;
-	fis0.b2 = b2;
-	fis0.b3 = b3;
-	fis0.pA = pA;
-	fis0.pR = pR;
-	fis0.sig_h = sig_h;
-	fis0.c_h = c_h;
-	fis0.sig_e = sig_e;
-	fis0.c_e = c_e;
-	fis0.halt_lim = halt_lim;
 }
 
 void MPCThread::configFiles(char emg_string[]) {
@@ -74,17 +65,17 @@ void MPCThread::configFiles(char emg_string[]) {
 
 	mpcFile << setprecision(3);
 
-	mpcFile << "                           pA " << fis0.pA << "\n";
-	mpcFile << "                           pR " << fis0.pR << "\n";
-	mpcFile << "                        sig_hN " << fis0.sig_hN << "\n";
-	mpcFile << "                          c_hN " << fis0.c_hN << "\n";
-	mpcFile << "                        sig_hP " << fis0.sig_hP << "\n";
-	mpcFile << "                          c_hP " << fis0.c_hP << "\n";
-	mpcFile << "                        sig_eN " << fis0.sig_eN << "\n";
-	mpcFile << "                          c_eN " << fis0.c_eN << "\n";
-	mpcFile << "                        sig_eP " << fis0.sig_eP << "\n";
-	mpcFile << "                          c_eP " << fis0.c_eP << "\n";
-	mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
+	//mpcFile << "                           pA " << fis0.pA << "\n";
+	//mpcFile << "                           pR " << fis0.pR << "\n";
+	//mpcFile << "                        sig_hN " << fis0. << "\n";
+	//mpcFile << "                          c_hN " << fis0.c_hN << "\n";
+	//mpcFile << "                        sig_hP " << fis0.sig_hP << "\n";
+	//mpcFile << "                          c_hP " << fis0.c_hP << "\n";
+	//mpcFile << "                        sig_eN " << fis0.sig_eN << "\n";
+	//mpcFile << "                          c_eN " << fis0.c_eN << "\n";
+	//mpcFile << "                        sig_eP " << fis0.sig_eP << "\n";
+	//mpcFile << "                          c_eP " << fis0.c_eP << "\n";
+	//mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
 
 	mpcFile << "-------------------------------------------------------------\n";
 	mpcFile << "                  Test Option " << "Setting" << "\n";
@@ -290,7 +281,7 @@ void MPCThread::controlFunctions(fisParams fis) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis0);
 	}
 }
 
@@ -324,35 +315,34 @@ void MPCThread::run()
 
 	motorThread->start(QThread::LowPriority);
 
-	mpc_init(emg_data);
-	
-	while (!motor_init);
-	
-	last_time = clock();
-	start_time = last_time;
-	while (!Stop && t < mpc0.Tsim) {
-		
-		mpc_loop();
-		if (iMPC % 10 == 0)
-		{
-			mutex.lock();
-			vars0.time = t;
-			vars0.x1 = grampc_->sol->xnext[0];
-			vars0.x1des = grampc_->param->xdes[0];
-			vars0.x2 = grampc_->sol->xnext[1];
-			vars0.u = grampc_->sol->unext[0];
-			vars0.hTauEst = grampc_->sol->xnext[2];
-			vars0.mode = grampc_->sol->xnext[3];
-			vars0.AIdata0 = AIdata[0];
-			vars0.AIm0 = AIm[0];
-			vars0.AIdata1 = AIdata[1];
-			vars0.AIm1 = AIm[1];
-			vars0.lambdaA = lambdaA;
-			vars0.lambdaR = lambdaR;
-			mutex.unlock();
-			//emit mpcIteration(vars0);
-		}
-	}
-	mpc_stop();
+	//mpc_init(emg_data);
+	//
+	//while (!motor_init);
+	//
+	//last_time = clock();
+	//start_time = last_time;
+	//while (!Stop && t < mpc0.Tsim) {
+	//	
+	//	mpc_loop();
+	//	if (iMPC % 10 == 0)
+	//	{
+	//		mutex.lock();
+	//		vars0.time = t;
+	//		vars0.x1 = grampc_->sol->xnext[0];
+	//		vars0.x1des = grampc_->param->xdes[0];
+	//		vars0.x2 = grampc_->sol->xnext[1];
+	//		vars0.u = grampc_->sol->unext[0];
+	//		vars0.hTauEst = grampc_->sol->xnext[2];
+	//		vars0.mode = grampc_->sol->xnext[3];
+	//		vars0.AIdata0 = AIdata[0];
+	//		vars0.AIm0 = AIm[0];
+	//		vars0.AIdata1 = AIdata[1];
+	//		vars0.AIm1 = AIm[1];
+	//		vars0.lambdaA = lambdaA;
+	//		vars0.lambdaR = lambdaR;
+	//		mutex.unlock();
+	//	}
+	//}
+	//mpc_stop();
 	terminate();
 }

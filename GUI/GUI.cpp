@@ -5,10 +5,30 @@ GUI::GUI(QWidget *parent)
 {
 	ui.setupUi(this);
 
+	initPlots();
+
+	mpcThread = new MPCThread(this);
+	timer = new QTimer(this);
+	timer->setTimerType(Qt::PreciseTimer);
+
+	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout));
+	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString)));
+
+	ui.A_box->setValue(mpcThread->model0.A);
+	ui.B_box->setValue(mpcThread->model0.B);
+	ui.J_box->setValue(mpcThread->model0.J);
+	ui.tau_g_box->setValue(mpcThread->model0.tau_g);
+	ui.W_theta_box->setValue(mpcThread->model0.w_theta);
+	ui.W_tau_box->setValue(mpcThread->model0.w_tau);
+	ui.Thor_box->setValue(mpcThread->mpc0.Thor);
+}
+
+void GUI::initPlots()
+{
 	// include this section to fully disable antialiasing for higher performance:
 	QFont font;
 	font.setStyleStrategy(QFont::NoAntialias);
-	
+
 	ui.plot->setNotAntialiasedElements(QCP::aeAll);
 	ui.plot->xAxis->setTickLabelFont(font);
 	ui.plot->yAxis->setTickLabelFont(font);
@@ -53,16 +73,12 @@ GUI::GUI(QWidget *parent)
 	ui.plot1->graph(1)->setPen(QPen(Qt::red));
 	ui.plot1->addGraph();
 	ui.plot1->graph(2)->setPen(QPen(Qt::green));
-	
+
 	ui.plot2->addGraph();
 	ui.plot2->graph(0)->setPen(QPen(Qt::blue));
-	ui.plot2->addGraph();
-	ui.plot2->graph(1)->setPen(QPen(Qt::red));
 
 	ui.plot3->addGraph();
 	ui.plot3->graph(0)->setPen(QPen(Qt::blue));
-	ui.plot3->addGraph();
-	ui.plot3->graph(1)->setPen(QPen(Qt::red));
 
 	ui.plot4->addGraph();
 	ui.plot4->graph(0)->setPen(QPen(Qt::black));
@@ -107,32 +123,6 @@ GUI::GUI(QWidget *parent)
 	ui.plot3->yAxis->setRange(ylim3[0], ylim3[1]);
 	ui.plot4->yAxis->setRange(ylim4[0], ylim4[1]);
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
-
-	mpcThread = new MPCThread(this);
-
-	timer = new QTimer(this);
-	timer->setTimerType(Qt::PreciseTimer);
-
-	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout));
-	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString)));
-
-	ui.A_box->setValue(mpcThread->model0.A);
-	ui.B_box->setValue(mpcThread->model0.B);
-	ui.J_box->setValue(mpcThread->model0.J);
-	ui.tau_g_box->setValue(mpcThread->model0.tau_g);
-	ui.W_theta_box->setValue(mpcThread->model0.w_theta);
-	ui.W_tau_box->setValue(mpcThread->model0.w_tau);
-	ui.Thor_box->setValue(mpcThread->mpc0.Thor);
-	ui.b1_box->setValue(mpcThread->fis0.b1);
-	ui.b2_box->setValue(mpcThread->fis0.b2);
-	ui.b3_box->setValue(mpcThread->fis0.b3);
-	ui.pA_box->setValue(mpcThread->fis0.pA);
-	ui.pR_box->setValue(mpcThread->fis0.pR);
-	ui.sig_h_box->setValue(mpcThread->fis0.sig_h);
-	ui.c_h_box->setValue(mpcThread->fis0.c_h);
-	ui.sig_e_box->setValue(mpcThread->fis0.sig_e);
-	ui.c_e_box->setValue(mpcThread->fis0.c_e);
-	ui.halt_lim_box->setValue(mpcThread->fis0.halt_lim);
 }
 
 void GUI::addPoints(plotVars vars)
@@ -146,11 +136,9 @@ void GUI::addPoints(plotVars vars)
 	ui.plot1->graph(1)->addData(vars.time, vars.hTauEst);
 	ui.plot1->graph(2)->addData(vars.time, vars.u + vars.hTauEst);
 
-	//ui.plot2->graph(0)->addData(vars.time, vars.AIdata0);
-	ui.plot2->graph(1)->addData(vars.time, vars.AIm0);
+	ui.plot2->graph(0)->addData(vars.time, vars.AIm0);
 
-	//ui.plot3->graph(0)->addData(vars.time, vars.AIdata1);
-	ui.plot3->graph(1)->addData(vars.time, vars.AIm1);
+	ui.plot3->graph(0)->addData(vars.time, vars.AIm1);
 
 	ui.plot4->graph(0)->addData(vars.time, vars.lambdaA);
 
@@ -166,10 +154,8 @@ void GUI::addPoints(plotVars vars)
 	ui.plot1->graph(2)->removeDataBefore(vars.time - t_span);
 
 	ui.plot2->graph(0)->removeDataBefore(vars.time - t_span);
-	ui.plot2->graph(1)->removeDataBefore(vars.time - t_span);
 
 	ui.plot3->graph(0)->removeDataBefore(vars.time - t_span);
-	ui.plot3->graph(1)->removeDataBefore(vars.time - t_span);
 
 	ui.plot4->graph(0)->removeDataBefore(vars.time - t_span);
 
@@ -206,23 +192,14 @@ void GUI::on_btn_stop_clicked()
 
 void GUI::on_btn_set_params_clicked()
 {
-	mpcThread->paramSet(ui.A_box->value(),
+	double params[7] = { ui.A_box->value(),
 		ui.B_box->value(),
 		ui.J_box->value(),
 		ui.tau_g_box->value(),
 		ui.W_theta_box->value(),
 		ui.W_tau_box->value(),
-		ui.Thor_box->value(),
-		ui.b1_box->value(),
-		ui.b2_box->value(),
-		ui.b3_box->value(),
-		ui.pA_box->value(),
-		ui.pR_box->value(),
-		ui.sig_h_box->value(),
-		ui.c_h_box->value(),
-		ui.sig_e_box->value(),
-		ui.c_e_box->value(),
-		ui.halt_lim_box->value());
+		ui.Thor_box->value() };
+	mpcThread->paramSet(params);
 }
 
 void GUI::onGUIPrint(QString message)
