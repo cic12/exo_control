@@ -7,6 +7,7 @@ MPCThread::MPCThread(QObject *parent)
 {
 	if (test0.Device) {
 		motorThread = new MotorThread(this);
+		motorThread->start(QThread::LowPriority);
 	}
 	else
 	{
@@ -313,36 +314,34 @@ void MPCThread::run()
 {
 	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
 
-	motorThread->start(QThread::LowPriority);
-
-	//mpc_init(emg_data);
-	//
-	//while (!motor_init);
-	//
-	//last_time = clock();
-	//start_time = last_time;
-	//while (!Stop && t < mpc0.Tsim) {
-	//	
-	//	mpc_loop();
-	//	if (iMPC % 10 == 0)
-	//	{
-	//		mutex.lock();
-	//		vars0.time = t;
-	//		vars0.x1 = grampc_->sol->xnext[0];
-	//		vars0.x1des = grampc_->param->xdes[0];
-	//		vars0.x2 = grampc_->sol->xnext[1];
-	//		vars0.u = grampc_->sol->unext[0];
-	//		vars0.hTauEst = grampc_->sol->xnext[2];
-	//		vars0.mode = grampc_->sol->xnext[3];
-	//		vars0.AIdata0 = AIdata[0];
-	//		vars0.AIm0 = AIm[0];
-	//		vars0.AIdata1 = AIdata[1];
-	//		vars0.AIm1 = AIm[1];
-	//		vars0.lambdaA = lambdaA;
-	//		vars0.lambdaR = lambdaR;
-	//		mutex.unlock();
-	//	}
-	//}
-	//mpc_stop();
+	mpc_init(emg_data);
+	
+	while (!motor_init);
+	
+	last_time = clock();
+	start_time = last_time;
+	while (!Stop && t < mpc0.Tsim) {
+		
+		mpc_loop();
+		if (iMPC % 10 == 0)
+		{
+			mutex.lock();
+			vars0.time = t;
+			vars0.x1 = grampc_->sol->xnext[0];
+			vars0.x1des = grampc_->param->xdes[0];
+			vars0.x2 = grampc_->sol->xnext[1];
+			vars0.u = grampc_->sol->unext[0];
+			vars0.hTauEst = grampc_->sol->xnext[2];
+			vars0.mode = grampc_->sol->xnext[3];
+			vars0.AIdata0 = AIdata[0];
+			vars0.AIm0 = AIm[0];
+			vars0.AIdata1 = AIdata[1];
+			vars0.AIm1 = AIm[1];
+			vars0.lambdaA = lambdaA;
+			vars0.lambdaR = lambdaR;
+			mutex.unlock();
+		}
+	}
+	mpc_stop();
 	terminate();
 }
