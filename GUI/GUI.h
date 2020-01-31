@@ -32,6 +32,7 @@ private:
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
+	void on_btn_reset_clicked();
 	void on_btn_set_params_clicked();
 
 public slots:

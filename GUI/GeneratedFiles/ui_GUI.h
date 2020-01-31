@@ -60,6 +60,7 @@ public:
     QLabel *label_25;
     QLabel *label_26;
     QPlainTextEdit *plainTextEdit;
+    QPushButton *btn_reset;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -197,6 +198,9 @@ public:
         plainTextEdit->setEnabled(false);
         plainTextEdit->setGeometry(QRect(10, 520, 171, 241));
         plainTextEdit->setReadOnly(true);
+        btn_reset = new QPushButton(centralWidget);
+        btn_reset->setObjectName(QString::fromUtf8("btn_reset"));
+        btn_reset->setGeometry(QRect(110, 770, 71, 23));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -213,6 +217,7 @@ public:
         QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
         QObject::connect(btn_set_params, SIGNAL(clicked()), GUIClass, SLOT(on_btn_set_params_clicked()));
+        QObject::connect(btn_reset, SIGNAL(clicked()), GUIClass, SLOT(on_btn_reset_clicked()));
 
         QMetaObject::connectSlotsByName(GUIClass);
     } // setupUi
@@ -220,8 +225,8 @@ public:
     void retranslateUi(QMainWindow *GUIClass)
     {
         GUIClass->setWindowTitle(QApplication::translate("GUIClass", "GUI", nullptr));
-        btn_start->setText(QApplication::translate("GUIClass", "Start MPC", nullptr));
-        btn_stop->setText(QApplication::translate("GUIClass", "Stop MPC", nullptr));
+        btn_start->setText(QApplication::translate("GUIClass", "Start", nullptr));
+        btn_stop->setText(QApplication::translate("GUIClass", "Stop", nullptr));
         label_3->setText(QApplication::translate("GUIClass", "0.000", nullptr));
         label_4->setText(QApplication::translate("GUIClass", "Time", nullptr));
         label_2->setText(QApplication::translate("GUIClass", "A", nullptr));
@@ -239,6 +244,7 @@ public:
         label_25->setText(QApplication::translate("GUIClass", "lambdaA", nullptr));
         label_26->setText(QApplication::translate("GUIClass", "lambdaR", nullptr));
         plainTextEdit->setPlainText(QString());
+        btn_reset->setText(QApplication::translate("GUIClass", "Reset", nullptr));
     } // retranslateUi
 
 };

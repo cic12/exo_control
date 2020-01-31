@@ -81,7 +81,7 @@ public:
 	int iMPC = 0;
 
 	plotVars vars0;
-
+	
 	QMutex mutex;
 
 	void paramSet(double* params);

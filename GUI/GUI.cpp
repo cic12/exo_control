@@ -99,12 +99,12 @@ void GUI::initPlots()
 	ui.plot2->xAxis->setAutoTickStep(false);
 	ui.plot2->xAxis->setTickStep(1);
 	ui.plot2->yAxis->setAutoTickStep(false);
-	ui.plot2->yAxis->setTickStep(1);
+	ui.plot2->yAxis->setTickStep(0.2);
 
 	ui.plot3->xAxis->setAutoTickStep(false);
 	ui.plot3->xAxis->setTickStep(1);
 	ui.plot3->yAxis->setAutoTickStep(false);
-	ui.plot3->yAxis->setTickStep(1);
+	ui.plot3->yAxis->setTickStep(0.2);
 
 	ui.plot4->xAxis->setAutoTickStep(false);
 	ui.plot4->xAxis->setTickStep(1);
@@ -187,6 +187,12 @@ void GUI::on_btn_start_clicked()
 void GUI::on_btn_stop_clicked()
 {
 	mpcThread->Stop = true;
+	timer->stop();
+}
+
+void GUI::on_btn_reset_clicked()
+{
+	mpcThread = new MPCThread(this);
 }
 
 void GUI::on_btn_set_params_clicked()
