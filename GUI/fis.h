@@ -6,13 +6,26 @@
 using namespace std;
 
 extern int haltMode;
-extern double mu[4];
+extern double mu[6];
 extern double rule[4];
 extern double lambdaA;
 extern double lambdaR;
 
+struct fisParams {
+	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
+	double pA = 1, pR = 1;
+	double s0 = 0.9, s1 = 0.8;
+	double eN_sig = 0.3, eN_c = -0.6;
+	double eZ_sig = 0.2, eZ_c = 0;
+	double eP_sig = 0.3, eP_c = 0.6;
+	double hN_a = -1, hN_c = -4, hP_a = 1, hP_c = 4;
+};
+
+extern fisParams fis0;
+
 double hTorqueEst(double m1, double m2, double b1, double b2, double b3);
 double gaussmf(double x, double sig, double c);
-double assistanceMode(double Tau_h, double dtheta, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim);
+double sigmf(double x, double a, double c);
+double assistanceMode(double Tau_h, double dtheta, fisParams fis);
 
 #endif

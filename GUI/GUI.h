@@ -11,11 +11,12 @@ class GUI : public QMainWindow
 
 public:
 	GUI(QWidget *parent = Q_NULLPTR);
-	void addPoints(plotVars);
-	void plot();
 	MPCThread *mpcThread;
 	QTimer *timer;
 private:
+	void initPlots();
+	void addPoints(plotVars);
+	void plot();
 	Ui::GUIClass ui;
 	double t_span = 4;
 	double ylim[2] = { -2 , 1.4 };

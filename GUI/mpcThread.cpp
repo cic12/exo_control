@@ -7,6 +7,7 @@ MPCThread::MPCThread(QObject *parent)
 {
 	if (test0.Device) {
 		motorThread = new MotorThread(this);
+		motorThread->start(QThread::LowPriority);
 	}
 	else
 	{
@@ -17,94 +18,56 @@ MPCThread::MPCThread(QObject *parent)
 	}
 }
 
-void MPCThread::paramSet(double A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
-	double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
-	model0.A = A; model0.pSys[0] = model0.A;
-	model0.B = B; model0.pSys[1] = model0.B;
-	model0.J = J; model0.pSys[2] = model0.J;
-	model0.tau_g = tau_g; model0.pSys[3] = model0.tau_g;
-	model0.w_theta = w_theta; model0.pSys[4] = model0.w_theta;
-	model0.w_tau = w_tau; model0.pSys[5] = model0.w_tau;
-	grampc_->userparam = model0.pSys;
-	
-	mpc0.Thor = Thor;
-	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
+void MPCThread::run()
+{
+	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
 
-	fis0.b1 = b1;
-	fis0.b2 = b2;
-	fis0.b3 = b3;
-	fis0.pA = pA;
-	fis0.pR = pR;
-	fis0.sig_h = sig_h;
-	fis0.c_h = c_h;
-	fis0.sig_e = sig_e;
-	fis0.c_e = c_e;
-	fis0.halt_lim = halt_lim;
+	mpc_init(emg_data);
+
+	while (!motor_init);
+
+	last_time = clock();
+	start_time = last_time;
+	while (!Stop && t < mpc0.Tsim) {
+
+		mpc_loop();
+		if (iMPC % 10 == 0)
+		{
+			mutex.lock();
+			vars0.time = t;
+			vars0.x1 = grampc_->sol->xnext[0];
+			vars0.x1des = grampc_->param->xdes[0];
+			vars0.x2 = grampc_->sol->xnext[1];
+			vars0.u = grampc_->sol->unext[0];
+			vars0.hTauEst = grampc_->sol->xnext[2];
+			vars0.mode = grampc_->sol->xnext[3];
+			vars0.AIdata0 = AIdata[0];
+			vars0.AIm0 = AIm[0];
+			vars0.AIdata1 = AIdata[1];
+			vars0.AIm1 = AIm[1];
+			vars0.lambdaA = lambdaA;
+			vars0.lambdaR = lambdaR;
+			mutex.unlock();
+		}
+	}
+	mpc_stop();
+	terminate();
 }
 
-void MPCThread::configFiles(char emg_string[]) {
-	aiFile.open("../res/ai_daq.txt");
-	if (test0.aiSim) {
-		aiSimProcess(emg_string);
-	}
-
-	mpcFile << fixed;
-	mpcFile << setprecision(3);
-
-	mpcFile << "-------------------------------------------------------------\n";
-	mpcFile << "                  Model Param " << "Value" << "\n";
-	mpcFile << "-------------------------------------------------------------\n";
-
-	mpcFile << "                            A " << model0.A << "\n";
-	mpcFile << "                            B " << model0.B << "\n";
-	mpcFile << "                            J " << model0.J << "\n";
-	mpcFile << "                        tau_g " << model0.tau_g << "\n";
-	mpcFile << "                      w_theta " << model0.w_theta << "\n";
-	mpcFile << "                        w_tau " << model0.w_tau << "\n";
-
-	mpcFile << setprecision(15);
-
-	mpcFile << "-------------------------------------------------------------\n";
-	mpcFile << "                    FIS Param " << "Value" << "\n";
-	mpcFile << "-------------------------------------------------------------\n";
-
-	mpcFile << "                           b1 " << fis0.b1 << "\n";
-	mpcFile << "                           b2 " << fis0.b2 << "\n";
-	mpcFile << "                           b3 " << fis0.b3 << "\n";
-
-	mpcFile << setprecision(3);
-
-	mpcFile << "                           pA " << fis0.pA << "\n";
-	mpcFile << "                           pR " << fis0.pR << "\n";
-	mpcFile << "                        sig_hN " << fis0.sig_hN << "\n";
-	mpcFile << "                          c_hN " << fis0.c_hN << "\n";
-	mpcFile << "                        sig_hP " << fis0.sig_hP << "\n";
-	mpcFile << "                          c_hP " << fis0.c_hP << "\n";
-	mpcFile << "                        sig_eN " << fis0.sig_eN << "\n";
-	mpcFile << "                          c_eN " << fis0.c_eN << "\n";
-	mpcFile << "                        sig_eP " << fis0.sig_eP << "\n";
-	mpcFile << "                          c_eP " << fis0.c_eP << "\n";
-	mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
-
-	mpcFile << "-------------------------------------------------------------\n";
-	mpcFile << "                  Test Option " << "Setting" << "\n";
-	mpcFile << "-------------------------------------------------------------\n";
-
-	mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
-	mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
-	mpcFile << "                          EMG " << emg_string << "\n";
-
-	mpcFile.close();
-
-	openFile(&file_x, "../res/xvec.txt");
-	openFile(&file_xdes, "../res/xdesvec.txt");
-	openFile(&file_u, "../res/uvec.txt");
-	openFile(&file_mode, "../res/mode.txt");
-	openFile(&file_t, "../res/tvec.txt");
-	openFile(&file_Ncfct, "../res/cost.txt");
-	openFile(&file_mu, "../res/mu.txt");
-	openFile(&file_rule, "../res/rule.txt");
-	openFile(&file_ai, "../res/rule.txt");
+void MPCThread::paramSet(double* params)
+{
+	//A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
+	//double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
+	model0.A = params[0]; model0.pSys[0] = model0.A;
+	model0.B = params[1]; model0.pSys[1] = model0.B;
+	model0.J = params[2]; model0.pSys[2] = model0.J;
+	model0.tau_g = params[3]; model0.pSys[3] = model0.tau_g;
+	model0.w_theta = params[3]; model0.pSys[4] = model0.w_theta;
+	model0.w_tau = params[3]; model0.pSys[5] = model0.w_tau;
+	grampc_->userparam = model0.pSys;
+	
+	mpc0.Thor = params[3];
+	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
 }
 
 void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
@@ -150,26 +113,73 @@ void MPCThread::mpc_init(char emg_string[]) {
 		mpc0.ScaleProblem,
 		mpc0.AugLagUpdateGradientRelTol,
 		mpc0.ConstraintsAbsTol);
-	
 
-	filesInit();
+	aiFile.open("../res/ai_daq.txt");
+	if (test0.aiSim) {
+		aiSimProcess(emg_string);
+	}
 
-	configFiles(emg_string);
-	
+	mpcFile << fixed;
+	mpcFile << setprecision(3);
+
+	mpcFile << "-------------------------------------------------------------\n";
+	mpcFile << "                  Model Param " << "Value" << "\n";
+	mpcFile << "-------------------------------------------------------------\n";
+
+	mpcFile << "                            A " << model0.A << "\n";
+	mpcFile << "                            B " << model0.B << "\n";
+	mpcFile << "                            J " << model0.J << "\n";
+	mpcFile << "                        tau_g " << model0.tau_g << "\n";
+	mpcFile << "                      w_theta " << model0.w_theta << "\n";
+	mpcFile << "                        w_tau " << model0.w_tau << "\n";
+
+	mpcFile << setprecision(15);
+
+	mpcFile << "-------------------------------------------------------------\n";
+	mpcFile << "                    FIS Param " << "Value" << "\n";
+	mpcFile << "-------------------------------------------------------------\n";
+
+	mpcFile << "                           b1 " << fis0.b1 << "\n";
+	mpcFile << "                           b2 " << fis0.b2 << "\n";
+	mpcFile << "                           b3 " << fis0.b3 << "\n";
+
+	mpcFile << setprecision(3);
+
+	//mpcFile << "                           pA " << fis0.pA << "\n";
+	//mpcFile << "                           pR " << fis0.pR << "\n";
+	//mpcFile << "                        sig_hN " << fis0. << "\n";
+	//mpcFile << "                          c_hN " << fis0.c_hN << "\n";
+	//mpcFile << "                        sig_hP " << fis0.sig_hP << "\n";
+	//mpcFile << "                          c_hP " << fis0.c_hP << "\n";
+	//mpcFile << "                        sig_eN " << fis0.sig_eN << "\n";
+	//mpcFile << "                          c_eN " << fis0.c_eN << "\n";
+	//mpcFile << "                        sig_eP " << fis0.sig_eP << "\n";
+	//mpcFile << "                          c_eP " << fis0.c_eP << "\n";
+	//mpcFile << "                     halt_lim " << fis0.halt_lim << "\n";
+
+	mpcFile << "-------------------------------------------------------------\n";
+	mpcFile << "                  Test Option " << "Setting" << "\n";
+	mpcFile << "-------------------------------------------------------------\n";
+
+	mpcFile << "                      Exo Sim " << (test0.Sim == 1 ? "on" : "off") << "\n";
+	mpcFile << "                       AI Sim " << (test0.aiSim == 1 ? "on" : "off") << "\n";
+	mpcFile << "                          EMG " << emg_string << "\n";
+
+	mpcFile.close();
+
+	openFile(&file_x, "../res/xvec.txt");
+	openFile(&file_xdes, "../res/xdesvec.txt");
+	openFile(&file_u, "../res/uvec.txt");
+	openFile(&file_mode, "../res/mode.txt");
+	openFile(&file_t, "../res/tvec.txt");
+	openFile(&file_Ncfct, "../res/cost.txt");
+	openFile(&file_mu, "../res/mu.txt");
+	openFile(&file_rule, "../res/rule.txt");
+	openFile(&file_ai, "../res/ai.txt");
+
 	if (!test0.aiSim) {
-		//try {
-			//AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, mpc0.AIsamplingRate);
-			//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
-			//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
-			//AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
-
-		//TMSi->createdRecording = TMSi->createRecordingFile(TMSi->filePath);
-		//}
-		//catch (char* msg) {
-		//	//GUIPrint("DAQmx Error:"+QString(msg)); // not currently reached
-		//}
 	}
 
 	emit GUIPrint("Init Complete\n");
@@ -179,15 +189,6 @@ void MPCThread::mpc_stop() {
 	end_time = clock();
 	double duration = (double)(end_time - start_time);
 	if (!test0.aiSim) {
-		//if (AItaskHandle != 0) {
-		//	DAQmxStopTask(AItaskHandle);
-		//	DAQmxClearTask(AItaskHandle);
-		//}
-		//if (AOtaskHandle != 0) {
-		//	DAQmxStopTask(AOtaskHandle);
-		//	DAQmxClearTask(AOtaskHandle);
-		//}
-		//TMSi->endRecordingFile();
 		TMSi->endStream();
 		TMSi->reset();
 	}
@@ -196,9 +197,7 @@ void MPCThread::mpc_stop() {
 	aiFile.close();
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
-	//if (test0.Device == 2) {
-	//	closeDevice();
-	//}
+
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0) + "\n");
 }
@@ -210,23 +209,6 @@ void MPCThread::mpc_loop() {
 	last_time = this_time;
 	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
-		//// Model ID
-		//if (t <= 20) {
-		//	mpc0.xdes[0] = (cos((0.1 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else if (t <= 40) {
-		//	mpc0.xdes[0] = (cos((0.2 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else if (t <= 60) {
-		//	mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else if (t <= 80) {
-		//	mpc0.xdes[0] = (cos((0.5 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else {
-		//	mpc0.xdes[0] = (cos((1.0 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-
 		// Setpoint
 		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
 		mpc0.xdes[1] = (mpc0.xdes[0] - xdes_previous) / mpc0.dt;
@@ -236,11 +218,7 @@ void MPCThread::mpc_loop() {
 
 		// Grampc
 		grampc_run(grampc_);
-		if (grampc_->sol->status > 0) {
-			if (grampc_printstatus(grampc_->sol->status, STATUS_LEVEL_ERROR)) {
-				qDebug() << "at iteration %i:\n -----\n" << iMPC;
-			}
-		}
+
 		if (test0.Device) {
 			demandedCurrent = *grampc_->sol->unext;
 		}
@@ -286,11 +264,15 @@ void MPCThread::controlFunctions(fisParams fis) {
 			AIm[1] = 0;
 		}
 	}
+	aiVec[0] = AIm[0];
+	aiVec[1] = AIm[0];
+	aiVec[2] = AIdata[0];
+	aiVec[3] = AIdata[1];
 	if (test0.tauEst) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis.pA, fis.pR, fis.sig_h, fis.c_h, fis.sig_e, fis.c_e, fis.halt_lim);
+		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis0);
 	}
 }
 
@@ -312,47 +294,7 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_t, &t, 1);
 	printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
-	printNumVector2File(file_mu, mu, 4);
+	printNumVector2File(file_mu, mu, 6);
 	printNumVector2File(file_rule, rule, 4);
-	double aiVec[4] = { AIm[0], AIm[1], AIdata[0], AIdata[1] };
 	printNumVector2File(file_ai, aiVec, 4);
-}
-
-void MPCThread::run()
-{
-	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
-
-	motorThread->start(QThread::LowPriority);
-
-	mpc_init(emg_data);
-	
-	while (!motor_init);
-	
-	last_time = clock();
-	start_time = last_time;
-	while (!Stop && t < mpc0.Tsim) {
-		
-		mpc_loop();
-		if (iMPC % 10 == 0)
-		{
-			mutex.lock();
-			vars0.time = t;
-			vars0.x1 = grampc_->sol->xnext[0];
-			vars0.x1des = grampc_->param->xdes[0];
-			vars0.x2 = grampc_->sol->xnext[1];
-			vars0.u = grampc_->sol->unext[0];
-			vars0.hTauEst = grampc_->sol->xnext[2];
-			vars0.mode = grampc_->sol->xnext[3];
-			vars0.AIdata0 = AIdata[0];
-			vars0.AIm0 = AIm[0];
-			vars0.AIdata1 = AIdata[1];
-			vars0.AIm1 = AIm[1];
-			vars0.lambdaA = lambdaA;
-			vars0.lambdaR = lambdaR;
-			mutex.unlock();
-			//emit mpcIteration(vars0);
-		}
-	}
-	mpc_stop();
-	terminate();
 }

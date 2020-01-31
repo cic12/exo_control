@@ -31,8 +31,5 @@ public:
 private:
 	Lookup lookup;
 	std::shared_ptr<hebi::Group> group;
-	//GroupCommand *group_command;
-	//GroupFeedback *group_feedback;
-	//Eigen::VectorXd efforts;
 	QMutex mutex;
 };
