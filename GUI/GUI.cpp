@@ -182,7 +182,7 @@ void GUI::plot()
 void GUI::on_btn_start_clicked()
 {
 	mpcThread->start(QThread::NormalPriority);
-	timer->start(20); // Timer period controls GUI update frequency
+	timer->start(20); // Timer period in ms controls GUI update frequency
 }
 
 void GUI::on_btn_stop_clicked()

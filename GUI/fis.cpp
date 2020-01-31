@@ -1,8 +1,7 @@
 #include "fis.h"
 
 int haltMode;
-double mu[4], rule[4], lambdaA, lambdaR;
-
+double mu[6], rule[4], lambdaA, lambdaR;
 fisParams fis0;
 
 double hTorqueEst(double m1, double m2, double b1, double b2, double b3) {

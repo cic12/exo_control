@@ -18,6 +18,42 @@ MPCThread::MPCThread(QObject *parent)
 	}
 }
 
+void MPCThread::run()
+{
+	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
+
+	mpc_init(emg_data);
+
+	while (!motor_init);
+
+	last_time = clock();
+	start_time = last_time;
+	while (!Stop && t < mpc0.Tsim) {
+
+		mpc_loop();
+		if (iMPC % 10 == 0)
+		{
+			mutex.lock();
+			vars0.time = t;
+			vars0.x1 = grampc_->sol->xnext[0];
+			vars0.x1des = grampc_->param->xdes[0];
+			vars0.x2 = grampc_->sol->xnext[1];
+			vars0.u = grampc_->sol->unext[0];
+			vars0.hTauEst = grampc_->sol->xnext[2];
+			vars0.mode = grampc_->sol->xnext[3];
+			vars0.AIdata0 = AIdata[0];
+			vars0.AIm0 = AIm[0];
+			vars0.AIdata1 = AIdata[1];
+			vars0.AIm1 = AIm[1];
+			vars0.lambdaA = lambdaA;
+			vars0.lambdaR = lambdaR;
+			mutex.unlock();
+		}
+	}
+	mpc_stop();
+	terminate();
+}
+
 void MPCThread::paramSet(double* params)
 {
 	//A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
@@ -34,7 +70,50 @@ void MPCThread::paramSet(double* params)
 	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
 }
 
-void MPCThread::configFiles(char emg_string[]) {
+void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
+	QFile myQfile(emg_string);
+	if (!myQfile.open(QIODevice::ReadOnly)) {
+		return;
+	}
+	QStringList wordList;
+	QStringList wordList1;
+	while (!myQfile.atEnd()) {
+		QByteArray line = myQfile.readLine();
+		wordList.append(line.split(',').at(0));
+		wordList1.append(line.split(',').at(1));
+	}
+
+	int len = wordList.length();
+
+	for (int i = 0; i < len; i++) {
+		aivec.append(wordList.at(i).toDouble());
+		aivec1.append(wordList1.at(i).toDouble());
+
+		AImvec.append(emgProcess(aivec[i],0));
+		AImvec1.append(emgProcess(aivec1[i],1));
+
+		aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
+	}
+}
+
+void MPCThread::mpc_init(char emg_string[]) {
+	mpcInit(&grampc_,
+		&model0.pSys, 
+		mpc0.x0,
+		mpc0.xdes,
+		mpc0.u0,
+		mpc0.udes,
+		mpc0.umax,
+		mpc0.umin,
+		&mpc0.Thor,
+		&mpc0.dt,
+		&t,
+		mpc0.TerminalCost,
+		mpc0.IntegralCost,
+		mpc0.ScaleProblem,
+		mpc0.AugLagUpdateGradientRelTol,
+		mpc0.ConstraintsAbsTol);
+
 	aiFile.open("../res/ai_daq.txt");
 	if (test0.aiSim) {
 		aiSimProcess(emg_string);
@@ -96,72 +175,11 @@ void MPCThread::configFiles(char emg_string[]) {
 	openFile(&file_Ncfct, "../res/cost.txt");
 	openFile(&file_mu, "../res/mu.txt");
 	openFile(&file_rule, "../res/rule.txt");
-	openFile(&file_ai, "../res/rule.txt");
-}
+	openFile(&file_ai, "../res/ai.txt");
 
-void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
-	QFile myQfile(emg_string);
-	if (!myQfile.open(QIODevice::ReadOnly)) {
-		return;
-	}
-	QStringList wordList;
-	QStringList wordList1;
-	while (!myQfile.atEnd()) {
-		QByteArray line = myQfile.readLine();
-		wordList.append(line.split(',').at(0));
-		wordList1.append(line.split(',').at(1));
-	}
-
-	int len = wordList.length();
-
-	for (int i = 0; i < len; i++) {
-		aivec.append(wordList.at(i).toDouble());
-		aivec1.append(wordList1.at(i).toDouble());
-
-		AImvec.append(emgProcess(aivec[i],0));
-		AImvec1.append(emgProcess(aivec1[i],1));
-
-		aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
-	}
-}
-
-void MPCThread::mpc_init(char emg_string[]) {
-	mpcInit(&grampc_,
-		&model0.pSys, 
-		mpc0.x0,
-		mpc0.xdes,
-		mpc0.u0,
-		mpc0.udes,
-		mpc0.umax,
-		mpc0.umin,
-		&mpc0.Thor,
-		&mpc0.dt,
-		&t,
-		mpc0.TerminalCost,
-		mpc0.IntegralCost,
-		mpc0.ScaleProblem,
-		mpc0.AugLagUpdateGradientRelTol,
-		mpc0.ConstraintsAbsTol);
-	
-
-	filesInit();
-
-	configFiles(emg_string);
-	
 	if (!test0.aiSim) {
-		//try {
-			//AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, mpc0.AIsamplingRate);
-			//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
-			//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
-			//AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
-
-		//TMSi->createdRecording = TMSi->createRecordingFile(TMSi->filePath);
-		//}
-		//catch (char* msg) {
-		//	//GUIPrint("DAQmx Error:"+QString(msg)); // not currently reached
-		//}
 	}
 
 	emit GUIPrint("Init Complete\n");
@@ -171,15 +189,6 @@ void MPCThread::mpc_stop() {
 	end_time = clock();
 	double duration = (double)(end_time - start_time);
 	if (!test0.aiSim) {
-		//if (AItaskHandle != 0) {
-		//	DAQmxStopTask(AItaskHandle);
-		//	DAQmxClearTask(AItaskHandle);
-		//}
-		//if (AOtaskHandle != 0) {
-		//	DAQmxStopTask(AOtaskHandle);
-		//	DAQmxClearTask(AOtaskHandle);
-		//}
-		//TMSi->endRecordingFile();
 		TMSi->endStream();
 		TMSi->reset();
 	}
@@ -188,9 +197,7 @@ void MPCThread::mpc_stop() {
 	aiFile.close();
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
-	//if (test0.Device == 2) {
-	//	closeDevice();
-	//}
+
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0) + "\n");
 }
@@ -202,23 +209,6 @@ void MPCThread::mpc_loop() {
 	last_time = this_time;
 	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
-		//// Model ID
-		//if (t <= 20) {
-		//	mpc0.xdes[0] = (cos((0.1 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else if (t <= 40) {
-		//	mpc0.xdes[0] = (cos((0.2 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else if (t <= 60) {
-		//	mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else if (t <= 80) {
-		//	mpc0.xdes[0] = (cos((0.5 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-		//else {
-		//	mpc0.xdes[0] = (cos((1.0 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		//}
-
 		// Setpoint
 		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
 		mpc0.xdes[1] = (mpc0.xdes[0] - xdes_previous) / mpc0.dt;
@@ -228,11 +218,7 @@ void MPCThread::mpc_loop() {
 
 		// Grampc
 		grampc_run(grampc_);
-		if (grampc_->sol->status > 0) {
-			if (grampc_printstatus(grampc_->sol->status, STATUS_LEVEL_ERROR)) {
-				qDebug() << "at iteration %i:\n -----\n" << iMPC;
-			}
-		}
+
 		if (test0.Device) {
 			demandedCurrent = *grampc_->sol->unext;
 		}
@@ -278,6 +264,10 @@ void MPCThread::controlFunctions(fisParams fis) {
 			AIm[1] = 0;
 		}
 	}
+	aiVec[0] = AIm[0];
+	aiVec[1] = AIm[0];
+	aiVec[2] = AIdata[0];
+	aiVec[3] = AIdata[1];
 	if (test0.tauEst) {
 		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
@@ -304,44 +294,7 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_t, &t, 1);
 	printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
-	printNumVector2File(file_mu, mu, 4);
+	printNumVector2File(file_mu, mu, 6);
 	printNumVector2File(file_rule, rule, 4);
-	double aiVec[4] = { AIm[0], AIm[1], AIdata[0], AIdata[1] };
 	printNumVector2File(file_ai, aiVec, 4);
-}
-
-void MPCThread::run()
-{
-	char emg_data[] = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
-
-	mpc_init(emg_data);
-	
-	while (!motor_init);
-	
-	last_time = clock();
-	start_time = last_time;
-	while (!Stop && t < mpc0.Tsim) {
-		
-		mpc_loop();
-		if (iMPC % 10 == 0)
-		{
-			mutex.lock();
-			vars0.time = t;
-			vars0.x1 = grampc_->sol->xnext[0];
-			vars0.x1des = grampc_->param->xdes[0];
-			vars0.x2 = grampc_->sol->xnext[1];
-			vars0.u = grampc_->sol->unext[0];
-			vars0.hTauEst = grampc_->sol->xnext[2];
-			vars0.mode = grampc_->sol->xnext[3];
-			vars0.AIdata0 = AIdata[0];
-			vars0.AIm0 = AIm[0];
-			vars0.AIdata1 = AIdata[1];
-			vars0.AIm1 = AIm[1];
-			vars0.lambdaA = lambdaA;
-			vars0.lambdaR = lambdaR;
-			mutex.unlock();
-		}
-	}
-	mpc_stop();
-	terminate();
 }

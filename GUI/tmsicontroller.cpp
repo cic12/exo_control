@@ -9,19 +9,7 @@ TMSiController::TMSiController()
 	bool getFormat = getSignalFormatCall();
 	int* signaltypes = queryPortTypes();
 	setSampleRate(MAX_SAMPLE_RATE);
-	//setSampleRate(2000);
 	ULONG sampleRate = getSampleRate();
-	//filePath = generateFilePath();
-	//bool streamStarted = startStream();
-	//bool refCalc = setRefCalculation(1);
-	//Sleep(100);
-	//createdRecording = createRecordingFile(filePath);
-
-	//Sleep(20000);
-
-	//bool recordingEnded = endRecordingFile();
-	//bool streamEnded = endStream();
-	//reset();
 }
 
 bool TMSiController::locateDLL()

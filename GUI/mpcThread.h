@@ -23,9 +23,9 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, aiSim = 1, tauEst = 0, Mode = 0;
+	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
 	int Device = 0; // 0 - None, 1 - HEBI
-	int Human = 0; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
+	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Older
 }; extern testParams test0;
 
 struct mpcParams {
@@ -33,7 +33,7 @@ struct mpcParams {
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double Tsim = 20.0, dt = 0.002;
+	const double Tsim = 24.0, dt = 0.002;
 	const int AIsamplingRate = 10000;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
@@ -52,8 +52,8 @@ struct modelParams {
 	double A = 0.0000 + A_h[test0.Human];
 	double tau_g = 1.7536 + tau_g_h[test0.Human];
 			
-	double w_theta = 2000, w_tau = 20;
-	//double w_theta = 100000, w_tau = 20; // Human
+	//double w_theta = 2000, w_tau = 20;
+	double w_theta = 100000, w_tau = 20; // Human
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
@@ -85,7 +85,6 @@ public:
 	QMutex mutex;
 
 	void paramSet(double* params);
-	void configFiles(char emg_string[]);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init(char emg_string[]);
 	void mpc_loop();
@@ -105,6 +104,8 @@ private:
 
 	MotorThread *motorThread;
 	TMSiController *TMSi;
+
+	double aiVec[4];
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:

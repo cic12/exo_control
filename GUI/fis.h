@@ -6,7 +6,7 @@
 using namespace std;
 
 extern int haltMode;
-extern double mu[4];
+extern double mu[6];
 extern double rule[4];
 extern double lambdaA;
 extern double lambdaR;
