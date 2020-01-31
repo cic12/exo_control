@@ -226,9 +226,9 @@ void TMSiController::streamProcess()
 				aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
 
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
-				if (createdRecording) {
+				//if (createdRecording) {
 					//addRecordingLine(currentReadTime, currentSample);
-				}
+				//}
 			}
 		}
 	}

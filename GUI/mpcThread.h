@@ -39,7 +39,7 @@ struct mpcParams {
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
 	const double ConstraintsAbsTol[NH] = { 1e-3, 1e-3, 1e-3, 1e-3 };
-};
+}; extern mpcParams mpc0;
 
 struct modelParams {
 	double J_h[6] = { 0, 0.2383, 0, 0, 0, 0 };
@@ -57,7 +57,7 @@ struct modelParams {
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
-};
+}; extern modelParams model0;
 
 struct plotVars {
 	double time = 0,
@@ -66,6 +66,8 @@ struct plotVars {
 		AIdata0 = 0, AIm0 = 0, AIdata1 = 0, AIm1 = 0,
 		lambdaA = 0, lambdaR = 0;
 };
+
+extern char* emg_data;
 	
 class MPCThread : public QThread
 {
@@ -73,13 +75,11 @@ class MPCThread : public QThread
 
 public:
 	MPCThread(QObject *parent);
-	
+
 	void run();
 	bool Stop = false;
 	int iMPC = 0;
 
-	mpcParams mpc0;
-	modelParams model0;
 	plotVars vars0;
 
 	QMutex mutex;
