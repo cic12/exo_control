@@ -14,10 +14,6 @@ MPCThread::MPCThread(QObject *parent)
 		motorThread = new MotorThread(this);
 		motorThread->start(QThread::LowPriority);
 	}
-	else
-	{
-		motor_init = 1;
-	}
 	if (!test0.aiSim) {
 		TMSi = new TMSiController();
 	}
@@ -27,8 +23,9 @@ void MPCThread::run()
 {
 	mpc_init(emg_data);
 
-	while (!motor_init);
-
+	if (test0.Device)
+		while (!motorThread->motor_init);
+	
 	last_time = clock();
 	start_time = last_time;
 	while (!Stop && t < mpc0.Tsim) {
@@ -156,7 +153,8 @@ void MPCThread::mpc_stop() {
 	grampc_free(&grampc_);
 
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
-	GUIPrint("Command Cycles  :" + QString::number(motor_comms_count, 'f', 0) + "\n");
+	if(test0.Device)
+		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n");
 }
 
 void MPCThread::mpc_loop() {
@@ -177,34 +175,31 @@ void MPCThread::mpc_loop() {
 		grampc_run(grampc_);
 
 		if (test0.Device) {
-			demandedCurrent = *grampc_->sol->unext;
-		}
-		if (test0.Sim) { // Heun scheme // Convert to Sim function
-			plantSim();
-		}
-		else {
-			if (test0.Device) {
-				grampc_->sol->xnext[0] = currentPosition - 0.125 * M_PI - 0.5 * M_PI;
-			}
+			motorThread->demandedTorque = *grampc_->sol->unext;
+			grampc_->sol->xnext[0] = motorThread->currentPosition - 0.125 * M_PI - 0.5 * M_PI;
+
 			if (iMPC == 0) {
-				previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
+				motorThread->previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
 			}
-			currentVelocity = (grampc_->sol->xnext[0] - previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
+			currentVelocity = (grampc_->sol->xnext[0] - motorThread->previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
 			currentAcceleration = (grampc_->sol->xnext[1] - previousVelocity) / mpc0.dt; // USE DESIRED ACC INSTEAD
-			previousPosition = grampc_->sol->xnext[0];
+			motorThread->previousPosition = grampc_->sol->xnext[0];
 			previousVelocity = grampc_->sol->xnext[1];
 		}
+
+		if (test0.Sim) { // Overwrites position with device connected
+			plantSim();
+		}
+
 		controlFunctions(fis0);
 		t = t + mpc0.dt;
-		if (haltMode) {
-			t_halt = t_halt + mpc0.dt;
-		}
+		//if (haltMode) {
+		//	t_halt = t_halt + mpc0.dt;
+		//}
 		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 		iMPC++;
-
 		print2Files();
-
 		time_counter -= (double)(mpc0.dt * CLOCKS_PER_SEC);
 		task_count++;
 	}

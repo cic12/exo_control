@@ -193,6 +193,7 @@ void GUI::on_btn_stop_clicked()
 void GUI::on_btn_reset_clicked()
 {
 	mpcThread = new MPCThread(this);
+	//mpc_complete = 0;
 }
 
 void GUI::on_btn_set_params_clicked()
@@ -216,7 +217,7 @@ void GUI::onTimeout()
 {
 	mpcThread->mutex.lock();
 	plot_vars = mpcThread->vars0;
-	if (mpc_complete) {
+	if (mpcThread->Stop) {
 		timer->stop();
 	}
 	mpcThread->mutex.unlock();

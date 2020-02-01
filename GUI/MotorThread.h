@@ -11,14 +11,7 @@
 
 using namespace hebi;
 
-extern double demandedCurrent;
-extern short inputCurrent;
-extern double currentPosition, homePosition, previousPosition;
-
-extern bool mpc_initialised;
 extern bool mpc_complete;
-extern double motor_comms_count;
-extern bool motor_init;
 
 class MotorThread : public QThread
 {
@@ -28,6 +21,11 @@ public:
 	MotorThread(QObject *parent);
 	void run();
 
+	bool motor_init = 0;
+	double demandedTorque = 0;
+	double motor_comms_count = 0;
+	double currentPosition = 0;
+	double previousPosition = 0;
 private:
 	Lookup lookup;
 	std::shared_ptr<hebi::Group> group;
