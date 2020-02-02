@@ -101,7 +101,6 @@ private:
 	clock_t this_time, last_time, start_time, end_time;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	typeGRAMPC *grampc_;
-	TaskHandle  AItaskHandle = 0, AOtaskHandle = 0;
 
 	MotorThread *motorThread;
 	TMSiController *TMSi;

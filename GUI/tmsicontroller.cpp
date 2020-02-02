@@ -223,7 +223,7 @@ void TMSiController::streamProcess()
 				AIm[0] = emgProcess(AIdata[0], 0);
 				AIm[1] = emgProcess(AIdata[1], 1);
 
-				aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
+				raw_aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
 
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
 				//if (createdRecording) {

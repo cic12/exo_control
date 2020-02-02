@@ -89,7 +89,7 @@ void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
 		AImvec.append(emgProcess(aivec[i],0));
 		AImvec1.append(emgProcess(aivec1[i],1));
 
-		aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
+		raw_aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 	}
 }
 
@@ -111,7 +111,7 @@ void MPCThread::mpc_init() {
 		mpc0.AugLagUpdateGradientRelTol,
 		mpc0.ConstraintsAbsTol);
 
-	aiFile.open("../res/ai_daq.txt");
+	raw_aiFile.open("../res/ai_daq.txt");
 	if (test0.aiSim) {
 		aiSimProcess(emgPath);
 	}
@@ -147,7 +147,7 @@ void MPCThread::mpc_stop() {
 	if (test0.Device) {
 		motorThread->mpc_complete = 1;
 	}
-	aiFile.close();
+	raw_aiFile.close();
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
