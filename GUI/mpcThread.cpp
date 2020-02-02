@@ -45,10 +45,8 @@ void MPCThread::run()
 			vars0.u = grampc_->sol->unext[0];
 			vars0.hTauEst = grampc_->sol->xnext[2];
 			vars0.mode = grampc_->sol->xnext[3];
-			vars0.AIdata0 = AIdata[0];
-			vars0.AIm0 = AIm[0];
-			vars0.AIdata1 = AIdata[1];
-			vars0.AIm1 = AIm[1];
+			vars0.emg0 = emgVec[0];
+			vars0.emg1 = emgVec[1];
 			vars0.lambdaA = fuzzyInferenceSystem->lambdaA;
 			vars0.lambdaR = fuzzyInferenceSystem->lambdaR;
 			mutex.unlock();
@@ -197,7 +195,7 @@ void MPCThread::mpc_loop() {
 		if (test0.Sim) { // Overwrites position with device connected
 			plantSim();
 		}
-
+		daqProcess();
 		controlFunctions(fis0);
 		t = t + mpc0.dt;
 		//if (haltMode) {
@@ -211,26 +209,34 @@ void MPCThread::mpc_loop() {
 	}
 }
 
-void MPCThread::controlFunctions(fisParams fis) {
+void MPCThread::daqProcess() {
 	if (test0.aiSim) {
 		if (t < 24) {
-			AIm[0] = AImvec[iMPC];
-			AIm[1] = AImvec1[iMPC];
+			emgVec[0] = AImvec[iMPC];
+			emgVec[1] = AImvec1[iMPC];
 		}
 		else {
-			AIm[0] = 0;
-			AIm[1] = 0;
+			emgVec[0] = 0;
+			emgVec[1] = 0;
 		}
 	}
-	aiVec[0] = AIm[0];
-	aiVec[1] = AIm[0];
-	aiVec[2] = AIdata[0];
-	aiVec[3] = AIdata[1];
+	else {
+		emgVec[0] = TMSi->daq->AIm[0];
+		emgVec[1] = TMSi->daq->AIm[1];
+		emgVec[2] = TMSi->daq->AIdata[0];
+		emgVec[3] = TMSi->daq->AIdata[1];
+	}
+}
+
+void MPCThread::controlFunctions(fisParams fis) {
 	if (test0.tauEst) {
-		grampc_->sol->xnext[2] = fuzzyInferenceSystem->hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
+		grampc_->sol->xnext[2] = fuzzyInferenceSystem->hTorqueEst(emgVec[0], emgVec[1], fis.b1, fis.b2, fis.b3);
+	}
+	else {
+		grampc_->sol->xnext[2] = 0;
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = fuzzyInferenceSystem->assistanceMode(fuzzyInferenceSystem->hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis0);
+		grampc_->sol->xnext[3] = fuzzyInferenceSystem->assistanceMode(grampc_->sol->xnext[2], mpc0.xdes[1], fis0);
 	}
 }
 
@@ -254,5 +260,5 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
 	printNumVector2File(file_mu, fuzzyInferenceSystem->mu, 6);
 	printNumVector2File(file_rule, fuzzyInferenceSystem->rule, 4);
-	printNumVector2File(file_ai, aiVec, 4);
+	printNumVector2File(file_ai, emgVec, 4);
 }

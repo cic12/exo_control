@@ -25,7 +25,7 @@ struct testParams {
 	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
 	int Device = 0; // 0 - None, 1 - HEBI
 	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Annika
-	double T = 4.0;
+	double T = 20.0;
 	double freq = 0.25;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
 }; extern testParams test0;
@@ -65,7 +65,7 @@ struct plotVars {
 	double time = 0,
 		x1 = 0, x1des = 0, x2 = 0,
 		u = 0, hTauEst = 0, mode = 1,
-		AIdata0 = 0, AIm0 = 0, AIdata1 = 0, AIm1 = 0,
+		emg0 = 0, emg1 = 0,
 		lambdaA = 0, lambdaR = 0;
 };
 	
@@ -89,6 +89,7 @@ public:
 	void mpc_init();
 	void mpc_loop();
 	void mpc_stop();
+	void daqProcess();
 	void controlFunctions(fisParams);
 	void plantSim();
 	void print2Files();
@@ -108,7 +109,7 @@ private:
 
 	char* emgPath = test0.emgPath;
 	double freq = test0.freq;
-	double aiVec[4];
+	double emgVec[4];
 	
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:
