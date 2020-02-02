@@ -1,9 +1,10 @@
 #include "daq.h"
 
-char errBuff[2048] = { '\0' };
-int32 error = 0;
+//char errBuff[2048] = { '\0' };
+//int32 error = 0;
 ofstream aiFile;
-float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { -0 , -0 };
+float64	AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, offset[2] = { -0 , -0 };
+// AOdata[2] = { 3.3 , 3.3 },
 
 struct filter_para {
 	double x[3][2];
@@ -64,54 +65,54 @@ double highpass1(double X_in, int emg)
 	return high_para1.y[0][emg];
 }
 
-TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle, int AIsamplingRate) {
+//TaskHandle DAQmxAIinit(int32 error, char &errBuff, TaskHandle AItaskHandle, int AIsamplingRate) {
+//
+//	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
+//	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "ai0diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
+//	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "ai1diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
+//	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", AIsamplingRate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
+//	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
+//
+//Error:
+//	if (DAQmxFailed(error)) {
+//		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+//		DAQmxStopTask(AItaskHandle);
+//		DAQmxClearTask(AItaskHandle);
+//		throw errBuff;
+//	}
+//	return AItaskHandle;
+//}
 
-	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "ai0diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "ai1diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", AIsamplingRate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
-	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
+//TaskHandle DAQmxAOinit(float64 &AOdata, int32 error, char &errBuff, TaskHandle AOtaskHandle) {
+//
+//	DAQmxErrChk(DAQmxCreateTask("3V3 Out", &AOtaskHandle));
+//	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
+//	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao1", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
+//	DAQmxErrChk(DAQmxWriteAnalogF64(AOtaskHandle, 1, 1, 10.0, DAQmx_Val_GroupByChannel, &AOdata, NULL, NULL));
+//
+//Error:
+//	if (DAQmxFailed(error)) {
+//		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+//		DAQmxStopTask(AOtaskHandle);
+//		DAQmxClearTask(AOtaskHandle);
+//		throw errBuff;
+//	}
+//	return AOtaskHandle;
+//}
 
-Error:
-	if (DAQmxFailed(error)) {
-		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
-		DAQmxStopTask(AItaskHandle);
-		DAQmxClearTask(AItaskHandle);
-		throw errBuff;
-	}
-	return AItaskHandle;
-}
-
-TaskHandle DAQmxAOinit(float64 &AOdata, int32 error, char &errBuff, TaskHandle AOtaskHandle) {
-
-	DAQmxErrChk(DAQmxCreateTask("3V3 Out", &AOtaskHandle));
-	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao1", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxWriteAnalogF64(AOtaskHandle, 1, 1, 10.0, DAQmx_Val_GroupByChannel, &AOdata, NULL, NULL));
-
-Error:
-	if (DAQmxFailed(error)) {
-		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
-		DAQmxStopTask(AOtaskHandle);
-		DAQmxClearTask(AOtaskHandle);
-		throw errBuff;
-	}
-	return AOtaskHandle;
-}
-
-TaskHandle DAQmxAstart(int32 error, char &errBuff, TaskHandle taskHandle)
-{
-	DAQmxErrChk(DAQmxStartTask(taskHandle));
-
-Error:
-	if (DAQmxFailed(error)) {
-		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
-		DAQmxStopTask(taskHandle);
-		DAQmxClearTask(taskHandle);
-		throw errBuff;
-	}
-	return taskHandle;
-}
+//TaskHandle DAQmxAstart(int32 error, char &errBuff, TaskHandle taskHandle)
+//{
+//	DAQmxErrChk(DAQmxStartTask(taskHandle));
+//
+//Error:
+//	if (DAQmxFailed(error)) {
+//		DAQmxGetExtendedErrorInfo(&errBuff, 2048);
+//		DAQmxStopTask(taskHandle);
+//		DAQmxClearTask(taskHandle);
+//		throw errBuff;
+//	}
+//	return taskHandle;
+//}
 
 double clipLimEMG(double emg, double lim) {
 	if (abs(emg) > lim) {
@@ -136,27 +137,27 @@ double emgProcess(double AI,int i)
 	return lowpass2(abs(clipLimEMG(noiseLimEMG(lowpass1(clipLimEMG(highpass1((AI + offset[i]),i),clip1),i),clip2),clip3)),i);
 }
 
-int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
-{
-	int32   error = 0;
-	char    errBuff[2048] = { '\0' };
-	int32   read = 0;
-
-	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
-
-	AIm[0] = emgProcess(AIdata[0],0);
-	AIm[1] = emgProcess(AIdata[1],1);
-
-	if (read>0) {
-		aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
-	}
-
-Error:
-	if (DAQmxFailed(error)) {
-		DAQmxGetExtendedErrorInfo(errBuff, 2048);
-		DAQmxStopTask(taskHandle);
-		DAQmxClearTask(taskHandle);
-		throw errBuff;
-	}
-	return 0;
-}
+//int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
+//{
+//	int32   error = 0;
+//	char    errBuff[2048] = { '\0' };
+//	int32   read = 0;
+//
+//	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
+//
+//	AIm[0] = emgProcess(AIdata[0],0);
+//	AIm[1] = emgProcess(AIdata[1],1);
+//
+//	if (read>0) {
+//		aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
+//	}
+//
+//Error:
+//	if (DAQmxFailed(error)) {
+//		DAQmxGetExtendedErrorInfo(errBuff, 2048);
+//		DAQmxStopTask(taskHandle);
+//		DAQmxClearTask(taskHandle);
+//		throw errBuff;
+//	}
+//	return 0;
+//}
