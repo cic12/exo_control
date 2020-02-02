@@ -1,7 +1,5 @@
 #include "mpc.h"
 
-ofstream	mpcFile;
-
 void openFile(FILE **file, const char *name) {
 	*file = fopen(name, "w");
 	if (*file == NULL) {
@@ -54,6 +52,7 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, c
 	//grampc_setopt_real_vector(*grampc_, " ConstraintsAbsTol ", ConstraintsAbsTol);
 
 	// MPC params
+	ofstream mpcFile;
 
 	mpcFile.open("../res/mpcDetails.txt");
 

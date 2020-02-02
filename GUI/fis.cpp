@@ -1,22 +1,24 @@
 #include "fis.h"
 
-int haltMode;
-double mu[6], rule[4], lambdaA, lambdaR;
 fisParams fis0;
 
-double hTorqueEst(double m1, double m2, double b1, double b2, double b3) {
-	return (b1 + b2 * m1 + b3 * m2);
+FIS::FIS() {
+
 }
 
-double gaussmf(double x, double sig, double c) {
-	return exp(-((x - c)*(x - c))/(2*sig*sig));
+double FIS::gaussmf(double x, double sig, double c) {
+	return exp(-((x - c)*(x - c)) / (2 * sig*sig));
 }
 
-double sigmf(double x, double a, double c) {
-	return 1 / (1 + exp(-a*(x - c)));
+double FIS::sigmf(double x, double a, double c) {
+	return 1 / (1 + exp(-a * (x - c)));
 }
 
-double assistanceMode(double Tau_h, double x_des, fisParams fis)
+double FIS::hTorqueEst(double e1, double e2, double b1, double b2, double b3) {
+	return (b1 + b2 * e1 + b3 * e2);
+}
+
+double FIS::assistanceMode(double Tau_h, double x_des, fisParams fis)
 {
 	mu[0] = fis.s0 * gaussmf(x_des, fis.eN_sig, fis.eN_c); // exo N
 	mu[1] = fis.s0 * gaussmf(x_des, fis.eP_sig, fis.eP_c); // exo P

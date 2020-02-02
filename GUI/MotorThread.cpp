@@ -1,7 +1,5 @@
 #include "motorThread.h"
 
-bool mpc_complete = 0;
-
 MotorThread::MotorThread(QObject *parent)
 	: QThread(parent)
 {
@@ -33,7 +31,6 @@ void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 		motor_comms_count++;
 		mutex.unlock();
 	}
-	// Stop logging
 	auto log_file = group->stopLog();
 }
 		

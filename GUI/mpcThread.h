@@ -27,6 +27,8 @@ struct testParams {
 	int Device = 0; // 0 - None, 1 - HEBI
 	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Annika
 	double T = 4.0;
+	double freq = 0.25;
+	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
 }; extern testParams test0;
 
 struct mpcParams {
@@ -67,8 +69,6 @@ struct plotVars {
 		AIdata0 = 0, AIm0 = 0, AIdata1 = 0, AIm1 = 0,
 		lambdaA = 0, lambdaR = 0;
 };
-
-extern char* emg_data;
 	
 class MPCThread : public QThread
 {
@@ -87,7 +87,7 @@ public:
 
 	void paramSet(double* params);
 	void aiSimProcess(char emg_string[]);
-	void mpc_init(char emg_string[]);
+	void mpc_init();
 	void mpc_loop();
 	void mpc_stop();
 	void controlFunctions(fisParams);
@@ -105,9 +105,12 @@ private:
 
 	MotorThread *motorThread;
 	TMSiController *TMSi;
+	FIS *fuzzyInferenceSystem;
 
+	char* emgPath = test0.emgPath;
+	double freq = test0.freq;
 	double aiVec[4];
-
+	
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:
 	void mpcIteration(plotVars);

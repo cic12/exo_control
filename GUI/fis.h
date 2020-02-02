@@ -1,15 +1,7 @@
 #ifndef FIS_H_
 #define FIS_H_
 
-#include <algorithm>    // std::min
-
-using namespace std;
-
-extern int haltMode;
-extern double mu[6];
-extern double rule[4];
-extern double lambdaA;
-extern double lambdaR;
+#include <math.h>
 
 struct fisParams {
 	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
@@ -23,9 +15,18 @@ struct fisParams {
 
 extern fisParams fis0;
 
-double hTorqueEst(double m1, double m2, double b1, double b2, double b3);
-double gaussmf(double x, double sig, double c);
-double sigmf(double x, double a, double c);
-double assistanceMode(double Tau_h, double dtheta, fisParams fis);
+class FIS {
+public:
+	FIS();
+	int haltMode;
+	double mu[6], rule[4], lambdaA, lambdaR;
+
+	double hTorqueEst(double e1, double e2, double b1, double b2, double b3);
+	double assistanceMode(double Tau_h, double dtheta, fisParams fis);
+private:
+	double gaussmf(double x, double sig, double c);
+	double sigmf(double x, double a, double c);
+};
+
 
 #endif

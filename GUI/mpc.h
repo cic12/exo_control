@@ -6,9 +6,7 @@
 #include "libgrampc.h"
 
 using namespace std;
-
-extern ofstream mpcFile;
-
+ 
 void openFile(FILE **file, const char *name);
 void printNumVector2File(FILE *file, const double *const val, const int size);
 void printVector2File(const char *prefix, ofstream *file, const double * val, const int size);

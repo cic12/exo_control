@@ -5,13 +5,11 @@
 
 #include "hebi.h"
 #include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
-#include "group_command.hpp" // "
-#include "group_feedback.hpp" // "
-#include "log_file.hpp" // "
+#include "group_command.hpp"
+#include "group_feedback.hpp"
+#include "log_file.hpp"
 
 using namespace hebi;
-
-extern bool mpc_complete;
 
 class MotorThread : public QThread
 {
@@ -22,6 +20,7 @@ public:
 	void run();
 
 	bool motor_init = 0;
+	bool mpc_complete = 0;
 	double demandedTorque = 0;
 	double motor_comms_count = 0;
 	double currentPosition = 0;

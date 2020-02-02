@@ -3,13 +3,11 @@
 testParams test0;
 mpcParams mpc0;
 modelParams model0;
-char* emg_data;
 
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
-	emg_data = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
-
+	emgPath = test0.emgPath;
 	if (test0.Device) {
 		motorThread = new MotorThread(this);
 		motorThread->start(QThread::LowPriority);
@@ -17,11 +15,12 @@ MPCThread::MPCThread(QObject *parent)
 	if (!test0.aiSim) {
 		TMSi = new TMSiController();
 	}
+	fuzzyInferenceSystem = new FIS();
 }
 
 void MPCThread::run()
 {
-	mpc_init(emg_data);
+	mpc_init();
 
 	if (test0.Device)
 		while (!motorThread->motor_init);
@@ -45,8 +44,8 @@ void MPCThread::run()
 			vars0.AIm0 = AIm[0];
 			vars0.AIdata1 = AIdata[1];
 			vars0.AIm1 = AIm[1];
-			vars0.lambdaA = lambdaA;
-			vars0.lambdaR = lambdaR;
+			vars0.lambdaA = fuzzyInferenceSystem->lambdaA;
+			vars0.lambdaR = fuzzyInferenceSystem->lambdaR;
 			mutex.unlock();
 		}
 	}
@@ -56,8 +55,6 @@ void MPCThread::run()
 
 void MPCThread::paramSet(double* params)
 {
-	//A, double B, double J, double tau_g, double w_theta, double w_tau, double Thor,
-	//double b1, double b2, double b3, double pA, double pR, double sig_h, double c_h, double sig_e, double c_e, double halt_lim) {
 	model0.A = params[0]; model0.pSys[0] = model0.A;
 	model0.B = params[1]; model0.pSys[1] = model0.B;
 	model0.J = params[2]; model0.pSys[2] = model0.J;
@@ -96,7 +93,7 @@ void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
 	}
 }
 
-void MPCThread::mpc_init(char emg_string[]) {
+void MPCThread::mpc_init() {
 	mpcInit(&grampc_,
 		&model0.pSys, 
 		mpc0.x0,
@@ -116,7 +113,7 @@ void MPCThread::mpc_init(char emg_string[]) {
 
 	aiFile.open("../res/ai_daq.txt");
 	if (test0.aiSim) {
-		aiSimProcess(emg_string);
+		aiSimProcess(emgPath);
 	}
 
 	
@@ -147,11 +144,12 @@ void MPCThread::mpc_stop() {
 		TMSi->reset();
 	}
 	Stop = 1;
-	mpc_complete = 1;
+	if (test0.Device) {
+		motorThread->mpc_complete = 1;
+	}
 	aiFile.close();
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
-
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	if(test0.Device)
 		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n");
@@ -165,9 +163,8 @@ void MPCThread::mpc_loop() {
 	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
 		// Setpoint
-		mpc0.xdes[0] = (cos((0.25 * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		mpc0.xdes[0] = (cos((freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
 		mpc0.xdes[1] = (mpc0.xdes[0] - xdes_previous) / mpc0.dt;
-
 		grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
 		xdes_previous = mpc0.xdes[0];
 
@@ -221,10 +218,10 @@ void MPCThread::controlFunctions(fisParams fis) {
 	aiVec[2] = AIdata[0];
 	aiVec[3] = AIdata[1];
 	if (test0.tauEst) {
-		grampc_->sol->xnext[2] = hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
+		grampc_->sol->xnext[2] = fuzzyInferenceSystem->hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3);
 	}
 	if (test0.Mode) {
-		grampc_->sol->xnext[3] = assistanceMode(hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis0);
+		grampc_->sol->xnext[3] = fuzzyInferenceSystem->assistanceMode(fuzzyInferenceSystem->hTorqueEst(AIm[0], AIm[1], fis.b1, fis.b2, fis.b3), mpc0.xdes[1], fis0);
 	}
 }
 
@@ -246,7 +243,7 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_t, &t, 1);
 	printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
-	printNumVector2File(file_mu, mu, 6);
-	printNumVector2File(file_rule, rule, 4);
+	printNumVector2File(file_mu, fuzzyInferenceSystem->mu, 6);
+	printNumVector2File(file_rule, fuzzyInferenceSystem->rule, 4);
 	printNumVector2File(file_ai, aiVec, 4);
 }
