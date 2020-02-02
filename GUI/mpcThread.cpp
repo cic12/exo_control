@@ -14,6 +14,11 @@ MPCThread::MPCThread(QObject *parent)
 	}
 	if (!test0.aiSim) {
 		TMSi = new TMSiController();
+		TMSi->daq->daq_aiFile.open("../res/ai_daq.txt");
+	}
+	else {
+		daqSim = new DAQ();
+		daqSim->daq_aiFile.open("../res/ai_daqSim.txt");
 	}
 	fuzzyInferenceSystem = new FIS();
 }
@@ -86,10 +91,10 @@ void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
 		aivec.append(wordList.at(i).toDouble());
 		aivec1.append(wordList1.at(i).toDouble());
 
-		AImvec.append(emgProcess(aivec[i],0));
-		AImvec1.append(emgProcess(aivec1[i],1));
+		AImvec.append(daqSim->emgProcess(aivec[i],0));
+		AImvec1.append(daqSim->emgProcess(aivec1[i],1));
 
-		raw_aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
+		daqSim->daq_aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 	}
 }
 
@@ -111,7 +116,6 @@ void MPCThread::mpc_init() {
 		mpc0.AugLagUpdateGradientRelTol,
 		mpc0.ConstraintsAbsTol);
 
-	raw_aiFile.open("../res/ai_daq.txt");
 	if (test0.aiSim) {
 		aiSimProcess(emgPath);
 	}
@@ -147,7 +151,12 @@ void MPCThread::mpc_stop() {
 	if (test0.Device) {
 		motorThread->mpc_complete = 1;
 	}
-	raw_aiFile.close();
+	if (test0.aiSim) {
+		daqSim->daq_aiFile.close();
+	}
+	else {
+		TMSi->daq->daq_aiFile.close();
+	}
 	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
 	grampc_free(&grampc_);
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");

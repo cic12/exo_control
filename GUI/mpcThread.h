@@ -12,7 +12,6 @@
 #include "ui_GUI.h"
 #include "motorThread.h"
 #include "fis.h"
-#include "daq.h"
 #include "mpc.h"
 #include "tmsicontroller.h"
 
@@ -105,6 +104,7 @@ private:
 	MotorThread *motorThread;
 	TMSiController *TMSi;
 	FIS *fuzzyInferenceSystem;
+	DAQ *daqSim;
 
 	char* emgPath = test0.emgPath;
 	double freq = test0.freq;

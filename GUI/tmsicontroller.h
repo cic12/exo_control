@@ -18,6 +18,8 @@ class TMSiController
 public:
 	TMSiController();
 
+	DAQ *daq;
+
 	bool locateDLL();
 	bool initialiseLibrary();
 	bool findDevice();

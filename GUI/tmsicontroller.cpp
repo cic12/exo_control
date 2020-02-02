@@ -2,6 +2,8 @@
 
 TMSiController::TMSiController()
 {
+	daq = new DAQ();
+
 	locateDLL();
 	initialiseLibrary();
 	bool found = findDevice();
@@ -217,13 +219,13 @@ void TMSiController::streamProcess()
 				}
 				timeStampsC.push_back(currentReadTime.load());
 
-				AIdata[0] = (double)currentSample[16] / 1000;
-				AIdata[1] = (double)currentSample[17] / 1000;
+				daq->AIdata[0] = (double)currentSample[16] / 1000;
+				daq->AIdata[1] = (double)currentSample[17] / 1000;
 
-				AIm[0] = emgProcess(AIdata[0], 0);
-				AIm[1] = emgProcess(AIdata[1], 1);
+				daq->AIm[0] = daq->emgProcess(daq->AIdata[0], 0);
+				daq->AIm[1] = daq->emgProcess(daq->AIdata[1], 1);
 
-				raw_aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
+				daq->daq_aiFile << daq->AIdata[0] << "," << daq->AIdata[1] << "," << daq->AIm[0] << "," << daq->AIm[1] << "\n";
 
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
 				//if (createdRecording) {
