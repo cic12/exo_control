@@ -22,10 +22,10 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
+	bool Sim = 1, aiSim = 1, tauEst = 0, Mode = 0;
 	int Device = 0; // 0 - None, 1 - HEBI
 	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Annika
-	double T = 20.0;
+	double T = 1.0;
 	double freq = 0.25;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
 }; extern testParams test0;
