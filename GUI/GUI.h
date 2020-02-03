@@ -6,8 +6,6 @@
 #include "mpcThread.h"
 #include "qcustomplot.h"
 
-
-
 class GUI : public QMainWindow
 {
 	Q_OBJECT
@@ -18,6 +16,7 @@ public:
 	QTimer *timer;
 private:
 	void initPlots();
+	void clearPlots();
 	void addPoints(plotVars);
 	void plot();
 	Ui::GUIClass ui;

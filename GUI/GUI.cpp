@@ -23,6 +23,54 @@ GUI::GUI(QWidget *parent)
 	ui.Thor_box->setValue(mpcThread->mpc.Thor);
 }
 
+void GUI::onTimeout()
+{
+	mpcThread->mutex.lock();
+	plot_vars = mpcThread->vars;
+	if (mpcThread->Stop) {
+		timer->stop();
+	}
+	mpcThread->mutex.unlock();
+
+	ui.label_3->setText(QString::number(plot_vars.time, 'f', 3));
+	addPoints(plot_vars);
+	plot();
+}
+
+void GUI::on_btn_start_clicked()
+{
+	mpcThread->start(QThread::NormalPriority);
+	clearPlots();
+	timer->start(20); // Timer period in ms controls GUI update frequency
+}
+
+void GUI::on_btn_stop_clicked()
+{
+	mpcThread->Stop = true;
+}
+
+void GUI::on_btn_reset_clicked()
+{
+	mpcThread = new MPCThread(this);
+}
+
+void GUI::on_btn_set_params_clicked()
+{
+	double params[7] = { ui.A_box->value(),
+		ui.B_box->value(),
+		ui.J_box->value(),
+		ui.tau_g_box->value(),
+		ui.W_theta_box->value(),
+		ui.W_tau_box->value(),
+		ui.Thor_box->value() };
+	mpcThread->paramSet(params);
+}
+
+void GUI::onGUIPrint(QString message)
+{
+	ui.plainTextEdit->insertPlainText(message);
+}
+
 void GUI::initPlots()
 {
 	QFont font; // include this to fully disable antialiasing for higher performance
@@ -122,6 +170,24 @@ void GUI::initPlots()
 	ui.plot5->yAxis->setRange(ylim5[0], ylim5[1]);
 }
 
+void GUI::clearPlots()
+{
+	ui.plot->graph(0)->data()->clear();
+	ui.plot->graph(1)->data()->clear();
+
+	ui.plot1->graph(0)->data()->clear();
+	ui.plot1->graph(1)->data()->clear();
+	ui.plot1->graph(2)->data()->clear();
+
+	ui.plot2->graph(0)->data()->clear();
+
+	ui.plot3->graph(0)->data()->clear();
+
+	ui.plot4->graph(0)->data()->clear();
+
+	ui.plot5->graph(0)->data()->clear();
+}
+
 void GUI::addPoints(plotVars vars)
 {
 	// Add data
@@ -172,51 +238,4 @@ void GUI::plot()
 	ui.plot3->replot();
 	ui.plot4->replot();
 	ui.plot5->replot();
-}
-
-void GUI::on_btn_start_clicked()
-{
-	mpcThread->start(QThread::NormalPriority);
-	timer->start(20); // Timer period in ms controls GUI update frequency
-}
-
-void GUI::on_btn_stop_clicked()
-{
-	mpcThread->Stop = true;
-}
-
-void GUI::on_btn_reset_clicked()
-{
-	mpcThread = new MPCThread(this);
-}
-
-void GUI::on_btn_set_params_clicked()
-{
-	double params[7] = { ui.A_box->value(),
-		ui.B_box->value(),
-		ui.J_box->value(),
-		ui.tau_g_box->value(),
-		ui.W_theta_box->value(),
-		ui.W_tau_box->value(),
-		ui.Thor_box->value() };
-	mpcThread->paramSet(params);
-}
-
-void GUI::onGUIPrint(QString message)
-{
-	ui.plainTextEdit->insertPlainText(message);
-}
-
-void GUI::onTimeout()
-{
-	mpcThread->mutex.lock();
-	plot_vars = mpcThread->vars;
-	if (mpcThread->Stop) {
-		timer->stop();
-	}
-	mpcThread->mutex.unlock();
-
-	ui.label_3->setText(QString::number(plot_vars.time, 'f', 3));
-	addPoints(plot_vars);
-	plot();
 }

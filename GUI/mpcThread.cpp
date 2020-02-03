@@ -14,7 +14,6 @@ MPCThread::MPCThread(QObject *parent)
 
 	if (test.Device) {
 		motorThread = new MotorThread(this);
-		motorThread->start(QThread::LowPriority);
 	}
 	if (!test.aiSim) {
 		TMSi = new TMSiController();
@@ -28,9 +27,17 @@ MPCThread::MPCThread(QObject *parent)
 
 }
 
+MPCThread::~MPCThread()
+{
+}
+
 void MPCThread::run()
 {
 	mpc_init();
+
+	if (test.Device) {
+		motorThread->start(QThread::LowPriority);
+	}
 
 	if (test.Device)
 		while (!motorThread->motor_init);
@@ -151,6 +158,7 @@ void MPCThread::mpc_stop() {
 	Stop = 1;
 	if (test.Device) {
 		motorThread->mpc_complete = 1;
+		motorThread->motor_init = 0;
 	}
 	if (test.aiSim) {
 		daqSim->daq_aiFile.close();

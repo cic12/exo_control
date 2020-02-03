@@ -5,6 +5,11 @@ MotorThread::MotorThread(QObject *parent)
 {
 }
 
+MotorThread::~MotorThread()
+{
+
+}
+
 void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 	group = lookup.getGroupFromNames({ "X8-9" }, { "X-80768" });
 	if (!group) {
@@ -15,6 +20,7 @@ void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 	Eigen::VectorXd efforts(1);
 	GroupFeedback group_feedback(group->size());
 	group->setFeedbackFrequencyHz(500);
+	group->start
 
 	motor_init = 1;
 	
@@ -31,6 +37,6 @@ void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 		motor_comms_count++;
 		mutex.unlock();
 	}
+	//group->
 	auto log_file = group->stopLog();
-}
-		
+}	

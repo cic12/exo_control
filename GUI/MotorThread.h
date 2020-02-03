@@ -4,7 +4,7 @@
 #include <QMutex>
 
 #include "hebi.h"
-#include "lookup.hpp" // THESE INCLUDES MAKE REFERENCING ESSENTIAL -> CHANGE TO EXTERNAL STATIC LIBRARY
+#include "lookup.hpp"
 #include "group_command.hpp"
 #include "group_feedback.hpp"
 #include "log_file.hpp"
@@ -17,6 +17,7 @@ class MotorThread : public QThread
 
 public:
 	MotorThread(QObject *parent);
+	~MotorThread();
 	void run();
 
 	bool motor_init = 0;
