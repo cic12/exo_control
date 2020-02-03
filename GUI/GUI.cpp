@@ -26,12 +26,13 @@ GUI::GUI(QWidget *parent)
 void GUI::onTimeout()
 {
 	mpcThread->mutex.lock();
-	plot_vars = mpcThread->vars;
-	if (mpcThread->Stop) {
-		timer->stop();
+	if (mpcThread->motorThread->motor_init) {
+		plot_vars = mpcThread->vars;
+		if (mpcThread->Stop) {
+			timer->stop();
+		}
 	}
 	mpcThread->mutex.unlock();
-
 	ui.label_3->setText(QString::number(plot_vars.time, 'f', 3));
 	addPoints(plot_vars);
 	plot();
@@ -39,7 +40,9 @@ void GUI::onTimeout()
 
 void GUI::on_btn_start_clicked()
 {
+
 	mpcThread->start(QThread::NormalPriority);
+	
 	clearPlots();
 	timer->start(20); // Timer period in ms controls GUI update frequency
 }
@@ -51,7 +54,12 @@ void GUI::on_btn_stop_clicked()
 
 void GUI::on_btn_reset_clicked()
 {
-	mpcThread = new MPCThread(this);
+	if (!mpc_reset) {
+		ui.plainTextEdit->insertPlainText("MPC Reset \n");
+		mpcThread = new MPCThread(this);
+		connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
+		mpc_reset = true;
+	}
 }
 
 void GUI::on_btn_set_params_clicked()

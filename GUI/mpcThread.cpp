@@ -158,7 +158,7 @@ void MPCThread::mpc_stop() {
 	Stop = 1;
 	if (test.Device) {
 		motorThread->mpc_complete = 1;
-		motorThread->motor_init = 0;
+		//motorThread->motor_init = 0;
 	}
 	if (test.aiSim) {
 		daqSim->daq_aiFile.close();

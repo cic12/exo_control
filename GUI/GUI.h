@@ -15,10 +15,8 @@ public:
 	MPCThread *mpcThread;
 	QTimer *timer;
 private:
-	void initPlots();
-	void clearPlots();
-	void addPoints(plotVars);
-	void plot();
+
+
 	Ui::GUIClass ui;
 	double t_span = 4;
 	double ylim[2] = { 0 , 1.4 };
@@ -28,9 +26,14 @@ private:
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 
+	bool mpc_reset = false;
 	double time;
 	plotVars plot_vars;
 
+	void initPlots();
+	void clearPlots();
+	void addPoints(plotVars);
+	void plot();
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();

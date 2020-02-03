@@ -23,7 +23,7 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, Device = 1, aiSim = 1, tauEst = 1, Mode = 1;
+	bool Sim = 0, Device = 1, aiSim = 1, tauEst = 0, Mode = 0;
 	int Human = 1; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
 	double T = 4.0;
 	double freq = 0.25;
@@ -38,7 +38,7 @@ struct mpcParams {
 	const double dt = 0.002;
 	double Tsim;
 	double Thor = 0.2;
-	const char *IntegralCost = "off", *TerminalCost = "off", *ScaleProblem = "on";
+	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
 	const double ConstraintsAbsTol[NH] = { 1e-3, 1e-3, 1e-3, 1e-3 };
 };
@@ -56,7 +56,7 @@ struct modelParams {
 			
 	//double w_theta = 2000, w_tau = 20;
 	//double w_theta = 100000, w_tau = 20; // Human
-	double w_theta = 100, w_tau = 100;
+	double w_theta = 10000, w_tau = 100;
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
@@ -88,6 +88,8 @@ public:
 
 	QMutex mutex;
 
+	MotorThread *motorThread;
+
 	void paramSet(double* params);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init();
@@ -108,7 +110,6 @@ private:
 
 	testParams test;
 
-	MotorThread *motorThread;
 	TMSiController *TMSi;
 	FIS *fuzzyInferenceSystem;
 	DAQ *daqSim;
