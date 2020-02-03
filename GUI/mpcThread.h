@@ -11,8 +11,8 @@
 
 #include "ui_GUI.h"
 #include "motorThread.h"
+#include "libgrampc.h"
 #include "fis.h"
-#include "mpc.h"
 #include "tmsicontroller.h"
 #include "daq.h"
 
@@ -23,26 +23,26 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, aiSim = 1, tauEst = 0, Mode = 0;
+	bool Sim = 1, aiSim = 1, tauEst = 1, Mode = 1;
 	int Device = 0; // 0 - None, 1 - HEBI
 	int Human = 1; // 0 - None, 1 - Chris, 2 - Huo, 3 - Filip, 4 - Shibo, 5 - Annika
 	double T = 1.0;
 	double freq = 0.25;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
-}; extern testParams test0;
+};
 
 struct mpcParams {
 	double rwsReferenceIntegration[2 * NX];
 	const double x0[NX] = { 0, 0, 0, 1 };
 	double xdes[NX] = { 0, 0, 0, 0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double Tsim = test0.T, dt = 0.002;
-	//const int AIsamplingRate = 10000;
+	const double dt = 0.002;
+	double Tsim;
 	double Thor = 0.2;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
 	const double ConstraintsAbsTol[NH] = { 1e-3, 1e-3, 1e-3, 1e-3 };
-}; extern mpcParams mpc0;
+};
 
 struct modelParams {
 	double J_h[6] = { 0, 0.2383, 0, 0, 0, 0 };
@@ -50,17 +50,17 @@ struct modelParams {
 	double A_h[6] = { 0, 0, 0, 0, 0, 0 };
 	double tau_g_h[6] = { 0, 9.4162, 0, 0, 0, 0 };
 	
-	double J = 0.0377 + J_h[test0.Human];
-	double B = 0.0207 + B_h[test0.Human];
-	double A = 0.0000 + A_h[test0.Human];
-	double tau_g = 1.7536 + tau_g_h[test0.Human];
+	double J = 0.0377;
+	double B = 0.0207;
+	double A = 0.0000;
+	double tau_g = 1.7536;
 			
 	//double w_theta = 2000, w_tau = 20;
 	double w_theta = 100000, w_tau = 20; // Human
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
-}; extern modelParams model0;
+};
 
 struct plotVars {
 	double time = 0,
@@ -82,7 +82,9 @@ public:
 	int iMPC = 0;
 
 	plotVars vars0;
-	
+	mpcParams mpc0;
+	modelParams model0;
+
 	QMutex mutex;
 
 	void paramSet(double* params);
@@ -103,13 +105,15 @@ private:
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	typeGRAMPC *grampc_;
 
+	testParams test;
+
 	MotorThread *motorThread;
 	TMSiController *TMSi;
 	FIS *fuzzyInferenceSystem;
 	DAQ *daqSim;
 
-	char* emgPath = test0.emgPath;
-	double freq = test0.freq;
+	char* emgPath = test.emgPath;
+	double freq = test.freq;
 	double emgVec[4] = {};
 	
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
@@ -117,3 +121,8 @@ signals:
 	void mpcIteration(plotVars);
 	void GUIPrint(QString);
 };
+
+void openFile(FILE **file, const char *name);
+void printNumVector2File(FILE *file, const double *const val, const int size);
+void printVector2File(const char *prefix, ofstream *file, const double * val, const int size);
+void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol);

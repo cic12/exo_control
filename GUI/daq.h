@@ -2,10 +2,13 @@
 #define DAQ_H_
 
 #include <fstream>
-#include <cmath>
-//#include "NIDAQmx.h"
 
 using namespace std;
+
+struct filter_para {
+	double x[3][2] = {};
+	double y[3][2] = {};
+};
 
 class DAQ {
 public:
@@ -14,10 +17,7 @@ public:
 	double emgProcess(double AI, int);
 	ofstream daq_aiFile;
 private:
-	struct filter_para {
-		double x[3][2] = {};
-		double y[3][2] = {};
-	} low_para1, low_para2, high_para1;
+	filter_para low_para1, low_para2, high_para1;
 
 	double lowpass1(double X_in, int emg);
 	double lowpass2(double X_in, int emg);

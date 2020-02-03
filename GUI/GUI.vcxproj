@@ -220,7 +220,6 @@ xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="motorThread.cpp" />
-    <ClCompile Include="mpc.cpp" />
     <ClCompile Include="mpcThread.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
     <ClCompile Include="tmsicontroller.cpp" />
@@ -253,7 +252,6 @@ xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtPrintSupport;$(QTDIR)\include\QtWidgets</IncludePath>
     </QtMoc>
     <QtMoc Include="motorThread.h" />
-    <ClInclude Include="mpc.h" />
     <QtMoc Include="mpcThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

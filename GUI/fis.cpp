@@ -1,7 +1,5 @@
 #include "fis.h"
 
-fisParams fis0;
-
 FIS::FIS() {
 
 }

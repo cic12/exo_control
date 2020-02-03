@@ -13,17 +13,18 @@ struct fisParams {
 	double hN_a = -1, hN_c = -4, hP_a = 1, hP_c = 4;
 };
 
-extern fisParams fis0;
-
 class FIS {
 public:
 	FIS();
+
+	fisParams fis;
 	int haltMode;
 	double mu[6], rule[4], lambdaA, lambdaR;
 
 	double hTorqueEst(double e1, double e2, double b1, double b2, double b3);
 	double assistanceMode(double Tau_h, double dtheta, fisParams fis);
 private:
+
 	double gaussmf(double x, double sig, double c);
 	double sigmf(double x, double a, double c);
 };

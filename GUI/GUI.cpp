@@ -14,13 +14,13 @@ GUI::GUI(QWidget *parent)
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout)); // GUI update
 	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
 
-	ui.A_box->setValue(model0.A);
-	ui.B_box->setValue(model0.B);
-	ui.J_box->setValue(model0.J);
-	ui.tau_g_box->setValue(model0.tau_g);
-	ui.W_theta_box->setValue(model0.w_theta);
-	ui.W_tau_box->setValue(model0.w_tau);
-	ui.Thor_box->setValue(mpc0.Thor);
+	ui.A_box->setValue(mpcThread->model0.A);
+	ui.B_box->setValue(mpcThread->model0.B);
+	ui.J_box->setValue(mpcThread->model0.J);
+	ui.tau_g_box->setValue(mpcThread->model0.tau_g);
+	ui.W_theta_box->setValue(mpcThread->model0.w_theta);
+	ui.W_tau_box->setValue(mpcThread->model0.w_tau);
+	ui.Thor_box->setValue(mpcThread->mpc0.Thor);
 }
 
 void GUI::initPlots()
