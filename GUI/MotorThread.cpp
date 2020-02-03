@@ -20,7 +20,6 @@ void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 	Eigen::VectorXd efforts(1);
 	GroupFeedback group_feedback(group->size());
 	group->setFeedbackFrequencyHz(500);
-	group->start
 
 	motor_init = 1;
 	
