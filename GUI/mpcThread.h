@@ -14,6 +14,7 @@
 #include "fis.h"
 #include "mpc.h"
 #include "tmsicontroller.h"
+#include "daq.h"
 
 #define NX    	4
 #define NU  	1
@@ -109,7 +110,7 @@ private:
 
 	char* emgPath = test0.emgPath;
 	double freq = test0.freq;
-	double emgVec[4];
+	double emgVec[4] = {};
 	
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:

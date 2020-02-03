@@ -89,8 +89,8 @@ void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
 		aivec.append(wordList.at(i).toDouble());
 		aivec1.append(wordList1.at(i).toDouble());
 
-		AImvec.append(0);// daqSim->emgProcess(aivec[i], 0));
-		AImvec1.append(0);// daqSim->emgProcess(aivec1[i], 1));
+		AImvec.append(daqSim->emgProcess(aivec[i], 0)); // TO DO: change initial value to be first emg value read -- to get rid of high pass filter jump 
+		AImvec1.append(daqSim->emgProcess(aivec1[i], 1));
 
 		daqSim->daq_aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
 	}

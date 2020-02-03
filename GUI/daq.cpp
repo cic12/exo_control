@@ -10,7 +10,7 @@ double DAQ::emgProcess(double AI, int i)
 	double clip2 = 0.02;
 	double clip3 = 1.5;
 
-	return lowpass2(abs(clipLimEMG(noiseLimEMG(lowpass1(clipLimEMG(highpass1((AI + offset[i]), i), clip1), i), clip2), clip3)), i);
+	return lowpass2(abs(clipLimEMG(noiseLimEMG(lowpass1(clipLimEMG(highpass1(AI, i), clip1), i), clip2), clip3)), i);
 }
 
 double DAQ::lowpass1(double X_in, int emg)
