@@ -14,13 +14,13 @@ GUI::GUI(QWidget *parent)
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout)); // GUI update
 	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
 
-	ui.A_box->setValue(mpcThread->model0.A);
-	ui.B_box->setValue(mpcThread->model0.B);
-	ui.J_box->setValue(mpcThread->model0.J);
-	ui.tau_g_box->setValue(mpcThread->model0.tau_g);
-	ui.W_theta_box->setValue(mpcThread->model0.w_theta);
-	ui.W_tau_box->setValue(mpcThread->model0.w_tau);
-	ui.Thor_box->setValue(mpcThread->mpc0.Thor);
+	ui.A_box->setValue(mpcThread->model.A);
+	ui.B_box->setValue(mpcThread->model.B);
+	ui.J_box->setValue(mpcThread->model.J);
+	ui.tau_g_box->setValue(mpcThread->model.tau_g);
+	ui.W_theta_box->setValue(mpcThread->model.w_theta);
+	ui.W_tau_box->setValue(mpcThread->model.w_tau);
+	ui.Thor_box->setValue(mpcThread->mpc.Thor);
 }
 
 void GUI::initPlots()
@@ -63,8 +63,6 @@ void GUI::initPlots()
 	ui.plot->graph(0)->setPen(QPen(Qt::blue));
 	ui.plot->addGraph();
 	ui.plot->graph(1)->setPen(QPen(Qt::red));
-	ui.plot->addGraph();
-	ui.plot->graph(2)->setPen(QPen(Qt::green));
 
 	ui.plot1->addGraph();
 	ui.plot1->graph(0)->setPen(QPen(Qt::blue));
@@ -89,7 +87,7 @@ void GUI::initPlots()
 	ui.plot->xAxis->setAutoTickStep(false);
 	ui.plot->xAxis->setTickStep(1);
 	ui.plot->yAxis->setAutoTickStep(false);
-	ui.plot->yAxis->setTickStep(1);
+	ui.plot->yAxis->setTickStep(0.2);
 
 	ui.plot1->xAxis->setAutoTickStep(false);
 	ui.plot1->xAxis->setTickStep(1);
@@ -129,7 +127,6 @@ void GUI::addPoints(plotVars vars)
 	// Add data
 	ui.plot->graph(0)->addData(vars.time, vars.x1);
 	ui.plot->graph(1)->addData(vars.time, vars.x1des);
-	ui.plot->graph(2)->addData(vars.time, vars.x2);
 
 	ui.plot1->graph(0)->addData(vars.time, vars.u);
 	ui.plot1->graph(1)->addData(vars.time, vars.hTauEst);
@@ -146,7 +143,6 @@ void GUI::addPoints(plotVars vars)
 	// Remove data
 	ui.plot->graph(0)->removeDataBefore(vars.time - t_span);
 	ui.plot->graph(1)->removeDataBefore(vars.time - t_span);
-	ui.plot->graph(2)->removeDataBefore(vars.time - t_span);
 
 	ui.plot1->graph(0)->removeDataBefore(vars.time - t_span);
 	ui.plot1->graph(1)->removeDataBefore(vars.time - t_span);
@@ -214,7 +210,7 @@ void GUI::onGUIPrint(QString message)
 void GUI::onTimeout()
 {
 	mpcThread->mutex.lock();
-	plot_vars = mpcThread->vars0;
+	plot_vars = mpcThread->vars;
 	if (mpcThread->Stop) {
 		timer->stop();
 	}

@@ -18,7 +18,7 @@ public:
 	FIS();
 
 	fisParams fis;
-	int haltMode;
+	bool haltMode = false;
 	double mu[6], rule[4], lambdaA, lambdaR;
 
 	double hTorqueEst(double e1, double e2, double b1, double b2, double b3);

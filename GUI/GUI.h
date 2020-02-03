@@ -4,6 +4,9 @@
 
 #include "ui_GUI.h"
 #include "mpcThread.h"
+#include "qcustomplot.h"
+
+
 
 class GUI : public QMainWindow
 {
@@ -19,7 +22,7 @@ private:
 	void plot();
 	Ui::GUIClass ui;
 	double t_span = 4;
-	double ylim[2] = { -2 , 1.4 };
+	double ylim[2] = { 0 , 1.4 };
 	double ylim1[2] = { -20 , 20 };
 	double ylim2[2] = { -0.2 , 0.2 };
 	double ylim3[2] = { -0.2 , 0.2 };

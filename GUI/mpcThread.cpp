@@ -5,12 +5,12 @@ MPCThread::MPCThread(QObject *parent)
 {
 	emgPath = test.emgPath;
 
-	mpc0.Tsim = test.T;
+	mpc.Tsim = test.T;
 
-	model0.J += model0.J_h[test.Human];
-	model0.B += model0.B_h[test.Human];
-	model0.A += model0.A_h[test.Human];
-	model0.tau_g += model0.tau_g_h[test.Human];
+	model.J += model.J_h[test.Human];
+	model.B += model.B_h[test.Human];
+	model.A += model.A_h[test.Human];
+	model.tau_g += model.tau_g_h[test.Human];
 
 	if (test.Device) {
 		motorThread = new MotorThread(this);
@@ -37,23 +37,23 @@ void MPCThread::run()
 	
 	last_time = clock();
 	start_time = last_time;
-	while (!Stop && t < mpc0.Tsim) {
+	while (!Stop && t < mpc.Tsim) {
 
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
 			mutex.lock();
-			vars0.time = t;
-			vars0.x1 = grampc_->sol->xnext[0];
-			vars0.x1des = grampc_->param->xdes[0];
-			vars0.x2 = grampc_->sol->xnext[1];
-			vars0.u = grampc_->sol->unext[0];
-			vars0.hTauEst = grampc_->sol->xnext[2];
-			vars0.mode = grampc_->sol->xnext[3];
-			vars0.emg0 = emgVec[0];
-			vars0.emg1 = emgVec[1];
-			vars0.lambdaA = fuzzyInferenceSystem->lambdaA;
-			vars0.lambdaR = fuzzyInferenceSystem->lambdaR;
+			vars.time = t;
+			vars.x1 = grampc_->sol->xnext[0];
+			vars.x1des = grampc_->param->xdes[0];
+			vars.x2 = grampc_->sol->xnext[1];
+			vars.u = grampc_->sol->unext[0];
+			vars.hTauEst = grampc_->sol->xnext[2];
+			vars.mode = grampc_->sol->xnext[3];
+			vars.emg0 = emgVec[0];
+			vars.emg1 = emgVec[1];
+			vars.lambdaA = fuzzyInferenceSystem->lambdaA;
+			vars.lambdaR = fuzzyInferenceSystem->lambdaR;
 			mutex.unlock();
 		}
 	}
@@ -63,16 +63,16 @@ void MPCThread::run()
 
 void MPCThread::paramSet(double* params)
 {
-	model0.A = params[0]; model0.pSys[0] = model0.A;
-	model0.B = params[1]; model0.pSys[1] = model0.B;
-	model0.J = params[2]; model0.pSys[2] = model0.J;
-	model0.tau_g = params[3]; model0.pSys[3] = model0.tau_g;
-	model0.w_theta = params[3]; model0.pSys[4] = model0.w_theta;
-	model0.w_tau = params[3]; model0.pSys[5] = model0.w_tau;
-	grampc_->userparam = model0.pSys;
+	model.A = params[0]; model.pSys[0] = model.A;
+	model.B = params[1]; model.pSys[1] = model.B;
+	model.J = params[2]; model.pSys[2] = model.J;
+	model.tau_g = params[3]; model.pSys[3] = model.tau_g;
+	model.w_theta = params[3]; model.pSys[4] = model.w_theta;
+	model.w_tau = params[3]; model.pSys[5] = model.w_tau;
+	grampc_->userparam = model.pSys;
 	
-	mpc0.Thor = params[3];
-	grampc_setparam_real(grampc_, "Thor", mpc0.Thor);
+	mpc.Thor = params[3];
+	grampc_setparam_real(grampc_, "Thor", mpc.Thor);
 }
 
 void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
@@ -103,27 +103,25 @@ void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
 
 void MPCThread::mpc_init() {
 	mpcInit(&grampc_,
-		&model0.pSys, 
-		mpc0.x0,
-		mpc0.xdes,
-		mpc0.u0,
-		mpc0.udes,
-		mpc0.umax,
-		mpc0.umin,
-		&mpc0.Thor,
-		&mpc0.dt,
+		&model.pSys, 
+		mpc.x0,
+		mpc.xdes,
+		mpc.u0,
+		mpc.udes,
+		mpc.umax,
+		mpc.umin,
+		&mpc.Thor,
+		&mpc.dt,
 		&t,
-		mpc0.TerminalCost,
-		mpc0.IntegralCost,
-		mpc0.ScaleProblem,
-		mpc0.AugLagUpdateGradientRelTol,
-		mpc0.ConstraintsAbsTol);
+		mpc.TerminalCost,
+		mpc.IntegralCost,
+		mpc.ScaleProblem,
+		mpc.AugLagUpdateGradientRelTol,
+		mpc.ConstraintsAbsTol);
 
 	if (test.aiSim) {
 		aiSimProcess(emgPath);
 	}
-
-	
 
 	openFile(&file_x, "../res/xvec.txt");
 	openFile(&file_xdes, "../res/xdesvec.txt");
@@ -172,13 +170,13 @@ void MPCThread::mpc_loop() {
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
-	if (time_counter > (double)(mpc0.dt * CLOCKS_PER_SEC)) // 1000 cps
+	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
 		// Setpoint
-		mpc0.xdes[0] = (cos((freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-		mpc0.xdes[1] = (mpc0.xdes[0] - xdes_previous) / mpc0.dt;
-		grampc_setparam_real_vector(grampc_, "xdes", mpc0.xdes);
-		xdes_previous = mpc0.xdes[0];
+		mpc.xdes[0] = (cos((freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7; // freq
+		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
+		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
+		xdes_previous = mpc.xdes[0];
 
 		// Grampc
 		grampc_run(grampc_);
@@ -190,9 +188,9 @@ void MPCThread::mpc_loop() {
 			if (iMPC == 0) {
 				motorThread->previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
 			}
-			currentVelocity = (grampc_->sol->xnext[0] - motorThread->previousPosition) / mpc0.dt; // need state estimator? currently MPC solves for static system
+			currentVelocity = (grampc_->sol->xnext[0] - motorThread->previousPosition) / mpc.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
-			currentAcceleration = (grampc_->sol->xnext[1] - previousVelocity) / mpc0.dt; // USE DESIRED ACC INSTEAD
+			currentAcceleration = (grampc_->sol->xnext[1] - previousVelocity) / mpc.dt; // USE DESIRED ACC INSTEAD
 			motorThread->previousPosition = grampc_->sol->xnext[0];
 			previousVelocity = grampc_->sol->xnext[1];
 		}
@@ -202,14 +200,14 @@ void MPCThread::mpc_loop() {
 		}
 		daqProcess();
 		controlFunctions(fuzzyInferenceSystem->fis);
-		t = t + mpc0.dt;
+		t = t + mpc.dt;
 		if (fuzzyInferenceSystem->haltMode) {
-			t_halt = t_halt + mpc0.dt;
+			t_halt = t_halt + mpc.dt;
 		}
 		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 		iMPC++;
 		print2Files();
-		time_counter -= (double)(mpc0.dt * CLOCKS_PER_SEC);
+		time_counter -= (double)(mpc.dt * CLOCKS_PER_SEC);
 		task_count++;
 	}
 }
@@ -241,18 +239,18 @@ void MPCThread::controlFunctions(fisParams fis) {
 		grampc_->sol->xnext[2] = 0;
 	}
 	if (test.Mode) {
-		grampc_->sol->xnext[3] = fuzzyInferenceSystem->assistanceMode(grampc_->sol->xnext[2], mpc0.xdes[1], fuzzyInferenceSystem->fis);
+		grampc_->sol->xnext[3] = fuzzyInferenceSystem->assistanceMode(grampc_->sol->xnext[2], mpc.xdes[1], fuzzyInferenceSystem->fis);
 	}
 }
 
 void MPCThread::plantSim() {
-	ffct(mpc0.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+	ffct(mpc.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 	for (i = 0; i < NX; i++) {
-		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * mpc0.rwsReferenceIntegration[i];
+		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * mpc.rwsReferenceIntegration[i];
 	}
-	ffct(mpc0.rwsReferenceIntegration + NX, t + mpc0.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
+	ffct(mpc.rwsReferenceIntegration + NX, t + mpc.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
 	for (i = 0; i < NX; i++) {
-		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc0.dt * (mpc0.rwsReferenceIntegration[i] + mpc0.rwsReferenceIntegration[i + NX]) / 2;
+		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * (mpc.rwsReferenceIntegration[i] + mpc.rwsReferenceIntegration[i + NX]) / 2;
 	}
 }
 
@@ -423,12 +421,12 @@ void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, c
 	//mpcFile << "                  Model Param " << "Value" << "\n";
 	//mpcFile << "-------------------------------------------------------------\n";
 
-	//mpcFile << "                            A " << model0.A << "\n";
-	//mpcFile << "                            B " << model0.B << "\n";
-	//mpcFile << "                            J " << model0.J << "\n";
-	//mpcFile << "                        tau_g " << model0.tau_g << "\n";
-	//mpcFile << "                      w_theta " << model0.w_theta << "\n";
-	//mpcFile << "                        w_tau " << model0.w_tau << "\n";
+	//mpcFile << "                            A " << model.A << "\n";
+	//mpcFile << "                            B " << model.B << "\n";
+	//mpcFile << "                            J " << model.J << "\n";
+	//mpcFile << "                        tau_g " << model.tau_g << "\n";
+	//mpcFile << "                      w_theta " << model.w_theta << "\n";
+	//mpcFile << "                        w_tau " << model.w_tau << "\n";
 
 	//mpcFile << setprecision(15);
 
