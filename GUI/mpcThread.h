@@ -56,7 +56,7 @@ struct modelParams {
 	double A = 0.0000;
 	double tau_g = 1.7536;
 	
-	double w_theta = 10000, w_tau = 100;
+	double w_theta = 10000, w_tau = 50;
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };

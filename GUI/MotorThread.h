@@ -24,7 +24,7 @@ public:
 	bool mpc_complete = false;
 	double demandedTorque = 0;
 	double motor_comms_count = 0;
-	double currentPosition = 0.625 * M_PI;
+	double currentPosition = 0.2 + 0.625 * M_PI;
 	double previousPosition = 0;
 
 private:

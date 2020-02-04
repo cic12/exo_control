@@ -43,6 +43,8 @@ void MPCThread::run()
 	
 	mpc_initialised = true;
 
+	Sleep(100);
+
 	last_time = clock();
 	start_time = last_time;
 	while (!Stop && t < mpc.Tsim) {
