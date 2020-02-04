@@ -21,7 +21,8 @@ void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
 	GroupFeedback group_feedback(group->size());
 	group->setFeedbackFrequencyHz(500);
 	group->startLog("../res/logs");
-	motor_init = 1;
+
+	motor_initialised = true;
 	
 	while (!mpc_complete) {
 		mutex.lock();

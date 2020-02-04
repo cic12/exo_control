@@ -40,8 +40,10 @@ void MPCThread::run()
 	}
 
 	if (test.Device)
-		while (!motorThread->motor_init);
+		while (!motorThread->motor_initialised);
 	
+	mpc_initialised = true;
+
 	last_time = clock();
 	start_time = last_time;
 	while (!Stop && t < mpc.Tsim) {
@@ -158,7 +160,7 @@ void MPCThread::mpc_stop() {
 	Stop = 1;
 	if (test.Device) {
 		motorThread->mpc_complete = 1;
-		//motorThread->motor_init = 0;
+		//motorThread->motor_initialised = 0;
 	}
 	if (test.aiSim) {
 		daqSim->daq_aiFile.close();
@@ -174,7 +176,7 @@ void MPCThread::mpc_stop() {
 }
 
 void MPCThread::mpc_loop() {
-	this->usleep(100);
+	this->usleep(uSleep);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;

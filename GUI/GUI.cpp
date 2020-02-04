@@ -26,7 +26,7 @@ GUI::GUI(QWidget *parent)
 void GUI::onTimeout()
 {
 	mpcThread->mutex.lock();
-	if (mpcThread->motorThread->motor_init) {
+	if (mpcThread->mpc_initialised) {
 		plot_vars = mpcThread->vars;
 		if (mpcThread->Stop) {
 			timer->stop();
@@ -45,6 +45,7 @@ void GUI::on_btn_start_clicked()
 	
 	clearPlots();
 	timer->start(20); // Timer period in ms controls GUI update frequency
+	mpc_reset = false;
 }
 
 void GUI::on_btn_stop_clicked()

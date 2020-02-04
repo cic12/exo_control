@@ -26,7 +26,7 @@ private:
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 
-	bool mpc_reset = false;
+	bool mpc_reset;
 	double time;
 	plotVars plot_vars;
 

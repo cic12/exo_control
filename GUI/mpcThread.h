@@ -80,6 +80,7 @@ public:
 
 	void run();
 	bool Stop = false;
+	bool mpc_initialised = false;
 	int iMPC = 0;
 
 	plotVars vars;
@@ -117,7 +118,8 @@ private:
 	char* emgPath = test.emgPath;
 	double freq = test.freq;
 	double emgVec[4] = {};
-	
+	int uSleep = 500;
+
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:
 	void mpcIteration(plotVars);

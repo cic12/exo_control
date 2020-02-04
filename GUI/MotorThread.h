@@ -20,8 +20,8 @@ public:
 	~MotorThread();
 	void run();
 
-	bool motor_init = 0;
-	bool mpc_complete = 0;
+	bool motor_initialised = false;
+	bool mpc_complete = false;
 	double demandedTorque = 0;
 	double motor_comms_count = 0;
 	double currentPosition = 0;
