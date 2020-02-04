@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <QThread>
 #include <QtCore>
 #include <QFile>
@@ -27,6 +28,7 @@ struct testParams {
 	int Human = 1; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
 	double T = 4.0;
 	double freq = 0.25;
+	int uSleep = 100;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
 };
 
@@ -53,9 +55,7 @@ struct modelParams {
 	double B = 0.0207;
 	double A = 0.0000;
 	double tau_g = 1.7536;
-			
-	//double w_theta = 2000, w_tau = 20;
-	//double w_theta = 100000, w_tau = 20; // Human
+	
 	double w_theta = 10000, w_tau = 100;
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
@@ -104,7 +104,7 @@ private:
 	int i, vec_i;
 	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.001, xdes_previous = 0.2, xdes1_previous = 0.0;
 	double t = 0.0, t_halt = 0.0;
-	double task_count = 0, time_counter = 1;
+	double time_counter = 0.0;
 	clock_t this_time, last_time, start_time, end_time;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	typeGRAMPC *grampc_;
@@ -118,7 +118,6 @@ private:
 	char* emgPath = test.emgPath;
 	double freq = test.freq;
 	double emgVec[4] = {};
-	int uSleep = 500;
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
 signals:

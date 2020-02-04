@@ -40,9 +40,7 @@ void GUI::onTimeout()
 
 void GUI::on_btn_start_clicked()
 {
-
 	mpcThread->start(QThread::NormalPriority);
-	
 	clearPlots();
 	timer->start(20); // Timer period in ms controls GUI update frequency
 	mpc_reset = false;
@@ -56,7 +54,7 @@ void GUI::on_btn_stop_clicked()
 void GUI::on_btn_reset_clicked()
 {
 	if (!mpc_reset) {
-		ui.plainTextEdit->insertPlainText("MPC Reset \n");
+		ui.plainTextEdit->insertPlainText("MPC Reset \n\n");
 		mpcThread = new MPCThread(this);
 		connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
 		mpc_reset = true;

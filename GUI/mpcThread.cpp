@@ -38,7 +38,6 @@ void MPCThread::run()
 	if (test.Device) {
 		motorThread->start(QThread::LowPriority);
 	}
-
 	if (test.Device)
 		while (!motorThread->motor_initialised);
 	
@@ -47,7 +46,7 @@ void MPCThread::run()
 	last_time = clock();
 	start_time = last_time;
 	while (!Stop && t < mpc.Tsim) {
-
+		//this->usleep(uSleep);
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
@@ -160,7 +159,6 @@ void MPCThread::mpc_stop() {
 	Stop = 1;
 	if (test.Device) {
 		motorThread->mpc_complete = 1;
-		//motorThread->motor_initialised = 0;
 	}
 	if (test.aiSim) {
 		daqSim->daq_aiFile.close();
@@ -172,11 +170,11 @@ void MPCThread::mpc_stop() {
 	grampc_free(&grampc_);
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	if(test.Device)
-		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n");
+		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n\n");
 }
 
 void MPCThread::mpc_loop() {
-	this->usleep(uSleep);
+	this->usleep(test.uSleep);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -218,7 +216,6 @@ void MPCThread::mpc_loop() {
 		iMPC++;
 		print2Files();
 		time_counter -= (double)(mpc.dt * CLOCKS_PER_SEC);
-		task_count++;
 	}
 }
 

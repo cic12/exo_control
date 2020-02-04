@@ -154,7 +154,7 @@ public:
         label_11->setGeometry(QRect(10, 310, 61, 16));
         btn_set_params = new QPushButton(centralWidget);
         btn_set_params->setObjectName(QString::fromUtf8("btn_set_params"));
-        btn_set_params->setGeometry(QRect(10, 380, 75, 23));
+        btn_set_params->setGeometry(QRect(10, 370, 75, 23));
         plot2 = new QCustomPlot(centralWidget);
         plot2->setObjectName(QString::fromUtf8("plot2"));
         plot2->setEnabled(false);
@@ -196,7 +196,7 @@ public:
         plainTextEdit = new QPlainTextEdit(centralWidget);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
         plainTextEdit->setEnabled(false);
-        plainTextEdit->setGeometry(QRect(10, 520, 171, 241));
+        plainTextEdit->setGeometry(QRect(10, 410, 171, 351));
         plainTextEdit->setReadOnly(true);
         btn_reset = new QPushButton(centralWidget);
         btn_reset->setObjectName(QString::fromUtf8("btn_reset"));
