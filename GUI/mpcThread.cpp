@@ -5,10 +5,10 @@ MPCThread::MPCThread(QObject *parent)
 {
 	mpc.Tsim = test.T;
 
-	model.J += model.J_h[test.Human];
-	model.B += model.B_h[test.Human];
-	model.A += model.A_h[test.Human];
-	model.tau_g += model.tau_g_h[test.Human];
+	//model.J += model.J_h[test.Human];
+	//model.B += model.B_h[test.Human];
+	//model.A += model.A_h[test.Human];
+	//model.tau_g += model.tau_g_h[test.Human];
 
 	if (test.Device) {
 		motorThread = new MotorThread(this);
@@ -84,7 +84,7 @@ void MPCThread::paramSet(double* params)
 	}
 }
 
-void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
+void MPCThread::aiSimProcess(char emg_string[]) {
 	QFile myQfile(emg_string);
 	if (!myQfile.open(QIODevice::ReadOnly)) {
 		return;
