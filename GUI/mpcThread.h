@@ -24,12 +24,29 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, Device = 1, aiSim = 0, tauEst = 1, Mode = 1;
+	bool Sim = 1, Device = 0, aiSim = 1, tauEst = 0, Mode = 0;
 	int Human = 1; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
 	double T = 24.0;
 	double freq = 0.25;
 	int uSleep = 500;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFR.csv";
+};
+
+struct modelParams {
+	double J_h[6] = { 0, 0.2383, 0, 0, 0, 0 };
+	double B_h[6] = { 0, 0.1676, 0, 0, 0, 0 };
+	double A_h[6] = { 0, 0, 0, 0, 0, 0 };
+	double tau_g_h[6] = { 0, 9.4162, 0, 0, 0, 0 };
+
+	double J = 0.0377;
+	double B = 0.0207;
+	double A = 0.0000;
+	double tau_g = 1.7536;
+
+	double w_theta = 100000, w_tau = 10;
+
+	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
+	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 
 struct mpcParams {
@@ -43,23 +60,6 @@ struct mpcParams {
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
 	const double ConstraintsAbsTol[NH] = { 1e-3, 1e-3, 1e-3, 1e-3 };
-};
-
-struct modelParams {
-	double J_h[6] = { 0, 0.2383, 0, 0, 0, 0 };
-	double B_h[6] = { 0, 0.1676, 0, 0, 0, 0 };
-	double A_h[6] = { 0, 0, 0, 0, 0, 0 };
-	double tau_g_h[6] = { 0, 9.4162, 0, 0, 0, 0 };
-	
-	double J = 0.0377;
-	double B = 0.0207;
-	double A = 0.0000;
-	double tau_g = 1.7536;
-	
-	double w_theta = 100000, w_tau = 10;
-
-	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
-	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 
 struct plotVars {

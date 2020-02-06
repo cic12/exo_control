@@ -6,7 +6,7 @@ DAQ::DAQ() {
 
 double DAQ::emgProcess(double AI, int i)
 {
-	double clip1 = 2;
+	double clip1 = 0.5;
 	double clip2 = 0.02;
 	double clip3 = 1.5;
 
@@ -33,9 +33,9 @@ double DAQ::lowpass1(double X_in, int emg)
 
 double DAQ::lowpass2(double X_in, int emg)
 {
-	double a1 = -1.978307072742137;
-	double a2 = 0.978539852992783;
-	double k = 5.819506266166452e-05;
+	double a1 = -1.991322548359169;
+	double a2 = 0.991360035149071;
+	double k = 9.371697475252239e-06;
 
 	low_para2.x[0][emg] = X_in;
 

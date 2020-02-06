@@ -5,21 +5,21 @@ MPCThread::MPCThread(QObject *parent)
 {
 	mpc.Tsim = test.T;
 
-	//model.J += model.J_h[test.Human];
-	//model.B += model.B_h[test.Human];
-	//model.A += model.A_h[test.Human];
-	//model.tau_g += model.tau_g_h[test.Human];
+	model.J += model.J_h[test.Human];
+	model.B += model.B_h[test.Human];
+	model.A += model.A_h[test.Human];
+	model.tau_g += model.tau_g_h[test.Human];
 
 	if (test.Device) {
 		motorThread = new MotorThread(this);
 	}
 	if (!test.aiSim) {
 		TMSi = new TMSiController();
-		TMSi->daq->daq_aiFile.open("../res/ai_daq.txt");
+		TMSi->daq->daq_aiFile.open("../res/ai.txt");
 	}
 	else {
 		daqSim = new DAQ();
-		daqSim->daq_aiFile.open("../res/ai_daqSim.txt");
+		daqSim->daq_aiFile.open("../res/ai.txt");
 	}
 	fuzzyInferenceSystem = new FIS();
 }
@@ -131,6 +131,10 @@ void MPCThread::mpc_init() {
 	if (test.aiSim) {
 		aiSimProcess(test.emgPath);
 	}
+	else {
+		TMSi->startStream();
+		TMSi->setRefCalculation(1);
+	}
 
 	openFile(&file_x, "../res/xvec.txt");
 	openFile(&file_xdes, "../res/xdesvec.txt");
@@ -141,11 +145,6 @@ void MPCThread::mpc_init() {
 	openFile(&file_mu, "../res/mu.txt");
 	openFile(&file_rule, "../res/rule.txt");
 	openFile(&file_ai, "../res/ai.txt");
-
-	if (!test.aiSim) {
-		TMSi->startStream();
-		TMSi->setRefCalculation(1);
-	}
 
 	GUIPrint("Init Complete\n");
 	if (test.aiSim) {
