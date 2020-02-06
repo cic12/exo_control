@@ -61,6 +61,8 @@ public:
     QLabel *label_26;
     QPlainTextEdit *plainTextEdit;
     QPushButton *btn_reset;
+    QLabel *label_8;
+    QDoubleSpinBox *Freq_box;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -201,6 +203,17 @@ public:
         btn_reset = new QPushButton(centralWidget);
         btn_reset->setObjectName(QString::fromUtf8("btn_reset"));
         btn_reset->setGeometry(QRect(110, 770, 71, 23));
+        label_8 = new QLabel(centralWidget);
+        label_8->setObjectName(QString::fromUtf8("label_8"));
+        label_8->setGeometry(QRect(110, 10, 61, 16));
+        Freq_box = new QDoubleSpinBox(centralWidget);
+        Freq_box->setObjectName(QString::fromUtf8("Freq_box"));
+        Freq_box->setGeometry(QRect(110, 30, 71, 22));
+        Freq_box->setDecimals(2);
+        Freq_box->setMinimum(0.000000000000000);
+        Freq_box->setMaximum(2.000000000000000);
+        Freq_box->setSingleStep(0.050000000000000);
+        Freq_box->setValue(0.000000000000000);
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -237,14 +250,15 @@ public:
         label_10->setText(QApplication::translate("GUIClass", "W_tau", nullptr));
         label_11->setText(QApplication::translate("GUIClass", "Thor", nullptr));
         btn_set_params->setText(QApplication::translate("GUIClass", "Set Params", nullptr));
-        label_21->setText(QApplication::translate("GUIClass", "Outputs", nullptr));
-        label_22->setText(QApplication::translate("GUIClass", "Inputs", nullptr));
-        label_23->setText(QApplication::translate("GUIClass", "EMG1", nullptr));
-        label_24->setText(QApplication::translate("GUIClass", "EMG2", nullptr));
-        label_25->setText(QApplication::translate("GUIClass", "lambdaA", nullptr));
-        label_26->setText(QApplication::translate("GUIClass", "lambdaR", nullptr));
+        label_21->setText(QApplication::translate("GUIClass", "Theta", nullptr));
+        label_22->setText(QApplication::translate("GUIClass", "Tau", nullptr));
+        label_23->setText(QApplication::translate("GUIClass", "EMG 1", nullptr));
+        label_24->setText(QApplication::translate("GUIClass", "EMG 2", nullptr));
+        label_25->setText(QApplication::translate("GUIClass", "lambda A", nullptr));
+        label_26->setText(QApplication::translate("GUIClass", "lambda R", nullptr));
         plainTextEdit->setPlainText(QString());
         btn_reset->setText(QApplication::translate("GUIClass", "Reset", nullptr));
+        label_8->setText(QApplication::translate("GUIClass", "Freq", nullptr));
     } // retranslateUi
 
 };

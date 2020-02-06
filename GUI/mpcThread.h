@@ -26,10 +26,10 @@ using namespace std;
 struct testParams {
 	bool Sim = 1, Device = 0, aiSim = 1, tauEst = 1, Mode = 1;
 	int Human = 1; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
-	double T = 4.0;
+	double T = 24.0;
 	double freq = 0.25;
 	int uSleep = 100;
-	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFA.csv";
+	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFR.csv";
 };
 
 struct mpcParams {
@@ -83,7 +83,9 @@ public:
 	bool mpc_initialised = false;
 	int iMPC = 0;
 
+
 	plotVars vars;
+	testParams test;
 	mpcParams mpc;
 	modelParams model;
 
@@ -107,16 +109,13 @@ private:
 	double time_counter = 0.0;
 	clock_t this_time, last_time, start_time, end_time;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
+	
 	typeGRAMPC *grampc_;
-
-	testParams test;
 
 	TMSiController *TMSi;
 	FIS *fuzzyInferenceSystem;
 	DAQ *daqSim;
 
-	char* emgPath = test.emgPath;
-	double freq = test.freq;
 	double emgVec[4] = {};
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;

@@ -21,6 +21,7 @@ GUI::GUI(QWidget *parent)
 	ui.W_theta_box->setValue(mpcThread->model.w_theta);
 	ui.W_tau_box->setValue(mpcThread->model.w_tau);
 	ui.Thor_box->setValue(mpcThread->mpc.Thor);
+	ui.Freq_box->setValue(mpcThread->test.freq);
 }
 
 void GUI::onTimeout()
@@ -63,13 +64,14 @@ void GUI::on_btn_reset_clicked()
 
 void GUI::on_btn_set_params_clicked()
 {
-	double params[7] = { ui.A_box->value(),
+	double params[8] = { ui.A_box->value(),
 		ui.B_box->value(),
 		ui.J_box->value(),
 		ui.tau_g_box->value(),
 		ui.W_theta_box->value(),
 		ui.W_tau_box->value(),
-		ui.Thor_box->value() };
+		ui.Thor_box->value(),
+		ui.Freq_box->value()};
 	mpcThread->paramSet(params);
 }
 

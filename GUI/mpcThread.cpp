@@ -3,8 +3,6 @@
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
-	emgPath = test.emgPath;
-
 	mpc.Tsim = test.T;
 
 	model.J += model.J_h[test.Human];
@@ -24,7 +22,6 @@ MPCThread::MPCThread(QObject *parent)
 		daqSim->daq_aiFile.open("../res/ai_daqSim.txt");
 	}
 	fuzzyInferenceSystem = new FIS();
-
 }
 
 MPCThread::~MPCThread()
@@ -77,12 +74,14 @@ void MPCThread::paramSet(double* params)
 	model.B = params[1]; model.pSys[1] = model.B;
 	model.J = params[2]; model.pSys[2] = model.J;
 	model.tau_g = params[3]; model.pSys[3] = model.tau_g;
-	model.w_theta = params[3]; model.pSys[4] = model.w_theta;
-	model.w_tau = params[3]; model.pSys[5] = model.w_tau;
-	grampc_->userparam = model.pSys;
-	
-	mpc.Thor = params[3];
-	grampc_setparam_real(grampc_, "Thor", mpc.Thor);
+	model.w_theta = params[4]; model.pSys[4] = model.w_theta;
+	model.w_tau = params[5]; model.pSys[5] = model.w_tau;
+	mpc.Thor = params[6];
+	test.freq = params[7];
+	if (mpc_initialised) {
+		grampc_->userparam = model.pSys;
+		grampc_setparam_real(grampc_, "Thor", mpc.Thor);
+	}
 }
 
 void MPCThread::aiSimProcess(char emg_string[]) { // ai forma
@@ -130,7 +129,7 @@ void MPCThread::mpc_init() {
 		mpc.ConstraintsAbsTol);
 
 	if (test.aiSim) {
-		aiSimProcess(emgPath);
+		aiSimProcess(test.emgPath);
 	}
 
 	openFile(&file_x, "../res/xvec.txt");
@@ -148,7 +147,10 @@ void MPCThread::mpc_init() {
 		TMSi->setRefCalculation(1);
 	}
 
-	emit GUIPrint("Init Complete\n");
+	GUIPrint("Init Complete\n");
+	if (test.aiSim) {
+		GUIPrint("EMG simulation\n" + QString(test.emgPath) + "\n");
+	}
 }
 
 void MPCThread::mpc_stop() {
@@ -172,7 +174,8 @@ void MPCThread::mpc_stop() {
 	grampc_free(&grampc_);
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	if(test.Device)
-		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n\n");
+		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n");
+	GUIPrint("\n");
 }
 
 void MPCThread::mpc_loop() {
@@ -183,7 +186,7 @@ void MPCThread::mpc_loop() {
 	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
 		// Setpoint
-		mpc.xdes[0] = (cos((freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7; // freq
+		mpc.xdes[0] = (cos((test.freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7; // freq
 		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
 		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
 		xdes_previous = mpc.xdes[0];
