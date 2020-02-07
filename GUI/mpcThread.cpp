@@ -20,11 +20,11 @@ MPCThread::MPCThread(QObject *parent)
 	}
 	if (!test.aiSim) {
 		TMSi = new TMSiController();
-		TMSi->daq->daq_aiFile.open("../res/ai.txt");
+		TMSi->daq->daq_aiFile.open("../res/ai_daq.txt");
 	}
 	else {
 		daqSim = new DAQ();
-		daqSim->daq_aiFile.open("../res/ai.txt");
+		daqSim->daq_aiFile.open("../res/ai_daq.txt");
 	}
 	fuzzyInferenceSystem = new FIS();
 }

@@ -23,8 +23,8 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, Device = 0, aiSim = 1, tauEst = 0, Mode = 0;
-	int Human = 1; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
+	bool Sim = 0, Device = 1, aiSim = 0, tauEst = 1, Mode = 1;
+	int Human = 2; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
 	double T = 24.0;
 	double freq = 0.25;
 	int uSleep = 500;
@@ -42,7 +42,7 @@ struct modelParams {
 	double A = 0.0000;
 	double tau_g = 1.7536;
 
-	double w_theta = 20000, w_tau = 10;
+	double w_theta = 100000, w_tau = 10;
 
 	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -20, umax = 20;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
