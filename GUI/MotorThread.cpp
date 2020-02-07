@@ -10,7 +10,7 @@ MotorThread::~MotorThread()
 
 }
 
-void MotorThread::run() { // FUNCTION REQUIRES RESTRUCTURING
+void MotorThread::run() {
 	group = lookup.getGroupFromNames({ "X8-9" }, { "X-80768" });
 	if (!group) {
 		throw "Group not found!Check that the family and name of a module on the network matches what is given in the source file.";

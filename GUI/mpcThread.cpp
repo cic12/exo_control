@@ -10,6 +10,11 @@ MPCThread::MPCThread(QObject *parent)
 	model.A += model.A_h[test.Human];
 	model.tau_g += model.tau_g_h[test.Human];
 
+	model.pSys[0] = model.A;
+	model.pSys[1] = model.B;
+	model.pSys[2] = model.J;
+	model.pSys[3] = model.tau_g;
+
 	if (test.Device) {
 		motorThread = new MotorThread(this);
 	}
@@ -45,7 +50,6 @@ void MPCThread::run()
 	last_time = clock();
 	start_time = last_time;
 	while (!Stop && t < mpc.Tsim) {
-		//this->usleep(uSleep);
 		mpc_loop();
 		if (iMPC % 10 == 0)
 		{
