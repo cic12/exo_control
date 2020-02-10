@@ -7,11 +7,9 @@ struct fisParams {
 	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
 	double pA = 1, pR = 1;
 	double s0 = 0.9, s1 = 0.8;
-	//double eN_sig = 0.3, eN_c = -0.6; // gauss
-	double eN_a = -10, eN_c = -0.25;
-	double eZ_sig = 0.2, eZ_c = 0;
-	//double eP_sig = 0.3, eP_c = 0.6; // gauss
-	double eP_a = 10, eP_c = 0.25;
+
+	double eZ_sig = 0.1, eZ_c = 0;
+	double eN_a = -20, eN_c = -0.1, eP_a = 20, eP_c = 0.1;
 	double hN_a = -4, hN_c = -1, hP_a = 4, hP_c = 1;
 };
 
