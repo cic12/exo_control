@@ -10,7 +10,7 @@ struct fisParams {
 
 	double eZ_sig = 0.1, eZ_c = 0;
 	double eN_a = -20, eN_c = -0.1, eP_a = 20, eP_c = 0.1;
-	double hN_a = -4, hN_c = -1, hP_a = 4, hP_c = 1;
+	double hN_a = -8, hN_c = -0.5, hP_a = 8, hP_c = 0.5;
 };
 
 class FIS {
