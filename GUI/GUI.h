@@ -20,9 +20,9 @@ private:
 	Ui::GUIClass ui;
 	double t_span = 4;
 	double ylim[2] = { 0 , 1.4 };
-	double ylim1[2] = { -20 , 20 };
-	double ylim2[2] = { -0.2 , 0.2 };
-	double ylim3[2] = { -0.2 , 0.2 };
+	double ylim1[2] = { -25 , 25 };
+	double ylim2[2] = { -0.1 , 0.1 };
+	double ylim3[2] = { -0.1 , 0.1 };
 	double ylim4[2] = { 0 , 1 };
 	double ylim5[2] = { 0 , 1 };
 

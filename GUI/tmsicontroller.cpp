@@ -227,10 +227,12 @@ void TMSiController::streamProcess()
 
 				daq->daq_aiFile << daq->AIdata[0] << "," << daq->AIdata[1] << "," << daq->AIm[0] << "," << daq->AIm[1] << "\n";
 
+				//Sleep(1);
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
 				//if (createdRecording) {
 					//addRecordingLine(currentReadTime, currentSample);
 				//}
+
 			}
 		}
 	}
