@@ -211,9 +211,9 @@ void GUI::addPoints(plotVars vars)
 
 	ui.plot3->graph(0)->addData(vars.time, vars.emg1);
 
-	ui.plot4->graph(0)->addData(vars.time, vars.lambdaA);
+	ui.plot4->graph(0)->addData(vars.time, vars.muA);
 
-	ui.plot5->graph(0)->addData(vars.time, vars.lambdaR);
+	ui.plot5->graph(0)->addData(vars.time, vars.muR);
 
 	// Remove data
 	ui.plot->graph(0)->removeDataBefore(vars.time - t_span);

@@ -446,7 +446,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>lambda A</string>
+     <string>mu A</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_26">
@@ -459,7 +459,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>lambda R</string>
+     <string>mu R</string>
     </property>
    </widget>
    <widget class="QPlainTextEdit" name="plainTextEdit">

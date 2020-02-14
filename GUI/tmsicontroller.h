@@ -4,6 +4,7 @@
 #include "daq.h"
 
 #include <thread>
+#include <chrono>
 #include <QDebug>
 #include <iomanip>
 #include <fstream>
@@ -69,7 +70,6 @@ private:
 	int signalTypes[32];
 
 	std::mutex m_mutex;
-	//int records[34][3686400];
 
 	std::ofstream writeStream;
 

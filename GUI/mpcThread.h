@@ -24,7 +24,8 @@ using namespace std;
 
 struct testParams {
 	bool Sim = 0, Device = 1, aiSim = 0, tauEst = 1, Mode = 1;
-	int Human = 2; // 0 - None, 1 - Chris ... Huo, Filip, Shibo, Annika
+	int Human = 3; // None, Chris ID, Chris Test, Annika, Felix, Filip
+	int Trajectory = 1;
 	double T = 24.0;
 	double freq = 0.25;
 	int uSleep = 500;
@@ -32,19 +33,20 @@ struct testParams {
 };
 
 struct modelParams {
-	double J_h[6] = { 0, 0.2383, 0.43, 0, 0, 0 };
-	double B_h[6] = { 0, 0.1676, 0.1676, 0, 0, 0 };
-	double A_h[6] = { 0, 0, 0, 0, 0, 0 };
-	double tau_g_h[6] = { 0, 9.4162, 14.25, 0, 0, 0 };
+	// None, Chris ID, Chris Test, Annika, Felix, Filip
+	double J_h[6] =     { 0, 0.2383 , 0.4351, 0.1927 , 0.3060  , 0 };
+	double B_h[6] =     { 0, 0.1676 , 0.1676, 2      , 2       , 2 };
+	double A_h[6] =     { 0, 0      , 0     , 0      , 0       , 0 };
+	double tau_g_h[6] = { 0, 9.4162 , 14.25 , 7.5008 , 10.5946 , 0 };
 
 	double J = 0.0377;
 	double B = 0.0207;
 	double A = 0.0000;
 	double tau_g = 1.7536;
 
-	double w_theta = 100000, w_tau = 10;
+	double w_theta = 50000, w_tau = 25;
 
-	double x1min = 0.1, x1max = 1.3, x2min = -50, x2max = 50, umin = -25, umax = 25;
+	double x1min = 0, x1max = 1.4, x2min = -4, x2max = 4, umin = -25, umax = 25;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
 };
 
@@ -66,7 +68,7 @@ struct plotVars {
 		x1 = 0.2, x1des = 0.2, x2 = 0,
 		u = 0, hTauEst = 0, mode = 1,
 		emg0 = 0, emg1 = 0,
-		lambdaA = 0, lambdaR = 0;
+		muA = 0, muR = 0;
 };
 	
 class MPCThread : public QThread

@@ -254,8 +254,8 @@ public:
         label_22->setText(QApplication::translate("GUIClass", "Tau", nullptr));
         label_23->setText(QApplication::translate("GUIClass", "EMG 1", nullptr));
         label_24->setText(QApplication::translate("GUIClass", "EMG 2", nullptr));
-        label_25->setText(QApplication::translate("GUIClass", "lambda A", nullptr));
-        label_26->setText(QApplication::translate("GUIClass", "lambda R", nullptr));
+        label_25->setText(QApplication::translate("GUIClass", "mu A", nullptr));
+        label_26->setText(QApplication::translate("GUIClass", "mu R", nullptr));
         plainTextEdit->setPlainText(QString());
         btn_reset->setText(QApplication::translate("GUIClass", "Reset", nullptr));
         label_8->setText(QApplication::translate("GUIClass", "Freq", nullptr));

@@ -162,6 +162,7 @@ void TMSiController::streamProcess()
 	safeStart = false;
 	while (streaming.load())
 	{
+		std::this_thread::sleep_for(std::chrono::nanoseconds(200));
 		int ReturnedBytes = getSamples(Handle, (PULONG)SignalBuffer, 2176);
 		if (ReturnedBytes < 0) {
 			ErrorCount++;
@@ -227,6 +228,8 @@ void TMSiController::streamProcess()
 
 				daq->daq_aiFile << daq->AIdata[0] << "," << daq->AIdata[1] << "," << daq->AIm[0] << "," << daq->AIm[1] << "\n";
 
+				//std::this_thread::sleep_for(std::chrono::microseconds(500));
+
 				//Sleep(1);
 				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
 				//if (createdRecording) {
@@ -235,6 +238,7 @@ void TMSiController::streamProcess()
 
 			}
 		}
+		//std::this_thread::sleep_for(std::chrono::nanoseconds(200));
 	}
 
 	safeStart = true;

@@ -30,8 +30,10 @@ double FIS::assistanceMode(double Tau_h, double x_des, fisParams fis)
 	rule[2] = mu[2] * mu[5]; // R
 	rule[3] = mu[3] * mu[4]; // R
 
-	lambdaA = rule[0] + rule[1];
-	lambdaR = rule[2] + rule[3];
+	muA = rule[0] + rule[1]; // Summation
+	muR = rule[2] + rule[3];
 
-	return 1 - (fis.pA * lambdaA + fis.pR * lambdaR); // sqrt() to emphasise effect
+	// Halt limit
+
+	return 1 - (fis.pA * muA + fis.pR * muR); // sqrt() to emphasise effect
 }
