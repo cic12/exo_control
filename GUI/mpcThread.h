@@ -24,7 +24,7 @@ using namespace std;
 
 struct testParams {
 	bool Sim = 0, Device = 1, aiSim = 0, tauEst = 1, Mode = 1;
-	int Human = 3; // None, Chris ID, Chris Test, Annika, Felix, Filip
+	int Human = 4; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 1;
 	double T = 24.0;
 	double freq = 0.25;
