@@ -24,12 +24,12 @@ using namespace std;
 
 struct testParams {
 	bool Sim = 1, aiSim = 1, Device = 0,  tauEst = 1, Mode = 1;
-	int Human = 4; // None, Chris ID, Chris Test, Annika, Felix, Filip
+	int Human = 2; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 1;
-	double T = 4.0;
+	double T = 24.0;
 	double freq = 0.25;
 	int uSleep = 500;
-	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFR.csv";
+	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgER.csv";
 };
 
 struct modelParams {

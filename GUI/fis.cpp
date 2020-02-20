@@ -35,11 +35,11 @@ double FIS::assistanceMode(double Tau_h, double x_des, fisParams fis)
 
 	// Halt
 	if (muR > fis.limR) {
-		//halt = 1;
+		halt = 1;
 	}
 	else {
 		halt = 0;
 	}
 
-	return 1 - (fis.pA * muA + fis.pR * muR); // sqrt() to emphasise effect
+	return 1 - (fis.pA * muA + fis.pR * muR);
 }
