@@ -220,13 +220,14 @@ void TMSiController::streamProcess()
 				}
 				timeStampsC.push_back(currentReadTime.load());
 
+				m_mutex.lock();
 				daq->AIdata[0] = (double)currentSample[16] / 1000;
 				daq->AIdata[1] = (double)currentSample[17] / 1000;
-
 				daq->AIm[0] = daq->emgProcess(daq->AIdata[0], 0);
 				daq->AIm[1] = daq->emgProcess(daq->AIdata[1], 1);
 
 				daq->daq_aiFile << daq->AIdata[0] << "," << daq->AIdata[1] << "," << daq->AIm[0] << "," << daq->AIm[1] << "\n";
+				m_mutex.unlock();
 
 				//std::this_thread::sleep_for(std::chrono::microseconds(500));
 
@@ -235,7 +236,6 @@ void TMSiController::streamProcess()
 				//if (createdRecording) {
 					//addRecordingLine(currentReadTime, currentSample);
 				//}
-
 			}
 		}
 		//std::this_thread::sleep_for(std::chrono::nanoseconds(200));

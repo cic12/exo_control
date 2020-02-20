@@ -6,11 +6,10 @@ DAQ::DAQ() {
 
 double DAQ::emgProcess(double AI, int i)
 {
-	double clip1 = 0.5;
-	double clip2 = 0.02;
-	double clip3 = 1.5;
+	double clip1 = 0.5; // Motion artefacts
+	double clip2 = 0.02; // Signal noise
 
-	return lowpass2(abs(clipLimEMG(noiseLimEMG(lowpass1(clipLimEMG(highpass1(AI, i), clip1), i), clip2), clip3)), i);
+	return lowpass2(abs(noiseLimEMG(clipLimEMG(lowpass1(highpass1(AI, i), i), clip1), clip2)),i);
 }
 
 double DAQ::lowpass1(double X_in, int emg)

@@ -23,10 +23,10 @@
 using namespace std;
 
 struct testParams {
-	bool Sim = 0, Device = 1, aiSim = 0, tauEst = 1, Mode = 1;
+	bool Sim = 1, aiSim = 1, Device = 0,  tauEst = 1, Mode = 1;
 	int Human = 4; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 1;
-	double T = 24.0;
+	double T = 4.0;
 	double freq = 0.25;
 	int uSleep = 500;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgFR.csv";
@@ -119,7 +119,7 @@ private:
 
 	double emgVec[4] = {};
 
-	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mu, *file_rule, *file_ai;
+	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mf, *file_rule, *file_emg;
 
 signals:
 	void mpcIteration(plotVars);

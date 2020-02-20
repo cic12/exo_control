@@ -4,9 +4,10 @@
 #include <math.h>
 
 struct fisParams {
-	double b1 = 0.181042528144174, b2 = 206.216871616737/2, b3 = -90.5225975988012; // from emg_torque_fit.m
+	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
 	double pA = 0.5, pR = 1;
 	double s = 0.75;
+	double limR = 0.5;
 
 	double eZ_sig = 0.1, eZ_c = 0;
 	double eN_a = -20, eN_c = -0.1, eP_a = 20, eP_c = 0.1;
@@ -18,8 +19,8 @@ public:
 	FIS();
 
 	fisParams fis;
-	bool haltMode = false;
-	double mu[6], rule[4], muA, muR;
+	bool halt = false;
+	double mf[6], rule[4], muA, muR;
 
 	double hTorqueEst(double e1, double e2, double b1, double b2, double b3);
 	double assistanceMode(double Tau_h, double dtheta, fisParams fis);

@@ -20,11 +20,11 @@ MPCThread::MPCThread(QObject *parent)
 	}
 	if (!test.aiSim) {
 		TMSi = new TMSiController();
-		TMSi->daq->daq_aiFile.open("../res/ai_daq.txt");
+		TMSi->daq->daq_aiFile.open("../res/ai.txt");
 	}
 	else {
 		daqSim = new DAQ();
-		daqSim->daq_aiFile.open("../res/ai_daq.txt");
+		daqSim->daq_aiFile.open("../res/ai.txt");
 	}
 	fuzzyInferenceSystem = new FIS();
 }
@@ -146,9 +146,9 @@ void MPCThread::mpc_init() {
 	openFile(&file_mode, "../res/mode.txt");
 	openFile(&file_t, "../res/tvec.txt");
 	openFile(&file_Ncfct, "../res/cost.txt");
-	openFile(&file_mu, "../res/mu.txt");
+	openFile(&file_mf, "../res/mf.txt");
 	openFile(&file_rule, "../res/rule.txt");
-	openFile(&file_ai, "../res/ai.txt");
+	openFile(&file_emg, "../res/emg.txt");
 
 	GUIPrint("Init Complete\n");
 	if (test.aiSim) {
@@ -173,7 +173,7 @@ void MPCThread::mpc_stop() {
 	else {
 		TMSi->daq->daq_aiFile.close();
 	}
-	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mu); fclose(file_rule); fclose(file_ai);
+	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mf); fclose(file_rule); fclose(file_emg);
 	grampc_free(&grampc_);
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	if(test.Device)
@@ -182,7 +182,7 @@ void MPCThread::mpc_stop() {
 }
 
 void MPCThread::mpc_loop() {
-	this->usleep(test.uSleep);
+	//this->usleep(test.uSleep);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -218,13 +218,13 @@ void MPCThread::mpc_loop() {
 		}
 		daqProcess();
 		controlFunctions(fuzzyInferenceSystem->fis);
+		print2Files();
 		t = t + mpc.dt;
-		if (fuzzyInferenceSystem->haltMode) {
+		if (fuzzyInferenceSystem->halt) {
 			t_halt = t_halt + mpc.dt;
 		}
 		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 		iMPC++;
-		print2Files();
 		time_counter -= (double)(mpc.dt * CLOCKS_PER_SEC);
 	}
 }
@@ -241,10 +241,12 @@ void MPCThread::daqProcess() {
 		}
 	}
 	else {
+		mutex.lock();
 		emgVec[0] = TMSi->daq->AIm[0];
 		emgVec[1] = TMSi->daq->AIm[1];
 		emgVec[2] = TMSi->daq->AIdata[0];
 		emgVec[3] = TMSi->daq->AIdata[1];
+		mutex.unlock();
 	}
 }
 
@@ -278,9 +280,9 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_t, &t, 1);
 	printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
-	printNumVector2File(file_mu, fuzzyInferenceSystem->mu, 6);
+	printNumVector2File(file_mf, fuzzyInferenceSystem->mf, 6);
 	printNumVector2File(file_rule, fuzzyInferenceSystem->rule, 4);
-	printNumVector2File(file_ai, emgVec, 4);
+	printNumVector2File(file_emg, emgVec, 4);
 }
 
 void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol) {
