@@ -20,16 +20,22 @@
 #define NU  	1
 #define NH      4
 
+//#define Sim
+#define paramID
+
 using namespace std;
 
 struct testParams {
-	bool Sim = 1, aiSim = 1, Device = 0,  tauEst = 1, Mode = 1;
-	int Human = 2; // None, Chris ID, Chris Test, Annika, Felix, Filip
-	int Trajectory = 1;
+	bool Device = 1, Sim = 0, ai = 0, aiSim = 1, tauEst = 0, Mode = 0;
+#ifdef Sim
+	bool Device = 0, Sim = 1, ai = 0, aiSim = 1;
+#endif
+	int Human = 0; // None, Chris ID, Chris Test, Annika, Felix, Filip
+	int Trajectory = 1; // 0 - Stationary, 1 - Tracking
 	double T = 24.0;
 	double freq = 0.25;
 	int uSleep = 500;
-	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgER.csv";
+	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
 };
 
 struct modelParams {
@@ -44,7 +50,8 @@ struct modelParams {
 	double A = 0.0000;
 	double tau_g = 1.7536;
 
-	double w_theta = 100000, w_tau = 15;
+	// double w_theta = 100000, w_tau = 15;
+	double w_theta = 100, w_tau = 10;
 
 	double x1min = 0, x1max = 1.4, x2min = -4, x2max = 4, umin = -25, umax = 25;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
@@ -84,7 +91,6 @@ public:
 	bool mpc_initialised = false;
 	int iMPC = 0;
 
-
 	plotVars vars;
 	testParams test;
 	mpcParams mpc;
@@ -95,6 +101,8 @@ public:
 	MotorThread *motorThread;
 
 	void paramSet(double* params);
+	double paramIDTraj(double time);
+	double paramIDTau(double theta, double theta_r);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init();
 	void mpc_loop();
@@ -105,7 +113,7 @@ public:
 	void print2Files();
 private:
 	int i, vec_i;
-	double currentVelocity = 0, previousVelocity = 0, currentAcceleration = 0, alpha = 0.001, xdes_previous = 0.2, xdes1_previous = 0.0;
+	double currentVelocity = 0, previousVelocity = 0, alpha = 0.001, xdes_previous = 0.2;
 	double t = 0.0, t_halt = 0.0;
 	double time_counter = 0.0;
 	clock_t this_time, last_time, start_time, end_time;

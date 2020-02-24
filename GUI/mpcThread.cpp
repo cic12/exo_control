@@ -4,7 +4,9 @@ MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
 	mpc.Tsim = test.T;
-
+#ifdef paramID
+	mpc.Tsim = 80;
+#endif
 	model.J += model.J_h[test.Human];
 	model.B += model.B_h[test.Human];
 	model.A += model.A_h[test.Human];
@@ -86,6 +88,31 @@ void MPCThread::paramSet(double* params)
 		grampc_->userparam = model.pSys;
 		grampc_setparam_real(grampc_, "Thor", mpc.Thor);
 	}
+}
+
+double MPCThread::paramIDTraj(double t) {
+	double xdes;
+	if (t <= 20) {
+		xdes = (cos((0.1 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
+	}
+	else if (t <= 40) {
+		xdes = (cos((0.2 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
+	}
+	else if (t <= 60) {
+		xdes = (cos((0.25 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
+	}
+	else if (t <= 80) {
+		xdes = (cos((0.5 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
+	}
+	else {
+		xdes = (cos((1.0 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
+	}
+	return xdes;
+}
+
+double MPCThread::paramIDTau(double theta, double theta_r)
+{
+	return 10*(theta_r-theta);
 }
 
 void MPCThread::aiSimProcess(char emg_string[]) {
@@ -182,23 +209,28 @@ void MPCThread::mpc_stop() {
 }
 
 void MPCThread::mpc_loop() {
-	//this->usleep(test.uSleep);
+	this->usleep(test.uSleep);
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
 	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
-		// Setpoint
-		if (test.Trajectory == 1) {
+#ifndef paramID
+		if (test.Trajectory == 1) { // Tracking
 			mpc.xdes[0] = (cos((test.freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7; // freq
 		}
+#else
+		mpc.xdes[0] = paramIDTraj(t);
+#endif
 		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
 		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
 		xdes_previous = mpc.xdes[0];
-
-		// Grampc
+		
+#ifndef paramID
 		grampc_run(grampc_);
-
+#else
+		*grampc_->sol->unext = paramIDTau(grampc_->sol->xnext[0], mpc.xdes[0]);
+#endif
 		if (test.Device) {
 			motorThread->demandedTorque = *grampc_->sol->unext;
 			grampc_->sol->xnext[0] = motorThread->currentPosition - 0.125 * M_PI - 0.5 * M_PI;
@@ -208,11 +240,9 @@ void MPCThread::mpc_loop() {
 			}
 			currentVelocity = (grampc_->sol->xnext[0] - motorThread->previousPosition) / mpc.dt; // need state estimator? currently MPC solves for static system
 			grampc_->sol->xnext[1] = alpha * currentVelocity + (1 - alpha) * previousVelocity;		// implement SMA for velocity until full state estimator is developed
-			currentAcceleration = (grampc_->sol->xnext[1] - previousVelocity) / mpc.dt; // USE DESIRED ACC INSTEAD
 			motorThread->previousPosition = grampc_->sol->xnext[0];
 			previousVelocity = grampc_->sol->xnext[1];
 		}
-
 		if (test.Sim) { // Overwrites position with device connected
 			plantSim();
 		}

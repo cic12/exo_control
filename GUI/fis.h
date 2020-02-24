@@ -4,7 +4,8 @@
 #include <math.h>
 
 struct fisParams {
-	double b1 = 0.181042528144174, b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
+	double b1 = 0; // 0.181042528144174,
+	double b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
 	double pA = 0.5, pR = 1;
 	double s = 0.75;
 	double limR = 0.5;
@@ -29,6 +30,5 @@ private:
 	double gaussmf(double x, double sig, double c);
 	double sigmf(double x, double a, double c);
 };
-
 
 #endif
