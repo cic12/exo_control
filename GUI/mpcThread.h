@@ -107,7 +107,6 @@ public:
 	void daqProcess();
 	void controlFunctions(fisParams);
 	void plantSim();
-	void print2Files();
 private:
 	bool loopSlept = false;
 	int i, vec_i;
@@ -127,12 +126,14 @@ private:
 
 	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mf, *file_rule, *file_emg;
 
+	void open_files();
+	void print2Files();
 signals:
 	void mpcIteration(plotVars);
 	void GUIPrint(QString);
 };
 
+
 void openFile(FILE **file, const char *name);
 void printNumVector2File(FILE *file, const double *const val, const int size);
-void printVector2File(const char *prefix, ofstream *file, const double * val, const int size);
 void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol);
