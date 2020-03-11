@@ -105,7 +105,7 @@ public:
 	void mpc_loop();
 	void mpc_stop();
 	void daqProcess();
-	void controlFunctions(fisParams);
+	void controlFunctions();
 	void plantSim();
 private:
 	bool loopSlept = false;

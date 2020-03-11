@@ -252,7 +252,7 @@ void MPCThread::mpc_loop() {
 			plantSim();
 		}
 		daqProcess();
-		controlFunctions(fuzzyInferenceSystem->fis);
+		controlFunctions();
 		print2Files();
 		t = t + mpc.dt;
 		if (fuzzyInferenceSystem->halt) {
@@ -286,9 +286,9 @@ void MPCThread::daqProcess() {
 	}
 }
 
-void MPCThread::controlFunctions(fisParams fis) {
+void MPCThread::controlFunctions() {
 	if (test.tauEst) {
-		grampc_->sol->xnext[2] = fuzzyInferenceSystem->hTorqueEst(emgVec[0], emgVec[1], fis.b1, fis.b2, fis.b3);
+		grampc_->sol->xnext[2] = fuzzyInferenceSystem->hTorqueEst(emgVec[0], emgVec[1], fuzzyInferenceSystem->fis.b1, fuzzyInferenceSystem->fis.b2, fuzzyInferenceSystem->fis.b3);
 	}
 	else {
 		grampc_->sol->xnext[2] = 0;
