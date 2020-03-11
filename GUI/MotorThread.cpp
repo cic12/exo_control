@@ -25,10 +25,10 @@ void MotorThread::run() {
 	motor_initialised = true;
 	
 	while (!mpc_complete) {
-		mutex.lock();
 		if (!group->getNextFeedback(group_feedback)) {
 			continue;
 		}
+		mutex.lock();
 		efforts[0] = -demandedTorque;
 		group_command.setEffort(efforts);
 		group->sendCommand(group_command);

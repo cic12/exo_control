@@ -20,21 +20,18 @@
 #define NU  	1
 #define NH      4
 
-//#define Sim
-#define paramID
+#define Simulation
+//#define paramID
 
 using namespace std;
 
 struct testParams {
-	bool Device = 1, Sim = 0, ai = 0, aiSim = 1, tauEst = 0, Mode = 0;
-#ifdef Sim
-	bool Device = 0, Sim = 1, ai = 0, aiSim = 1;
-#endif
+	bool Device = 1, Sim = 0, aiSim = 0, tauEst = 1, Mode = 1;
 	int Human = 0; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 1; // 0 - Stationary, 1 - Tracking
 	double T = 24.0;
 	double freq = 0.25;
-	int uSleep = 500;
+	int uSleep = 800;
 	char* emgPath = "../res/emgTorque/20200124_TMSi_EMG/emgR.csv";
 };
 
@@ -112,6 +109,7 @@ public:
 	void plantSim();
 	void print2Files();
 private:
+	bool loopSlept = false;
 	int i, vec_i;
 	double currentVelocity = 0, previousVelocity = 0, alpha = 0.001, xdes_previous = 0.2;
 	double t = 0.0, t_halt = 0.0;

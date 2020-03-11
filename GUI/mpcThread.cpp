@@ -3,10 +3,20 @@
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
+#ifdef Simulation
+	test.Device = 0;
+	test.Sim = 1;
+	test.aiSim = 1;
+	test.tauEst = 1;
+	test.Mode = 1;
+#endif
 	mpc.Tsim = test.T;
 #ifdef paramID
-	mpc.Tsim = 80;
+	mpc.Tsim = 100;
+	test.tauEst = 0;
+	test.Mode = 0;
 #endif
+
 	model.J += model.J_h[test.Human];
 	model.B += model.B_h[test.Human];
 	model.A += model.A_h[test.Human];
@@ -209,7 +219,10 @@ void MPCThread::mpc_stop() {
 }
 
 void MPCThread::mpc_loop() {
-	this->usleep(test.uSleep);
+	if (!loopSlept) {
+		this->usleep(test.uSleep); // Sleep once
+		loopSlept = true;
+	}
 	this_time = clock();
 	time_counter += (double)(this_time - last_time);
 	last_time = this_time;
@@ -255,6 +268,7 @@ void MPCThread::mpc_loop() {
 		}
 		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 		iMPC++;
+		loopSlept = false;
 		time_counter -= (double)(mpc.dt * CLOCKS_PER_SEC);
 	}
 }
