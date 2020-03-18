@@ -221,7 +221,11 @@ void MPCThread::mpc_loop() {
 	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
 #ifndef paramID
-		if (test.Trajectory == 1) { // Tracking
+		if (test.Trajectory == 1) { // Step
+			if (t > test.T / 2) {
+				mpc.xdes[0] = 1.2;
+			}
+		} else if (test.Trajectory == 2) { // Tracking
 			mpc.xdes[0] = (cos((test.freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7; // freq
 		}
 #else
