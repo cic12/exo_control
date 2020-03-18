@@ -29,10 +29,10 @@ struct testParams {
 	bool Device = 1, Sim = 0, aiSim = 0, tauEst = 1, Mode = 1;
 	int Human = 0; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 1; // 0 - None, 1 - Tracking
-	double T = 24.0;
+	double T = 4.0;
 	double freq = 0.25;
 	int uSleep = 800;
-	char* emgPath = "../res/HTE/20200124_TMSi_EMG/emgR.csv";
+	char* emgPath = "../../exo_results/HTE/emgR.csv";
 };
 
 struct modelParams {

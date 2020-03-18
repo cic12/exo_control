@@ -21,7 +21,7 @@ void MotorThread::run() {
 	GroupFeedback group_feedback(group->size());
 	group->setFeedbackFrequencyHz(500);
 	group->startLog("../res/logs");
-
+	
 	motor_initialised = true;
 	
 	while (!mpc_complete) {
@@ -39,4 +39,4 @@ void MotorThread::run() {
 	}
 	auto log_file = group->stopLog();
 	group->~Group();
-}	
+}
