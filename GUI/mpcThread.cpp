@@ -7,8 +7,8 @@ MPCThread::MPCThread(QObject *parent)
 	test.Device = 0;
 	test.Sim = 1;
 	test.aiSim = 1;
-	test.tauEst = 1;
-	test.Mode = 1;
+	test.tauEst = 0;
+	test.Mode = 0;
 #endif
 	mpc.Tsim = test.T;
 #ifdef paramID

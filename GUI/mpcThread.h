@@ -28,8 +28,8 @@ using namespace std;
 struct testParams {
 	bool Device = 1, Sim = 0, aiSim = 0, tauEst = 1, Mode = 1;
 	int Human = 0; // None, Chris ID, Chris Test, Annika, Felix, Filip
-	int Trajectory = 2; // 0 - None, 1 - Step, 2 - Tracking
-	double T = 1.0;
+	int Trajectory = 1; // 0 - None, 1 - Step, 2 - Tracking
+	double T = 2.0;
 	double freq = 0.25;
 	int uSleep = 800;
 	char* emgPath = "../../exo_results/HTE/emgR.csv";
