@@ -37,7 +37,7 @@ extern "C"
 		*Nx = 4; // 2 system states and 2 dummy states
 		*Nu = 1;
 		*Np = 0;
-		*Nh = 0;// 4;
+		*Nh = 4;
 		*Ng = 0;
 		*NgT = 0;
 		*NhT = 0;
@@ -157,18 +157,21 @@ extern "C"
 	{
 		ctypeRNum* hParam = (ctypeRNum*)userparam;
 
-		//out[0] = hParam[6] - x[0];
-		//out[1] = -hParam[7] + x[0];
-		//out[2] = hParam[8] - x[1];
-		//out[3] = -hParam[9] + x[1];
+		out[0] = hParam[6] - x[0];
+		out[1] = -hParam[7] + x[0];
+		out[2] = hParam[8] - x[1];
+		out[3] = -hParam[9] + x[1];
 	}
 	void dhdx_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *vec, typeUSERPARAM* userparam)
 	{
-		//out[0] = -vec[0] + vec[1];
-		//out[1] = -vec[2] + vec[3];
+		out[0] = -vec[0] + vec[1];
+		out[1] = -vec[2] + vec[3];
+		out[2] = 0;
+		out[3] = 0;
 	}
 	void dhdu_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *vec, typeUSERPARAM* userparam)
 	{
+		out[0] = 0;
 	}
 	void dhdp_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *vec, typeUSERPARAM* userparam)
 	{

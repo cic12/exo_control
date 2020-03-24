@@ -29,7 +29,7 @@ struct testParams {
 	bool Device = 1, Sim = 0, aiSim = 0, tauEst = 1, Mode = 1;
 	int Human = 0; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 1; // 0 - None, 1 - Step, 2 - Tracking
-	double T = 2.0;
+	double T = 10.0;
 	double freq = 0.25;
 	int uSleep = 800;
 	char* emgPath = "../../exo_results/HTE/emgR.csv";
@@ -50,8 +50,8 @@ struct modelParams {
 	// double w_theta = 100000, w_tau = 15;
 	double w_theta = 100, w_tau = 10;
 
-	double x1min = 0, x1max = 1.4, x2min = -4, x2max = 4, umin = -25, umax = 25;
-	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max, umin, umax };
+	double x1min = 0, x1max = 1.4, x2min = -4, x2max = 4;
+	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max};
 };
 
 struct mpcParams {
