@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libgrampc", "libgrampc\libgrampc.vcxproj", "{C8168A7E-742F-4610-BC44-C3A9CBD9BB26}"
 EndProject
@@ -17,14 +17,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Debug|x64.ActiveCfg = Debug|Win32
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Debug|x64.Build.0 = Debug|Win32
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Debug|x86.ActiveCfg = Debug|Win32
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Debug|x86.Build.0 = Debug|Win32
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Release|x64.ActiveCfg = Release|x64
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Release|x64.Build.0 = Release|x64
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Release|x86.ActiveCfg = Release|Win32
-		{F52289D8-56F2-47D3-992C-B131A0644C09}.Release|x86.Build.0 = Release|Win32
 		{C8168A7E-742F-4610-BC44-C3A9CBD9BB26}.Debug|x64.ActiveCfg = Debug|x64
 		{C8168A7E-742F-4610-BC44-C3A9CBD9BB26}.Debug|x64.Build.0 = Debug|x64
 		{C8168A7E-742F-4610-BC44-C3A9CBD9BB26}.Debug|x86.ActiveCfg = Debug|Win32
@@ -54,7 +46,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		Qt5Version = Qt 5.12.4 (32 bit)
 		SolutionGuid = {EB7B0B1A-A754-4B94-AB84-D7DBC11E3B06}
+		Qt5Version = Qt 5.12.4 (32 bit)
 	EndGlobalSection
 EndGlobal

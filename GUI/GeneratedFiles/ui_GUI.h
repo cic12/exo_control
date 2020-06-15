@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'GUI.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.4
+** Created by: Qt User Interface Compiler version 5.14.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -237,28 +237,28 @@ public:
 
     void retranslateUi(QMainWindow *GUIClass)
     {
-        GUIClass->setWindowTitle(QApplication::translate("GUIClass", "GUI", nullptr));
-        btn_start->setText(QApplication::translate("GUIClass", "Start", nullptr));
-        btn_stop->setText(QApplication::translate("GUIClass", "Stop", nullptr));
-        label_3->setText(QApplication::translate("GUIClass", "0.000", nullptr));
-        label_4->setText(QApplication::translate("GUIClass", "Time", nullptr));
-        label_2->setText(QApplication::translate("GUIClass", "A", nullptr));
-        label_5->setText(QApplication::translate("GUIClass", "B", nullptr));
-        label_6->setText(QApplication::translate("GUIClass", "J", nullptr));
-        label_7->setText(QApplication::translate("GUIClass", "tau_g", nullptr));
-        label_9->setText(QApplication::translate("GUIClass", "W_theta", nullptr));
-        label_10->setText(QApplication::translate("GUIClass", "W_tau", nullptr));
-        label_11->setText(QApplication::translate("GUIClass", "Thor", nullptr));
-        btn_set_params->setText(QApplication::translate("GUIClass", "Set Params", nullptr));
-        label_21->setText(QApplication::translate("GUIClass", "Theta", nullptr));
-        label_22->setText(QApplication::translate("GUIClass", "Tau", nullptr));
-        label_23->setText(QApplication::translate("GUIClass", "EMG 1", nullptr));
-        label_24->setText(QApplication::translate("GUIClass", "EMG 2", nullptr));
-        label_25->setText(QApplication::translate("GUIClass", "mu A", nullptr));
-        label_26->setText(QApplication::translate("GUIClass", "mu R", nullptr));
+        GUIClass->setWindowTitle(QCoreApplication::translate("GUIClass", "GUI", nullptr));
+        btn_start->setText(QCoreApplication::translate("GUIClass", "Start", nullptr));
+        btn_stop->setText(QCoreApplication::translate("GUIClass", "Stop", nullptr));
+        label_3->setText(QCoreApplication::translate("GUIClass", "0.000", nullptr));
+        label_4->setText(QCoreApplication::translate("GUIClass", "Time", nullptr));
+        label_2->setText(QCoreApplication::translate("GUIClass", "A", nullptr));
+        label_5->setText(QCoreApplication::translate("GUIClass", "B", nullptr));
+        label_6->setText(QCoreApplication::translate("GUIClass", "J", nullptr));
+        label_7->setText(QCoreApplication::translate("GUIClass", "tau_g", nullptr));
+        label_9->setText(QCoreApplication::translate("GUIClass", "W_theta", nullptr));
+        label_10->setText(QCoreApplication::translate("GUIClass", "W_tau", nullptr));
+        label_11->setText(QCoreApplication::translate("GUIClass", "Thor", nullptr));
+        btn_set_params->setText(QCoreApplication::translate("GUIClass", "Set Params", nullptr));
+        label_21->setText(QCoreApplication::translate("GUIClass", "Theta", nullptr));
+        label_22->setText(QCoreApplication::translate("GUIClass", "Tau", nullptr));
+        label_23->setText(QCoreApplication::translate("GUIClass", "EMG 1", nullptr));
+        label_24->setText(QCoreApplication::translate("GUIClass", "EMG 2", nullptr));
+        label_25->setText(QCoreApplication::translate("GUIClass", "mu A", nullptr));
+        label_26->setText(QCoreApplication::translate("GUIClass", "mu R", nullptr));
         plainTextEdit->setPlainText(QString());
-        btn_reset->setText(QApplication::translate("GUIClass", "Reset", nullptr));
-        label_8->setText(QApplication::translate("GUIClass", "Freq", nullptr));
+        btn_reset->setText(QCoreApplication::translate("GUIClass", "Reset", nullptr));
+        label_8->setText(QCoreApplication::translate("GUIClass", "Freq", nullptr));
     } // retranslateUi
 
 };
