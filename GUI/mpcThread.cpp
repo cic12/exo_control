@@ -125,6 +125,25 @@ double MPCThread::paramIDTau(double theta, double theta_r)
 	return 10*(theta_r-theta);
 }
 
+double MPCThread::PIDcontrol(double theta, double theta_r, double lim = 25, double K_p = 50, double K_i = 50, double K_d = 0.5, double alpha = 0.1)
+{
+	double error = error_prior * (1 - alpha) + (theta_r - theta) * alpha;
+	if (iMPC == 1) {
+		error_prior = error;
+	}
+	double integral = integral_prior + error * 0.002;
+	double derivative = (error - error_prior) / 0.002;
+	double u = K_p * error + K_i * integral + K_d * derivative;
+	error_prior = error;
+	integral_prior = integral;
+	derivative_prior = derivative;
+	pid[0] = error_prior;
+	pid[1] = integral_prior;
+	pid[2] = derivative_prior;
+	return fmin(fmax(u, -lim), lim);
+}
+
+
 void MPCThread::aiSimProcess(char emg_string[]) {
 	QFile myQfile(emg_string);
 	if (!myQfile.open(QIODevice::ReadOnly)) {
@@ -187,7 +206,7 @@ void MPCThread::mpc_init() {
 
 void MPCThread::mpc_stop() {
 	end_time = clock();
-	double duration = (double)(end_time - start_time);
+	double duration = ((double)end_time - (double)start_time);
 	if (!test.aiSim) {
 		TMSi->endStream();
 		TMSi->reset();
@@ -202,7 +221,7 @@ void MPCThread::mpc_stop() {
 	else {
 		TMSi->daq->daq_aiFile.close();
 	}
-	fclose(file_x); fclose(file_xdes); fclose(file_u); fclose(file_t); fclose(file_mode); fclose(file_Ncfct); fclose(file_mf); fclose(file_rule); fclose(file_emg);
+	close_files();
 	grampc_free(&grampc_);
 	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
 	if(test.Device)
@@ -216,7 +235,7 @@ void MPCThread::mpc_loop() {
 		loopSlept = true;
 	}
 	this_time = clock();
-	time_counter += (double)(this_time - last_time);
+	time_counter += ((double)this_time - (double)last_time);
 	last_time = this_time;
 	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC)) // 1000 cps
 	{
@@ -236,8 +255,11 @@ void MPCThread::mpc_loop() {
 		xdes_previous = mpc.xdes[0];
 		
 #ifndef paramID
-		grampc_run(grampc_);
-#else
+		//grampc_run(grampc_);
+		if (iMPC > 0) {
+			*grampc_->sol->unext = PIDcontrol(grampc_->sol->xnext[0], mpc.xdes[0]);
+		}
+#else	
 		*grampc_->sol->unext = paramIDTau(grampc_->sol->xnext[0], mpc.xdes[0]);
 #endif
 		if (test.Device) {
@@ -345,6 +367,21 @@ void MPCThread::open_files() {
 	openFile(&file_mf, "../res/mf.txt");
 	openFile(&file_rule, "../res/rule.txt");
 	openFile(&file_emg, "../res/emg.txt");
+	openFile(&file_pid, "../res/pid.txt");
+}
+
+void MPCThread::close_files()
+{
+	fclose(file_x);
+	fclose(file_xdes);
+	fclose(file_u);
+	fclose(file_t);
+	fclose(file_mode);
+	fclose(file_Ncfct);
+	fclose(file_mf);
+	fclose(file_rule);
+	fclose(file_emg);
+	fclose(file_pid);
 }
 
 void MPCThread::print2Files() {
@@ -357,6 +394,7 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_mf, fuzzyInferenceSystem->mf, 6);
 	printNumVector2File(file_rule, fuzzyInferenceSystem->rule, 4);
 	printNumVector2File(file_emg, emgVec, 4);
+	printNumVector2File(file_pid, pid, 3);
 }
 
 void openFile(FILE **file, const char *name) {

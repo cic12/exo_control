@@ -20,19 +20,19 @@
 #define NU  	1
 #define NH      4
 
-#define Simulation
+//#define Simulation
 //#define paramID
 
 using namespace std;
 
 struct testParams {
-	bool Device = 1, Sim = 0, aiSim = 0, tauEst = 1, Mode = 1;
-	int Human = 0; // None, Chris ID, Chris Test, Annika, Felix, Filip
-	int Trajectory = 1; // 0 - None, 1 - Step, 2 - Tracking
-	double T = 10.0;
+	bool Device = 1, Sim = 0, aiSim = 1, tauEst = 0, Mode = 0;
+	int Human = 1; // None, Chris ID, Chris Test, Annika, Felix, Filip
+	int Trajectory = 2; // 0 - None, 1 - Step, 2 - Tracking
+	double T = 4.0;
 	double freq = 0.25;
 	int uSleep = 800;
-	char* emgPath = "../../exo_results/HTE/emgR.csv";
+	char* emgPath = "../res/emg/emgR.csv";
 };
 
 struct modelParams {
@@ -47,8 +47,9 @@ struct modelParams {
 	double A = 0.0000;
 	double tau_g = 1.7536;
 
-	// double w_theta = 100000, w_tau = 15;
-	double w_theta = 100, w_tau = 10;
+	//double w_theta = 100000, w_tau = 15;
+	double w_theta = 150000, w_tau = 10;
+	//double w_theta = 100, w_tau = 10;
 
 	double x1min = 0, x1max = 1.4, x2min = -4, x2max = 4;
 	double pSys[12] = { A , B , J , tau_g , w_theta, w_tau, x1min, x1max, x2min, x2max};
@@ -58,7 +59,7 @@ struct mpcParams {
 	double rwsReferenceIntegration[2 * NX];
 	const double x0[NX] = { 0.2, 0, 0, 1 };
 	double xdes[NX] = { 0.2, 0, 0, 0 };
-	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -25.0 }, umax[NU] = { 25.0 }; // set in inequality constraints
+	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -30.0 }, umax[NU] = { 30.0 }; // set in inequality constraints
 	const double dt = 0.002;
 	double Tsim;
 	double Thor = 0.2;
@@ -100,6 +101,7 @@ public:
 	void paramSet(double* params);
 	double paramIDTraj(double time);
 	double paramIDTau(double theta, double theta_r);
+	double PIDcontrol(double theta, double theta_r, double lim, double K_p, double K_i, double K_d, double alpha);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init();
 	void mpc_loop();
@@ -113,6 +115,11 @@ private:
 	double currentVelocity = 0, previousVelocity = 0, alpha = 0.001, xdes_previous = 0.2;
 	double t = 0.0, t_halt = 0.0;
 	double time_counter = 0.0;
+	// PID
+	double error_prior = 0;
+	double integral_prior = 0;
+	double derivative_prior = 0;
+
 	clock_t this_time, last_time, start_time, end_time;
 	QVector<double> aivec = { 0 }, aivec1 = { 0 }, AImvec = { 0 }, AImvec1 = { 0 };
 	
@@ -123,10 +130,12 @@ private:
 	DAQ *daqSim;
 
 	double emgVec[4] = {};
+	double pid[3] = {};
 
-	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mf, *file_rule, *file_emg;
+	FILE *file_x, *file_xdes, *file_u, *file_t, *file_mode, *file_Ncfct, *file_mf, *file_rule, *file_emg, *file_pid;
 
 	void open_files();
+	void close_files();
 	void print2Files();
 signals:
 	void mpcIteration(plotVars);
