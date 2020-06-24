@@ -4,10 +4,6 @@ FIS::FIS() {
 
 }
 
-double FIS::gaussmf(double x, double sig, double c) {
-	return exp(-((x - c)*(x - c)) / (2 * sig*sig));
-}
-
 double FIS::sigmf(double x, double a, double c) {
 	return 1 / (1 + exp(-a * (x - c)));
 }
@@ -20,8 +16,8 @@ double FIS::assistanceMode(double Tau_h, double x_des, fisParams fis)
 {
 	mf[0] = sigmf(x_des, fis.eN_a, fis.eN_c); // exo N
 	mf[1] = sigmf(x_des, fis.eP_a, fis.eP_c); // exo P
-	mf[2] = mf[0] + fis.s * gaussmf(x_des, fis.eZ_sig, fis.eZ_c); // exo N | Z
-	mf[3] = mf[1] + fis.s * gaussmf(x_des, fis.eZ_sig, fis.eZ_c); // exo N | Z
+	mf[2] = 1 - mf[1]; // exo NP
+	mf[3] = 1 - mf[0]; // exo NN
 	mf[4] = sigmf(Tau_h, fis.hN_a, fis.hN_c); // human N
 	mf[5] = sigmf(Tau_h, fis.hP_a, fis.hP_c); // human P
 

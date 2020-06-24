@@ -4,13 +4,10 @@
 #include <math.h>
 
 struct fisParams {
-	double b1 = 0; // 0.181042528144174,
-	double b2 = 206.216871616737, b3 = -90.5225975988012; // from emg_torque_fit.m
+	double b1 = 0.181042528144174;
+	double b2 = 206.216871616737, b3 = -90.5225975988012;
 	double pA = 0.5, pR = 1;
-	double s = 0.75;
 	double limR = 0.5;
-
-	double eZ_sig = 0.1, eZ_c = 0;
 	double eN_a = -20, eN_c = -0.1, eP_a = 20, eP_c = 0.1;
 	double hN_a = -4, hN_c = -1, hP_a = 4, hP_c = 1; 
 };
@@ -27,7 +24,6 @@ public:
 	double assistanceMode(double Tau_h, double dtheta, fisParams fis);
 private:
 
-	double gaussmf(double x, double sig, double c);
 	double sigmf(double x, double a, double c);
 };
 
