@@ -125,7 +125,7 @@ double MPCThread::paramIDTau(double theta, double theta_r)
 	return 10*(theta_r-theta);
 }
 
-double MPCThread::PIDcontrol(double theta, double theta_r, double lim = 25, double K_p = 50, double K_i = 50, double K_d = 0.5, double alpha = 0.1)
+double MPCThread::PIDcontrol(double theta, double theta_r, double lim = 30, double K_p = 150, double K_i = 200, double K_d = 3.5, double K_ff = 20, double alpha = 0.05)
 {
 	double error = error_prior * (1 - alpha) + (theta_r - theta) * alpha;
 	if (iMPC == 1) {
@@ -133,7 +133,7 @@ double MPCThread::PIDcontrol(double theta, double theta_r, double lim = 25, doub
 	}
 	double integral = integral_prior + error * 0.002;
 	double derivative = (error - error_prior) / 0.002;
-	double u = K_p * error + K_i * integral + K_d * derivative;
+	double u = K_p * error + K_i * integral + K_d * derivative + 20 * sin(theta);
 	error_prior = error;
 	integral_prior = integral;
 	derivative_prior = derivative;
@@ -142,7 +142,6 @@ double MPCThread::PIDcontrol(double theta, double theta_r, double lim = 25, doub
 	pid[2] = derivative_prior;
 	return fmin(fmax(u, -lim), lim);
 }
-
 
 void MPCThread::aiSimProcess(char emg_string[]) {
 	QFile myQfile(emg_string);
@@ -171,23 +170,7 @@ void MPCThread::aiSimProcess(char emg_string[]) {
 }
 
 void MPCThread::mpc_init() {
-	mpcInit(&grampc_,
-		&model.pSys, 
-		mpc.x0,
-		mpc.xdes,
-		mpc.u0,
-		mpc.udes,
-		mpc.umax,
-		mpc.umin,
-		&mpc.Thor,
-		&mpc.dt,
-		&t,
-		mpc.TerminalCost,
-		mpc.IntegralCost,
-		mpc.ScaleProblem,
-		mpc.AugLagUpdateGradientRelTol,
-		mpc.ConstraintsAbsTol);
-
+	mpcInit(&grampc_, &model.pSys, mpc);
 	if (test.aiSim) {
 		aiSimProcess(test.emgPath);
 	}
@@ -195,9 +178,7 @@ void MPCThread::mpc_init() {
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
 	}
-
 	open_files();
-
 	GUIPrint("Init Complete\n");
 	if (test.aiSim) {
 		GUIPrint("EMG simulation\n" + QString(test.emgPath) + "\n");
@@ -213,6 +194,7 @@ void MPCThread::mpc_stop() {
 	}
 	Stop = 1;
 	if (test.Device) {
+		motorThread->demandedTorque = 0;
 		motorThread->mpc_complete = 1;
 	}
 	if (test.aiSim) {
@@ -241,8 +223,8 @@ void MPCThread::mpc_loop() {
 	{
 #ifndef paramID
 		if (test.Trajectory == 1) { // Step
-			if (t > test.T / 2) {
-				mpc.xdes[0] = 1.2;
+			if (t > 2) {
+				//mpc.xdes[0] = 0.2;
 			}
 		} else if (test.Trajectory == 2) { // Tracking
 			mpc.xdes[0] = (cos((test.freq * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7; // freq
@@ -335,39 +317,41 @@ void MPCThread::plantSim() {
 	}
 }
 
-void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol) {
+void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, mpcParams mpc) {
 	grampc_init(grampc_, userparam);
 
-	grampc_setparam_real_vector(*grampc_, "x0", x0);
-	grampc_setparam_real_vector(*grampc_, "xdes", xdes);
-	grampc_setparam_real_vector(*grampc_, "u0", u0);
-	grampc_setparam_real_vector(*grampc_, "udes", udes);
-	grampc_setparam_real_vector(*grampc_, "umax", umax);
-	grampc_setparam_real_vector(*grampc_, "umin", umin);
+	//grampc_setparam_real_vector(*grampc_, "x0", x0);
+	grampc_setparam_real_vector(*grampc_, "x0", mpc.x0);
+	grampc_setparam_real_vector(*grampc_, "xdes", mpc.xdes);
+	grampc_setparam_real_vector(*grampc_, "u0", mpc.u0);
+	grampc_setparam_real_vector(*grampc_, "udes", mpc.udes);
+	grampc_setparam_real_vector(*grampc_, "umax", mpc.umax);
+	grampc_setparam_real_vector(*grampc_, "umin", mpc.umin);
 
-	grampc_setparam_real(*grampc_, "Thor", *Thor);
-	grampc_setparam_real(*grampc_, "dt", *dt);
-	grampc_setparam_real(*grampc_, "t0", *t);
+	grampc_setparam_real(*grampc_, "Thor", mpc.Thor);
+	grampc_setparam_real(*grampc_, "dt", mpc.dt);
+	grampc_setparam_real(*grampc_, "t0", mpc.t0);
 
-	grampc_setopt_string(*grampc_, "IntegralCost", IntegralCost);
-	grampc_setopt_string(*grampc_, "TerminalCost", TerminalCost);
-	grampc_setopt_string(*grampc_, "ScaleProblem", ScaleProblem);
+	grampc_setopt_string(*grampc_, "IntegralCost", mpc.IntegralCost);
+	grampc_setopt_string(*grampc_, "TerminalCost", mpc.TerminalCost);
+	grampc_setopt_string(*grampc_, "ScaleProblem", mpc.ScaleProblem);
 
-	//grampc_setopt_real(*grampc_, " AugLagUpdateGradientRelTol ", AugLagUpdateGradientRelTol);
-	//grampc_setopt_real_vector(*grampc_, " ConstraintsAbsTol ", ConstraintsAbsTol);
+	//grampc_setopt_real(*grampc_, " AugLagUpdateGradientRelTol ", mpc.AugLagUpdateGradientRelTol);
+	//grampc_setopt_real_vector(*grampc_, " ConstraintsAbsTol ", mpc.ConstraintsAbsTol);
 }
 
 void MPCThread::open_files() {
-	openFile(&file_x, "../res/xvec.txt");
-	openFile(&file_xdes, "../res/xdesvec.txt");
-	openFile(&file_u, "../res/uvec.txt");
-	openFile(&file_mode, "../res/mode.txt");
-	openFile(&file_t, "../res/tvec.txt");
-	openFile(&file_Ncfct, "../res/cost.txt");
-	openFile(&file_mf, "../res/mf.txt");
-	openFile(&file_rule, "../res/rule.txt");
-	openFile(&file_emg, "../res/emg.txt");
-	openFile(&file_pid, "../res/pid.txt");
+	errno_t err;
+	err = fopen_s(&file_x, "../res/xvec.txt", "w");
+	err = fopen_s(&file_xdes, "../res/xdesvec.txt", "w");
+	err = fopen_s(&file_u, "../res/uvec.txt", "w");
+	err = fopen_s(&file_mode, "../res/mode.txt", "w");
+	err = fopen_s(&file_t, "../res/tvec.txt", "w");
+	err = fopen_s(&file_Ncfct, "../res/cost.txt", "w");
+	err = fopen_s(&file_mf, "../res/mf.txt", "w");
+	err = fopen_s(&file_rule, "../res/rule.txt", "w");
+	err = fopen_s(&file_emg, "../res/emg.txt", "w");
+	err = fopen_s(&file_pid, "../res/pid.txt", "w");
 }
 
 void MPCThread::close_files()
@@ -395,10 +379,6 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_rule, fuzzyInferenceSystem->rule, 4);
 	printNumVector2File(file_emg, emgVec, 4);
 	printNumVector2File(file_pid, pid, 3);
-}
-
-void openFile(FILE **file, const char *name) {
-	*file = fopen(name, "w");
 }
 
 void printNumVector2File(FILE *file, const double * val, const int size) {

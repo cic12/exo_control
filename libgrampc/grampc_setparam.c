@@ -70,7 +70,7 @@ void grampc_setparam_real(const typeGRAMPC *grampc, const typeChar *paramName, c
 	}
 }
 
-void grampc_setparam_real_vector(const typeGRAMPC *grampc, const typeChar *paramName, const ctypeRNum *paramValue)
+void grampc_setparam_real_vector(const typeGRAMPC *grampc, const typeChar *paramName, ctypeRNum *paramValue)
 {
 	/* x0 */
 	if (!strcmp(paramName, "x0")) {

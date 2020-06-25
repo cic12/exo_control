@@ -26,13 +26,13 @@
 using namespace std;
 
 struct testParams {
-	bool Device = 1, Sim = 0, aiSim = 1, tauEst = 0, Mode = 0;
+	bool Device = 1, Sim = 0, aiSim = 0, tauEst = 0, Mode = 0;
 	int Human = 1; // None, Chris ID, Chris Test, Annika, Felix, Filip
 	int Trajectory = 2; // 0 - None, 1 - Step, 2 - Tracking
-	double T = 4.0;
-	double freq = 0.25;
+	double T = 24.0;
+	double freq = 0.5;
 	int uSleep = 800;
-	char* emgPath = "../res/emg/emgR.csv";
+	char* emgPath = "../res/emg/emgNone.csv";
 };
 
 struct modelParams {
@@ -63,6 +63,7 @@ struct mpcParams {
 	const double dt = 0.002;
 	double Tsim;
 	double Thor = 0.2;
+	double t0 = 0.0;
 	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
 	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
 	const double ConstraintsAbsTol[NH] = { 1e-3, 1e-3, 1e-3, 1e-3 };
@@ -101,7 +102,7 @@ public:
 	void paramSet(double* params);
 	double paramIDTraj(double time);
 	double paramIDTau(double theta, double theta_r);
-	double PIDcontrol(double theta, double theta_r, double lim, double K_p, double K_i, double K_d, double alpha);
+	double PIDcontrol(double theta, double theta_r, double lim, double K_p, double K_i, double K_d, double K_ff, double alpha);
 	void aiSimProcess(char emg_string[]);
 	void mpc_init();
 	void mpc_loop();
@@ -142,7 +143,5 @@ signals:
 	void GUIPrint(QString);
 };
 
-
-void openFile(FILE **file, const char *name);
 void printNumVector2File(FILE *file, const double *const val, const int size);
-void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, const double *x0, const double *xdes, const double *u0, const double *udes, const double *umax, const double *umin, const double *Thor, const double *dt, const double *t, const char *TerminalCost, const char *IntegralCost, const char *ScaleProblem, double AugLagUpdateGradientRelTol, const double *ConstraintsAbsTol);
+void mpcInit(typeGRAMPC **grampc_, typeUSERPARAM *userparam, mpcParams mpc);

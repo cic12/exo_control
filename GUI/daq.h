@@ -6,14 +6,14 @@
 using namespace std;
 
 struct filter_para {
-	double x[3][2] = {};
-	double y[3][2] = {};
+	double x[3][4] = {};
+	double y[3][4] = {};
 };
 
 class DAQ {
 public:
 	DAQ();
-	double AIdata[2] = {}, AIm[2] = {};
+	double AIdata[4] = {}, AIm[4] = {};
 	double emgProcess(double AI, int);
 	ofstream daq_aiFile;
 private:
