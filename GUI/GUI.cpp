@@ -10,18 +10,20 @@ GUI::GUI(QWidget *parent)
 	mpcThread = new MPCThread(this);
 	timer = new QTimer(this);
 	timer->setTimerType(Qt::PreciseTimer);
+	mpc_reset = true;
 
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout)); // GUI update
 	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
 
-	ui.A_box->setValue(mpcThread->model.A);
-	ui.B_box->setValue(mpcThread->model.B);
-	ui.J_box->setValue(mpcThread->model.J);
-	ui.tau_g_box->setValue(mpcThread->model.tau_g);
-	ui.W_theta_box->setValue(mpcThread->model.w_theta);
-	ui.W_tau_box->setValue(mpcThread->model.w_tau);
-	ui.Thor_box->setValue(mpcThread->mpc.Thor);
-	ui.Freq_box->setValue(mpcThread->test.freq);
+	initBoxes();
+
+	onGUIPrint("device:" + QString::number(ui.deviceBox->isChecked()) + "\n");
+	onGUIPrint("sim:" + QString::number(ui.simBox->isChecked()) + "\n");
+	onGUIPrint("control:" + QString::number(ui.controlBox->currentIndex()) + "\n");
+	onGUIPrint("config:" + QString::number(ui.configBox->currentIndex()) + "\n");
+	onGUIPrint("traj:" + QString::number(ui.trajBox->currentIndex()) + "\n");
+	onGUIPrint("time:" + QString::number(ui.timeBox->value()) + "\n");
+
 }
 
 void GUI::onTimeout()
@@ -41,10 +43,13 @@ void GUI::onTimeout()
 
 void GUI::on_btn_start_clicked()
 {
-	mpcThread->start(QThread::NormalPriority);
-	clearPlots();
-	timer->start(20); // Timer period in ms controls GUI update frequency
-	mpc_reset = false;
+	if (mpc_reset) {
+		on_btn_set_params_clicked();
+		mpcThread->start(QThread::NormalPriority);
+		clearPlots();
+		timer->start(20); // Timer period in ms controls GUI update frequency
+		mpc_reset = false;
+	}
 }
 
 void GUI::on_btn_stop_clicked()
@@ -62,17 +67,59 @@ void GUI::on_btn_reset_clicked()
 	}
 }
 
-void GUI::on_btn_set_params_clicked()
+void GUI::on_btn_set_params_clicked() // can update params mid-trial
 {
-	double params[8] = { ui.A_box->value(),
-		ui.B_box->value(),
-		ui.J_box->value(),
-		ui.tau_g_box->value(),
-		ui.W_theta_box->value(),
-		ui.W_tau_box->value(),
-		ui.Thor_box->value(),
-		ui.Freq_box->value()};
-	mpcThread->paramSet(params);
+	// Configuration
+	mpcThread->test.device = ui.deviceBox->isChecked();
+	mpcThread->test.sim = ui.simBox->isChecked();
+	mpcThread->test.human = ui.humanBox->currentIndex();
+	mpcThread->test.analogIn = ui.analogInBox->currentIndex();
+	mpcThread->test.control = ui.controlBox->currentIndex();
+	mpcThread->test.config = ui.configBox->currentIndex();
+	mpcThread->test.traj = ui.trajBox->currentIndex();
+	mpcThread->test.T = ui.timeBox->value();
+
+	mpcThread->test.HTE = (mpcThread->test.config > 0), mpcThread->test.FLA = (mpcThread->test.config > 1);
+
+	// Model Params
+	mpcThread->model.A = ui.A_box->value() + mpcThread->model.A_h[ui.humanBox->currentIndex()];
+	mpcThread->model.B = ui.B_box->value() + mpcThread->model.B_h[ui.humanBox->currentIndex()];
+	mpcThread->model.J = ui.J_box->value() + mpcThread->model.J_h[ui.humanBox->currentIndex()];
+	mpcThread->model.tau_g = ui.tau_g_box->value() + mpcThread->model.tau_g_h[ui.humanBox->currentIndex()];
+
+	mpcThread->mpc.pSys[0] = mpcThread->model.A;
+	mpcThread->mpc.pSys[1] = mpcThread->model.B;
+	mpcThread->mpc.pSys[2] = mpcThread->model.J;
+	mpcThread->mpc.pSys[3] = mpcThread->model.tau_g;
+
+	// MPC Params
+	mpcThread->mpc.w_theta = ui.w_theta_box->value();
+	mpcThread->mpc.w_tau = ui.w_tau_box->value();
+	mpcThread->mpc.x1min = ui.x1min_box->value();
+	mpcThread->mpc.x1max = ui.x1max_box->value();
+	mpcThread->mpc.x2min = ui.x2min_box->value();
+	mpcThread->mpc.x2max = ui.x2max_box->value();
+
+	mpcThread->mpc.pSys[4] = mpcThread->mpc.w_theta;
+	mpcThread->mpc.pSys[5] = mpcThread->mpc.w_tau;
+	mpcThread->mpc.pSys[6] = mpcThread->mpc.x1min;
+	mpcThread->mpc.pSys[7] = mpcThread->mpc.x1max;
+	mpcThread->mpc.pSys[8] = mpcThread->mpc.x2min;
+	mpcThread->mpc.pSys[9] = mpcThread->mpc.x2max;
+
+
+	// PID Params
+	mpcThread->pidImp.Kp = ui.Kp_box->value();
+	mpcThread->pidImp.Ki = ui.Ki_box->value();
+	mpcThread->pidImp.Kd = ui.Kd_box->value();
+	mpcThread->pidImp.Kff_A = ui.Kff_A_box->value();
+	mpcThread->pidImp.Kff_B = ui.Kff_B_box->value();
+	mpcThread->pidImp.Kff_tau_g = ui.Kff_tau_g_box->value();
+
+	if (mpcThread->mpc_initialised) {
+		mpcThread->grampc_->userparam = mpcThread->mpc.pSys;
+		grampc_setparam_real(mpcThread->grampc_, "Thor", mpcThread->mpc.Thor);
+	}
 }
 
 void GUI::onGUIPrint(QString message)
@@ -247,4 +294,70 @@ void GUI::plot()
 	ui.plot3->replot();
 	ui.plot4->replot();
 	ui.plot5->replot();
+}
+
+void GUI::initBoxes()
+{
+	ui.deviceBox->setCheckState(Qt::CheckState(mpcThread->test.device*2));
+	ui.simBox->setCheckState(Qt::CheckState(mpcThread->test.sim*2));
+
+	ui.humanBox->addItem("None");
+	ui.humanBox->addItem("Chris ID");
+	ui.humanBox->addItem("Chris Test");
+	ui.humanBox->addItem("Annika");
+	ui.humanBox->addItem("Felix");
+	ui.humanBox->setCurrentIndex(mpcThread->test.human);
+
+	ui.analogInBox->addItem("None");
+	ui.analogInBox->addItem("TMSi");
+	ui.analogInBox->addItem("Simulated");
+	ui.analogInBox->setCurrentIndex(mpcThread->test.analogIn);
+
+	ui.controlBox->addItem("None");
+	ui.controlBox->addItem("MPC");
+	ui.controlBox->addItem("PID");
+	ui.controlBox->addItem("Impedance");
+	ui.controlBox->setCurrentIndex(mpcThread->test.control);
+
+	ui.configBox->addItem("None");
+	ui.configBox->addItem("HTE");
+	ui.configBox->addItem("HTE w/ FLA");
+	ui.configBox->setCurrentIndex(mpcThread->test.config);
+
+	ui.trajBox->addItem("L");
+	ui.trajBox->addItem("M");
+	ui.trajBox->addItem("H");
+	ui.trajBox->addItem("P1");
+	ui.trajBox->addItem("P2");
+	ui.trajBox->addItem("P3");
+	ui.trajBox->addItem("P4");
+	ui.trajBox->addItem("P5");
+	ui.trajBox->addItem("Param ID");
+	ui.trajBox->setCurrentIndex(mpcThread->test.traj);
+
+	// Model
+	ui.A_box->setValue(mpcThread->model.A);
+	ui.B_box->setValue(mpcThread->model.B);
+	ui.J_box->setValue(mpcThread->model.J);
+	ui.tau_g_box->setValue(mpcThread->model.tau_g);
+
+	// FLA
+	ui.pA_box->setValue(mpcThread->fuzzyLogic->fis.pA);
+
+	// MPC
+	ui.w_theta_box->setValue(mpcThread->mpc.w_theta);
+	ui.w_tau_box->setValue(mpcThread->mpc.w_tau);
+	ui.x1min_box->setValue(mpcThread->mpc.x1min);
+	ui.x1max_box->setValue(mpcThread->mpc.x1max);
+	ui.x2min_box->setValue(mpcThread->mpc.x2min);
+	ui.x2max_box->setValue(mpcThread->mpc.x2max);
+
+	// PID/Imp
+	ui.Kp_box->setValue(mpcThread->pidImp.Kp);
+	ui.Ki_box->setValue(mpcThread->pidImp.Ki);
+	ui.Kd_box->setValue(mpcThread->pidImp.Kd);
+	ui.Kff_A_box->setValue(mpcThread->pidImp.Kff_A);
+	ui.Kff_B_box->setValue(mpcThread->pidImp.Kff_B);
+	ui.Kff_J_box->setValue(mpcThread->pidImp.Kff_J);
+	ui.Kff_tau_g_box->setValue(mpcThread->pidImp.Kff_tau_g);
 }

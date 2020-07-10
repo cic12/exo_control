@@ -34,6 +34,7 @@ private:
 	void clearPlots();
 	void addPoints(plotVars);
 	void plot();
+	void initBoxes();
 private slots:
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();

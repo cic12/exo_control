@@ -33,7 +33,9 @@ void MotorThread::run() {
 		group_command.setEffort(efforts);
 		group->sendCommand(group_command);
 		auto pos = group_feedback.getPosition();
+		auto effort = group_feedback.getEffort();
 		currentPosition = -pos[0];
+		torque = -effort[0];
 		motor_comms_count++;
 		mutex.unlock();
 	}
