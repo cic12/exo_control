@@ -13,7 +13,7 @@ struct filter_para {
 class DAQ {
 public:
 	DAQ();
-	double AIdata[4] = {}, AIm[4] = {};
+	double aivec[4] = {}, mgvec[4] = {};
 	double emgProcess(double AI, int);
 	ofstream daq_aiFile;
 private:

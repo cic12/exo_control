@@ -221,18 +221,19 @@ void TMSiController::streamProcess()
 				timeStampsC.push_back(currentReadTime.load());
 
 				// REDUCE AMOUNT OF WORK IN THIS THREAD __ ANOTHER THREAD OR ASYNC WORK
-				m_mutex.lock();
-				daq->AIdata[0] = (double)currentSample[16] / 1000;
-				daq->AIdata[1] = (double)currentSample[17] / 1000;
-				daq->AIdata[2] = (double)currentSample[18] / 1000;
-				daq->AIdata[3] = (double)currentSample[19] / 1000;
-				//daq->AIm[0] = daq->emgProcess(daq->AIdata[0], 0);
-				//daq->AIm[1] = daq->emgProcess(daq->AIdata[1], 1);
-				//daq->AIm[2] = daq->emgProcess(daq->AIdata[2], 2);
-				//daq->AIm[3] = daq->emgProcess(daq->AIdata[3], 3);
 
-				//daq->daq_aiFile << daq->AIdata[0] << "," << daq->AIdata[1] << "," << daq->AIm[0] << "," << daq->AIm[1] << "\n";
-				daq->daq_aiFile << daq->AIdata[0] << "," << daq->AIdata[1] << "," << daq->AIdata[2] << "," << daq->AIdata[3] << "\n";
+				m_mutex.lock();
+				daq->aivec[0] = (double)currentSample[16] / 1000;
+				daq->aivec[1] = (double)currentSample[17] / 1000;
+				daq->aivec[2] = (double)currentSample[18] / 1000;
+				daq->aivec[3] = (double)currentSample[19] / 1000;
+
+				//daq->mgvec[0] = daq->emgProcess(daq->aivec[0], 0);
+				//daq->mgvec[1] = daq->emgProcess(daq->aivec[1], 1);
+				//daq->mgvec[2] = daq->emgProcess(daq->aivec[2], 2);
+				//daq->mgvec[3] = daq->emgProcess(daq->aivec[3], 3);
+
+				daq->daq_aiFile << daq->aivec[0] << "," << daq->aivec[1] << "," << daq->aivec[2] << "," << daq->aivec[3] << "\n";
 				m_mutex.unlock();
 				//---------------------------------------------------------------------
 

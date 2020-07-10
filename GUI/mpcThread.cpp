@@ -3,13 +3,6 @@
 MPCThread::MPCThread(QObject *parent)
 	:QThread(parent)
 {
-	// Implement control configs and trajectories
-	mpc.Tsim = test.T;
-	mpc.pSys[0] = model.A + model.J_h[test.human];;
-	mpc.pSys[1] = model.B + model.B_h[test.human];
-	mpc.pSys[2] = model.J + model.A_h[test.human];
-	mpc.pSys[3] = model.tau_g + model.tau_g_h[test.human];
-
 	threadInit();
 }
 
@@ -22,8 +15,8 @@ void MPCThread::run()
 
 	last_time = clock();
 	start_time = last_time;
-	while (!Stop && t < mpc.Tsim) {
-		mpc_loop();
+	while (!Stop && t < test.T) {
+		control_loop();
 		if (iMPC % 10 == 0)
 		{
 			mutex.lock();
@@ -32,29 +25,20 @@ void MPCThread::run()
 			vars.x1des = grampc_->param->xdes[0];
 			vars.x2 = grampc_->sol->xnext[1];
 			vars.u = grampc_->sol->unext[0];
-			vars.udes = currentTorque;
+			vars.udes = Torque;
 			vars.hTauEst = grampc_->sol->xnext[2];
 			vars.mode = grampc_->sol->xnext[3];
-			vars.emg0 = emgVec[0];
-			vars.emg1 = emgVec[1];
+			vars.e1 = emgvec[0];
+			vars.e2 = emgvec[1];
+			vars.e3 = emgvec[2];
+			vars.e4 = emgvec[3];
 			vars.muA = fuzzyLogic->muA;
 			vars.muR = fuzzyLogic->muR;
 			mutex.unlock();
 		}
 	}
-	mpc_stop();
+	control_stop();
 	quit();
-}
-
-double MPCThread::refTrajectory()
-{
-	if (test.traj < 3) { // L, M, H
-		return (cos((test.freq[test.traj] * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
-	}
-	else if (test.traj < 8) { // P1, P2, P3, P4, P5
-		return test.pos[test.traj - 3];
-	}
-	return 0.0;
 }
 
 double MPCThread::paramIDTraj(double t) {
@@ -78,6 +62,11 @@ double MPCThread::paramIDTraj(double t) {
 }
 
 void MPCThread::mpcInit(){//(typeGRAMPC** grampc_, mpcParams mpc) {
+	mpc.pSys[0] = model.A + model.J_h[test.human];;
+	mpc.pSys[1] = model.B + model.B_h[test.human];
+	mpc.pSys[2] = model.J + model.A_h[test.human];
+	mpc.pSys[3] = model.tau_g + model.tau_g_h[test.human];
+	
 	grampc_init(&grampc_, mpc.pSys);
 
 	//grampc_setparam_real_vector(grampc_, "x0", x0);
@@ -141,6 +130,20 @@ double MPCThread::PIDImpControl(double theta, double theta_r, pidImpParams pidIm
 	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
 }
 
+double MPCThread::refTrajectory()
+{
+	if (test.traj == 0) {
+		return mpc.xdes[0];
+	}
+	else if (test.traj < 4) { // L, M, H
+		return (cos((test.freq[test.traj - 1] * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+	}
+	else if (test.traj < 9) { // P1, P2, P3, P4, P5
+		return test.pos[test.traj - 4];
+	}
+	return 0.0;
+}
+
 double MPCThread::controlInput()
 {
 	if (test.control == 1) {
@@ -155,29 +158,60 @@ double MPCThread::controlInput()
 	return 0.0;
 }
 
-void MPCThread::aiSimProcess(char emg_string[]) {
+void MPCThread::deviceUpdate()
+{
+	// Torque Command
+	motorThread->demandedTorque = *grampc_->sol->unext;
+
+	// Torque Feedback
+	Torque = motorThread->currentTorque;
+
+	// Position Feedback
+	grampc_->sol->xnext[0] = motorThread->currentPosition - 0.125 * M_PI - 0.5 * M_PI;
+
+	// Velocity Feedback // Change to velocity feedback from HEBI
+	if (iMPC == 0) { // Fix initial condition
+		//motorThread->previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
+		currentVelocity = 0;
+	}
+	else {
+		currentVelocity = (grampc_->sol->xnext[0] - motorThread->previousPosition) / mpc.dt;
+	}
+	grampc_->sol->xnext[1] = alpha_vel * currentVelocity + (1 - alpha_vel) * previousVelocity;
+	motorThread->previousPosition = grampc_->sol->xnext[0];
+	previousVelocity = grampc_->sol->xnext[1];
+}
+
+void MPCThread::plantSim() {
+	ffct(mpc.rwsReferenceIntegration, t, grampc_->param->x0, &Torque, grampc_->sol->pnext, grampc_->userparam);
+	for (i = 0; i < NX; i++) {
+		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * mpc.rwsReferenceIntegration[i];
+	}
+	ffct(mpc.rwsReferenceIntegration + NX, t + mpc.dt, grampc_->sol->xnext, &Torque, grampc_->sol->pnext, grampc_->userparam);
+	for (i = 0; i < NX; i++) {
+		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * (mpc.rwsReferenceIntegration[i] + mpc.rwsReferenceIntegration[i + NX]) / 2;
+	}
+}
+
+void MPCThread::emgSimProcess(char emg_string[]) {
 	QFile myQfile(emg_string);
 	if (!myQfile.open(QIODevice::ReadOnly)) {
 		return;
 	}
-	QStringList wordList;
-	QStringList wordList1;
+	QStringList list0, list1, list2, list3;
 	while (!myQfile.atEnd()) {
 		QByteArray line = myQfile.readLine();
-		wordList.append(line.split(',').at(0));
-		wordList1.append(line.split(',').at(1));
+		list0.append(line.split(',').at(0));
+		list1.append(line.split(',').at(1));
+		list2.append(line.split(',').at(2));
+		list3.append(line.split(',').at(3));
 	}
-
-	int len = wordList.length();
-
+	int len = list0.length();
 	for (int i = 0; i < len; i++) {
-		aivec.append(wordList.at(i).toDouble());
-		aivec1.append(wordList1.at(i).toDouble());
-
-		AImvec.append(daqSim->emgProcess(aivec[i], 0)); // TO DO: change initial value to be first emg value read -- to get rid of high pass filter jump 
-		AImvec1.append(daqSim->emgProcess(aivec1[i], 1));
-
-		daqSim->daq_aiFile << aivec[i] << "," << aivec1[i] << "," << AImvec[i] << "," << AImvec1[i] << "\n";
+		e1vec.append(list0.at(i).toDouble());
+		e2vec.append(list1.at(i).toDouble());
+		e3vec.append(list2.at(i).toDouble());
+		e4vec.append(list3.at(i).toDouble());
 	}
 }
 
@@ -186,29 +220,25 @@ void MPCThread::threadInit()
 	if (test.device) {
 		motorThread = new MotorThread(this);
 	}
-	if (test.analogIn == 1) { // ai
+	if (test.analogIn == 2) { // sim
+		emgSimProcess(test.emgPath);
+	}
+	else if (test.analogIn == 1) { // ai
 		TMSi = new TMSiController();
 		TMSi->daq->daq_aiFile.open("../res/aivec.txt"); // rename to aivec
 	}
-	else if (test.analogIn == 2) { // sim
-		daqSim = new DAQ();
-		daqSim->daq_aiFile.open("../res/aivec.txt"); // rename to aivec 
-	}
-	fuzzyLogic = new FIS(); // rename fis to fla
+	fuzzyLogic = new FIS(); // rename FIS class to fla
 }
 
 void MPCThread::runInit() {
-	mpcInit();
+	mpcInit(); // Init on run to account for param changes
 	PIDImpInit();
-	if (test.analogIn == 2) { // sim
-		aiSimProcess(test.emgPath);
-	}
-	else if (test.analogIn == 1) { // ai
+	if (test.analogIn == 1) { // ai
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
 	}
 	open_files();
-	GUIPrint("Init Complete\n");
+	GUIPrint("Init Complete\n\n");
 	if (test.analogIn == 2) { // sim
 		GUIPrint("EMG simulation\n" + QString(test.emgPath) + "\n");
 	}
@@ -218,33 +248,7 @@ void MPCThread::runInit() {
 	}
 }
 
-void MPCThread::mpc_stop() {
-	end_time = clock();
-	double duration = ((double)end_time - (double)start_time);
-	if (test.analogIn == 1) { // ai
-		TMSi->endStream();
-		TMSi->reset();
-	}
-	Stop = 1;
-	if (test.device) {
-		motorThread->demandedTorque = 0; // necessary?
-		motorThread->mpc_complete = 1;
-	}
-	if (test.analogIn == 2) {
-		daqSim->daq_aiFile.close();
-	}
-	else if (test.analogIn == 1) {
-		TMSi->daq->daq_aiFile.close();
-	}
-	close_files();
-	grampc_free(&grampc_);
-	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n");
-	if(test.device)
-		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n");
-	GUIPrint("\n");
-}
-
-void MPCThread::mpc_loop() {
+void MPCThread::control_loop() {
 	if (!loopSlept) {
 		this->usleep(test.uSleep); // Sleep once
 		loopSlept = true;
@@ -256,30 +260,19 @@ void MPCThread::mpc_loop() {
 	{
 		// Trajectory
 		mpc.xdes[0] = refTrajectory();
-
 		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
 		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
 		xdes_previous = mpc.xdes[0];
 		
+		// Control
 		*grampc_->sol->unext = controlInput();
 
+		// Device / Sim Update
 		if (test.device) {
-			motorThread->demandedTorque = *grampc_->sol->unext;
-			currentTorque = motorThread->torque;
-			grampc_->sol->xnext[0] = motorThread->currentPosition - 0.125 * M_PI - 0.5 * M_PI;
-
-			if (iMPC == 0) {
-				motorThread->previousPosition = grampc_->sol->xnext[0]; // takes initial position into account
-			}
-			currentVelocity = (grampc_->sol->xnext[0] - motorThread->previousPosition) / mpc.dt;
-			grampc_->sol->xnext[1] = alpha_vel * currentVelocity + (1 - alpha_vel) * previousVelocity;
-			motorThread->previousPosition = grampc_->sol->xnext[0];
-			previousVelocity = grampc_->sol->xnext[1];
+			deviceUpdate();
 		}
-		else {
-			currentTorque = *grampc_->sol->unext;
-		}
-		if (test.sim) { // Overwrites position with device connected
+		else if (test.sim) {
+			Torque = *grampc_->sol->unext;
 			plantSim();
 		}
 		daqProcess();
@@ -296,44 +289,59 @@ void MPCThread::mpc_loop() {
 	}
 }
 
+void MPCThread::control_stop() {
+	end_time = clock();
+	double duration = ((double)end_time - (double)start_time);
+	if (test.analogIn == 1) { // ai
+		TMSi->endStream();
+		TMSi->reset();
+	}
+	Stop = 1;
+	if (test.device) {
+		motorThread->demandedTorque = 0; // necessary?
+		motorThread->mpc_complete = 1;
+	}
+	if (test.analogIn == 1) {
+		TMSi->daq->daq_aiFile.close();
+	}
+	close_files();
+	grampc_free(&grampc_);
+	GUIPrint("Real Duration, ms :" + QString::number(duration, 'f', 0) + "\n\n");
+	if (test.device)
+		GUIPrint("Command Cycles  :" + QString::number(motorThread->motor_comms_count, 'f', 0) + "\n\n");
+}
+
 void MPCThread::daqProcess() {
-	if (test.analogIn == 2) {
+	if (test.analogIn == 2) { // Sim (rewrite)
 		if (t < 24) {
-			emgVec[0] = AImvec[iMPC];
-			emgVec[1] = AImvec1[iMPC];
+			emgvec[0] = e1vec[iMPC];
+			emgvec[1] = e2vec[iMPC];
+			emgvec[2] = e3vec[iMPC];
+			emgvec[3] = e4vec[iMPC];
 		}
 		else {
-			emgVec[0] = 0;
-			emgVec[1] = 0;
+			emgvec[0] = 0;
+			emgvec[1] = 0;
+			emgvec[2] = 0;
+			emgvec[3] = 0;
 		}
 	}
-	else if (test.analogIn == 1) {
+	else if (test.analogIn == 1) { // TMSi
 		mutex.lock();
-		emgVec[0] = TMSi->daq->AIm[0];
-		emgVec[1] = TMSi->daq->AIm[1];
-		emgVec[2] = TMSi->daq->AIdata[0];
-		emgVec[3] = TMSi->daq->AIdata[1];
+		emgvec[0] = TMSi->daq->mgvec[0];
+		emgvec[1] = TMSi->daq->mgvec[1];
+		emgvec[2] = TMSi->daq->mgvec[2];
+		emgvec[3] = TMSi->daq->mgvec[3];
 		mutex.unlock();
 	}
 }
 
 void MPCThread::interactionFunctions() {
 	if (test.HTE) {
-		grampc_->sol->xnext[2] = fuzzyLogic->hTorqueEst(emgVec[0], emgVec[1], fuzzyLogic->fis.b1, fuzzyLogic->fis.b2, fuzzyLogic->fis.b3);
+		grampc_->sol->xnext[2] = fuzzyLogic->hTorqueEst(emgvec[0], emgvec[1], fuzzyLogic->fis.b1, fuzzyLogic->fis.b2, fuzzyLogic->fis.b3);
 	}
-	else if (test.FLA) {
+	if (test.FLA) {
 		grampc_->sol->xnext[3] = fuzzyLogic->assistanceMode(grampc_->sol->xnext[2], mpc.xdes[1], fuzzyLogic->fis);
-	}
-}
-
-void MPCThread::plantSim() {
-	ffct(mpc.rwsReferenceIntegration, t, grampc_->param->x0, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
-	for (i = 0; i < NX; i++) {
-		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * mpc.rwsReferenceIntegration[i];
-	}
-	ffct(mpc.rwsReferenceIntegration + NX, t + mpc.dt, grampc_->sol->xnext, grampc_->sol->unext, grampc_->sol->pnext, grampc_->userparam);
-	for (i = 0; i < NX; i++) {
-		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * (mpc.rwsReferenceIntegration[i] + mpc.rwsReferenceIntegration[i + NX]) / 2;
 	}
 }
 
@@ -365,19 +373,20 @@ void MPCThread::close_files()
 	fclose(file_rule);
 	fclose(file_emg);
 	fclose(file_pid);
+	files_closed = true;
 }
 
 void MPCThread::print2Files() {
 	printNumVector2File(file_x, grampc_->sol->xnext, NX);
 	printNumVector2File(file_xdes, grampc_->param->xdes, NX);
-	printNumVector2File(file_u, &currentTorque, NU);
+	printNumVector2File(file_u, &Torque, NU);
 	printNumVector2File(file_udes, grampc_->sol->unext, NU);
 	printNumVector2File(file_t, &t, 1);
 	printNumVector2File(file_mode, &grampc_->sol->xnext[3], 1);
 	printNumVector2File(file_Ncfct, grampc_->sol->J, 1);
 	printNumVector2File(file_mf, fuzzyLogic->mf, 6);
 	printNumVector2File(file_rule, fuzzyLogic->rule, 4);
-	printNumVector2File(file_emg, emgVec, 4);
+	printNumVector2File(file_emg, emgvec, 4);
 	printNumVector2File(file_pid, pid, 3);
 }
 

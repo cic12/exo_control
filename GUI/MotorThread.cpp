@@ -5,11 +5,6 @@ MotorThread::MotorThread(QObject *parent)
 {
 }
 
-MotorThread::~MotorThread()
-{
-
-}
-
 void MotorThread::run() {
 	group = lookup.getGroupFromNames({ "X8-9" }, { "X-80768" });
 	if (!group) {
@@ -35,10 +30,10 @@ void MotorThread::run() {
 		auto pos = group_feedback.getPosition();
 		auto effort = group_feedback.getEffort();
 		currentPosition = -pos[0];
-		torque = -effort[0];
+		currentTorque = -effort[0];
 		motor_comms_count++;
 		mutex.unlock();
 	}
-	auto log_file = group->stopLog();
+	auto log_file = group->stopLog(); // collect log file name for test name
 	group->~Group();
 }
