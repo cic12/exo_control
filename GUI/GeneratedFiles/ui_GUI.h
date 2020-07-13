@@ -79,7 +79,6 @@ public:
     QComboBox *trajBox;
     QCheckBox *deviceBox;
     QLabel *label_28;
-    QCheckBox *simBox;
     QLabel *label_29;
     QFrame *line;
     QDoubleSpinBox *Kd_box;
@@ -318,9 +317,6 @@ public:
         label_28 = new QLabel(centralWidget);
         label_28->setObjectName(QString::fromUtf8("label_28"));
         label_28->setGeometry(QRect(20, 140, 71, 16));
-        simBox = new QCheckBox(centralWidget);
-        simBox->setObjectName(QString::fromUtf8("simBox"));
-        simBox->setGeometry(QRect(20, 60, 70, 17));
         label_29 = new QLabel(centralWidget);
         label_29->setObjectName(QString::fromUtf8("label_29"));
         label_29->setGeometry(QRect(20, 10, 71, 16));
@@ -510,7 +506,6 @@ public:
         trajBox->setCurrentText(QString());
         deviceBox->setText(QCoreApplication::translate("GUIClass", "Device", nullptr));
         label_28->setText(QCoreApplication::translate("GUIClass", "Analog In", nullptr));
-        simBox->setText(QCoreApplication::translate("GUIClass", "Simulation", nullptr));
         label_29->setText(QCoreApplication::translate("GUIClass", "Config", nullptr));
         label_30->setText(QCoreApplication::translate("GUIClass", "Kd", nullptr));
         label_31->setText(QCoreApplication::translate("GUIClass", "Ki", nullptr));

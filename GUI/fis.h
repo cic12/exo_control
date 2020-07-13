@@ -18,7 +18,7 @@ public:
 
 	fisParams fis;
 	bool halt = false;
-	double mf[6], rule[4], muA, muR;
+	double mf[6] = {}, rule[4] = {}, muA, muR;
 
 	double hTorqueEst(double e1, double e2, double b1, double b2, double b3);
 	double assistanceMode(double Tau_h, double dtheta, fisParams fis);

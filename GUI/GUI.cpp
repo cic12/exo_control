@@ -11,10 +11,11 @@ GUI::GUI(QWidget *parent)
 	timer = new QTimer(this);
 	timer->setTimerType(Qt::PreciseTimer);
 	gui_reset = true;
+	gui_done = false;
 	saved = false;
 
 	connect(timer, &QTimer::timeout, this, QOverload<>::of(&GUI::onTimeout)); // GUI update
-	connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
+	connect(mpcThread, SIGNAL(GUIComms(QString)), this, SLOT(onGUIComms(QString))); // GUI print function
 
 	initBoxes();
 }
@@ -22,10 +23,9 @@ GUI::GUI(QWidget *parent)
 void GUI::initBoxes()
 {
 	ui.deviceBox->setCheckState(Qt::CheckState(mpcThread->test.device * 2));
-	ui.simBox->setCheckState(Qt::CheckState(mpcThread->test.sim * 2));
 
 	ui.humanBox->addItem("None");
-	ui.humanBox->addItem("Chris ID");
+	ui.humanBox->addItem("Chris");
 	ui.humanBox->addItem("Chris Test");
 	ui.humanBox->addItem("Annika");
 	ui.humanBox->addItem("Felix");
@@ -37,9 +37,9 @@ void GUI::initBoxes()
 	ui.analogInBox->setCurrentIndex(mpcThread->test.analogIn);
 
 	ui.controlBox->addItem("None");
-	ui.controlBox->addItem("MPC");
 	ui.controlBox->addItem("PID");
 	ui.controlBox->addItem("Impedance");
+	ui.controlBox->addItem("MPC");
 	ui.controlBox->setCurrentIndex(mpcThread->test.control);
 
 	ui.configBox->addItem("None");
@@ -59,6 +59,11 @@ void GUI::initBoxes()
 	ui.trajBox->addItem("Param ID");
 	ui.trajBox->setCurrentIndex(mpcThread->test.traj);
 
+	setBoxValues();
+}
+
+void GUI::setBoxValues()
+{
 	ui.timeBox->setValue(mpcThread->test.T);
 
 	// Model
@@ -272,7 +277,7 @@ void GUI::on_btn_set_params_clicked() // can update params mid-trial
 {
 	// Configuration
 	mpcThread->test.device = ui.deviceBox->isChecked();
-	mpcThread->test.sim = ui.simBox->isChecked();
+
 	mpcThread->test.human = ui.humanBox->currentIndex();
 	mpcThread->test.analogIn = ui.analogInBox->currentIndex();
 	mpcThread->test.control = ui.controlBox->currentIndex();
@@ -283,10 +288,10 @@ void GUI::on_btn_set_params_clicked() // can update params mid-trial
 	mpcThread->test.HTE = (mpcThread->test.config > 0), mpcThread->test.FLA = (mpcThread->test.config > 1);
 
 	// Model Params
-	mpcThread->model.A = ui.A_box->value() + mpcThread->model.A_h[ui.humanBox->currentIndex()];
-	mpcThread->model.B = ui.B_box->value() + mpcThread->model.B_h[ui.humanBox->currentIndex()];
-	mpcThread->model.J = ui.J_box->value() + mpcThread->model.J_h[ui.humanBox->currentIndex()];
-	mpcThread->model.tau_g = ui.tau_g_box->value() + mpcThread->model.tau_g_h[ui.humanBox->currentIndex()];
+	mpcThread->model.A = ui.A_box->value(); //+mpcThread->model.A_h[ui.humanBox->currentIndex()];
+	mpcThread->model.B = ui.B_box->value(); //+mpcThread->model.B_h[ui.humanBox->currentIndex()];
+	mpcThread->model.J = ui.J_box->value(); // +mpcThread->model.J_h[ui.humanBox->currentIndex()];
+	mpcThread->model.tau_g = ui.tau_g_box->value(); // +mpcThread->model.tau_g_h[ui.humanBox->currentIndex()];
 
 	mpcThread->mpc.pSys[0] = mpcThread->model.A;
 	mpcThread->mpc.pSys[1] = mpcThread->model.B;
@@ -308,18 +313,17 @@ void GUI::on_btn_set_params_clicked() // can update params mid-trial
 	mpcThread->mpc.pSys[8] = mpcThread->mpc.x2min;
 	mpcThread->mpc.pSys[9] = mpcThread->mpc.x2max;
 
-
 	// PID Params
 	mpcThread->pidImp.Kp = ui.Kp_box->value();
 	mpcThread->pidImp.Ki = ui.Ki_box->value();
 	mpcThread->pidImp.Kd = ui.Kd_box->value();
 	mpcThread->pidImp.Kff_A = ui.Kff_A_box->value();
 	mpcThread->pidImp.Kff_B = ui.Kff_B_box->value();
+	mpcThread->pidImp.Kff_B = ui.Kff_J_box->value();
 	mpcThread->pidImp.Kff_tau_g = ui.Kff_tau_g_box->value();
 
 	if (mpcThread->mpc_initialised) {
 		mpcThread->grampc_->userparam = mpcThread->mpc.pSys;
-		grampc_setparam_real(mpcThread->grampc_, "Thor", mpcThread->mpc.Thor);
 	}
 }
 
@@ -342,28 +346,34 @@ void GUI::on_btn_stop_clicked()
 
 void GUI::on_btn_reset_clicked()
 {
-	if (!gui_reset) {
+	if (gui_done && !gui_reset) {
 		mpcThread = new MPCThread(this);
 		clearPlots();
 		ui.plainTextEdit->clear();
-		connect(mpcThread, SIGNAL(GUIPrint(QString)), this, SLOT(onGUIPrint(QString))); // GUI print function
+		connect(mpcThread, SIGNAL(GUIComms(QString)), this, SLOT(onGUIComms(QString))); // GUI print function
 		gui_reset = true;
+		gui_done = false;
 		saved = false;
 	}
 }
 
 void GUI::on_btn_save_clicked()
 {
-	if (!saved) {
+	if (gui_done && !saved) {
 		system("python save_data.py");
-		onGUIPrint("Executed save_data.py\n");
+		onGUIComms("Executed save_data.py\n");
 		saved = true;
 	}
 }
 
-void GUI::onGUIPrint(QString message)
+void GUI::onGUIComms(QString message)
 {
-	ui.plainTextEdit->insertPlainText(message);
+	if (message == "DONE") {
+		gui_done = true;
+	}
+	else {
+		ui.plainTextEdit->insertPlainText(message);
+	}
 }
 
 void GUI::onTimeout()

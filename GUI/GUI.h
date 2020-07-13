@@ -19,11 +19,13 @@ private:
 	double t_span = 4;
 
 	bool gui_reset;
+	bool gui_done;
 	bool saved;
 	double time;
 	plotVars plot_vars;
 
 	void initBoxes();
+	void setBoxValues();
 	void initPlots();
 	void addPoints(plotVars);
 	void updatePlots();
@@ -37,6 +39,6 @@ private slots:
 	void on_btn_save_clicked();
 
 public slots:
-	void onGUIPrint(QString);
+	void onGUIComms(QString);
 	void onTimeout();
 };
