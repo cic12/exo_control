@@ -59,7 +59,6 @@ struct mpcParams {
 	double w_theta = 100000, w_tau = 1;
 	double x1min = -1, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
-	typeUSERPARAM userparam;
 
 	double rwsReferenceIntegration[2 * NX];
 	const double x0[NX] = { -0.2 , 0.0 , 0.0 , 1.0 };
@@ -113,6 +112,7 @@ public:
 	MotorThread *motorThread;
 
 	typeGRAMPC* grampc_;
+	typeUSERPARAM* userparam;
 
 private:
 	bool loopSlept = false;

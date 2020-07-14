@@ -70,7 +70,8 @@ void MPCThread::mpcInit(){
 	mpc.pSys[1] = model.B;
 	mpc.pSys[2] = model.J;
 	mpc.pSys[3] = model.tau_g;
-	grampc_init(&grampc_, mpc.pSys);
+	userparam = mpc.pSys;
+	grampc_init(&grampc_, userparam);
 
 	// Set parameters
 	grampc_setparam_real_vector(grampc_, "x0", mpc.x0);
@@ -96,6 +97,9 @@ void MPCThread::mpcInit(){
 	grampc_setopt_real_vector(grampc_, "uScale", mpc.uScale);
 	grampc_setopt_real(grampc_, "JScale", mpc.JScale);
 	grampc_setopt_real_vector(grampc_, "cScale", mpc.cScale);
+
+	grampc_printopt(grampc_);
+	grampc_printparam(grampc_);
 }
 
 void MPCThread::PIDImpInit()
@@ -300,6 +304,7 @@ void MPCThread::control_loop() {
 		
 		// Control
 		
+
 		if (iMPC % 500 == 0 && iMPC > 0) {
 			grampc_run(grampc_);
 			GUIComms("xdes: "+QString::number(grampc_->rws->cfct[0])+"\n");
