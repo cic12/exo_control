@@ -24,19 +24,19 @@ using namespace std;
 
 struct testParams {
 	bool device = 0;
-	int human = 1;
+	int human = 2;
 	int analogIn = 0;
-	int control = 1; // None, PID, Imp, MPC
+	int control = 3; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 2;
+	int traj = 4;
 
 	double T = 4.0;
 
 	bool HTE = (config > 0), FLA = (config > 1); // set using config
-	double freq[3] = { 0.125, 0.25 , 0.5 }; // selected using traj
-	double pos[5] = { 0.2, 0.45, 0.70, 0.95, 1.2 }; // selected using traj
+	double freq[3] = { 0.125 , 0.25 , 0.5 }; // selected using traj
+	double pos[5] = { 0.2 , 0.45 , 0.70 , 0.95 , 1.2 }; // selected using traj
 
-	int uSleep = 800;
+	int uSleep = 10;
 
 	string sim_cond = "M_EA.csv";
 	string e_path = string("../res/sim/e_") + sim_cond;
@@ -44,11 +44,11 @@ struct testParams {
 };
 
 struct modelParams {
-	// None, Chris ID, Chris Test, Annika, Felix
+	// None, Chris ID, Chris, Annika, Felix
 	double J_h[5] =     { 0, 0.2383 , 0.4351, 0.1927 , 0.3060  };
 	double B_h[5] =     { 0, 0.1676 , 0.1676, 2      , 2       };
 	double A_h[5] =     { 0, 0      , 0     , 0      , 0       };
-	double tau_g_h[5] = { 0, 9.4162 , 14.25 , 7.5008 , 10.5946 };
+	double tau_g_h[5] = { 0, 9.4162 , 14.256 , 7.5008 , 10.5946 };
 	double J = 0.0377;
 	double B = 0.0207;
 	double A = 0.0000;
@@ -56,19 +56,21 @@ struct modelParams {
 };
 
 struct mpcParams {
-	double w_theta = 150000, w_tau = 10; 	//double w_theta = 100000, w_tau = 15; //double w_theta = 100, w_tau = 10;
-	double x1min = 0, x1max = 1.4, x2min = -4, x2max = 4;
+	double w_theta = 10, w_tau = 0;
+	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 
 	double rwsReferenceIntegration[2 * NX];
-	const double x0[NX] = { 0.20 , 0.0 , 0.0 , 1.0 };
+	const double x0[NX] = { 0.2 , 0.0 , 0.0 , 1.0 };
 	double xdes[NX] = { 0.2 , 0.0 , 0.0 , 1.0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
-	const double dt = 0.002;
-	double Thor = 0.2, t0 = 0.0;
-	const char *IntegralCost = "on", *TerminalCost = "off", *ScaleProblem = "on";
-	const double AugLagUpdateGradientRelTol = (typeRNum)1e0;
-	const double ConstraintsAbsTol[NH] = { 1e-3 , 1e-3 , 1e-3 , 1e-3 };
+	const double Thor = 0.2, dt = 0.002;
+	const int Nhor = 20, MaxGradIter = 4, MaxMultIter = 6;
+	const char * IntegralCost = "on", * TerminalCost = "off", * ScaleProblem = "on";
+	const double xScale[NX] = { 1.4 , 2.0 , 1.0 , 1.0 };
+	const double uScale[NU] = { umax[0] };
+	const double JScale = w_theta / 10;
+	const double cScale[NH] = { 1 , 1 , 1 , 1 };
 };
 
 struct pidImpParams {

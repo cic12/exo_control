@@ -25,7 +25,6 @@ private:
 	plotVars plot_vars;
 
 	void initBoxes();
-	void setBoxValues();
 	void initPlots();
 	void addPoints(plotVars);
 	void updatePlots();

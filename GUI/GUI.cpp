@@ -25,8 +25,8 @@ void GUI::initBoxes()
 	ui.deviceBox->setCheckState(Qt::CheckState(mpcThread->test.device * 2));
 
 	ui.humanBox->addItem("None");
+	ui.humanBox->addItem("Chris ID");
 	ui.humanBox->addItem("Chris");
-	ui.humanBox->addItem("Chris Test");
 	ui.humanBox->addItem("Annika");
 	ui.humanBox->addItem("Felix");
 	ui.humanBox->setCurrentIndex(mpcThread->test.human);
@@ -59,11 +59,6 @@ void GUI::initBoxes()
 	ui.trajBox->addItem("Param ID");
 	ui.trajBox->setCurrentIndex(mpcThread->test.traj);
 
-	setBoxValues();
-}
-
-void GUI::setBoxValues()
-{
 	ui.timeBox->setValue(mpcThread->test.T);
 
 	// Model
@@ -188,7 +183,7 @@ void GUI::initPlots()
 	ui.plot5->yAxis->setAutoTickStep(false);
 	ui.plot5->yAxis->setTickStep(0.5);
 
-	ui.plot->yAxis->setRange(0, 1.4);
+	ui.plot->yAxis->setRange(-0.4, 1.4);
 	ui.plot1->yAxis->setRange(-25, 25);
 	ui.plot2->yAxis->setRange(-0.1, 0.1);
 	ui.plot3->yAxis->setRange(-0.1, 0.1);

@@ -73,7 +73,7 @@ void MPCThread::mpcInit(){//(typeGRAMPC** grampc_, mpcParams mpc) {
 	
 	grampc_init(&grampc_, mpc.pSys);
 
-	//grampc_setparam_real_vector(grampc_, "x0", x0);
+	// Set parameters
 	grampc_setparam_real_vector(grampc_, "x0", mpc.x0);
 	grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
 	grampc_setparam_real_vector(grampc_, "u0", mpc.u0);
@@ -83,14 +83,21 @@ void MPCThread::mpcInit(){//(typeGRAMPC** grampc_, mpcParams mpc) {
 
 	grampc_setparam_real(grampc_, "Thor", mpc.Thor);
 	grampc_setparam_real(grampc_, "dt", mpc.dt);
-	grampc_setparam_real(grampc_, "t0", mpc.t0);
+	grampc_setparam_real(grampc_, "t0", 0);
+
+	// Set Options
+	grampc_setopt_int(grampc_, "Nhor", mpc.Nhor);
+	grampc_setopt_int(grampc_, "MaxGradIter", mpc.MaxGradIter);
+	grampc_setopt_int(grampc_, "MaxMultIter", mpc.MaxMultIter);
 
 	grampc_setopt_string(grampc_, "IntegralCost", mpc.IntegralCost);
 	grampc_setopt_string(grampc_, "TerminalCost", mpc.TerminalCost);
 	grampc_setopt_string(grampc_, "ScaleProblem", mpc.ScaleProblem);
 
-	//grampc_setopt_real(grampc_, " AugLagUpdateGradientRelTol ", mpc.AugLagUpdateGradientRelTol);
-	//grampc_setopt_real_vector(grampc_, " ConstraintsAbsTol ", mpc.ConstraintsAbsTol);
+	grampc_setopt_real_vector(grampc_, "xScale", mpc.xScale);
+	grampc_setopt_real_vector(grampc_, "uScale", mpc.uScale);
+	grampc_setopt_real(grampc_, "JScale", mpc.JScale);
+	grampc_setopt_real_vector(grampc_, "cScale", mpc.cScale);
 }
 
 void MPCThread::PIDImpInit()
@@ -154,13 +161,13 @@ double MPCThread::refTrajectory()
 
 double MPCThread::controlInput()
 {
+	grampc_run(grampc_);
 	if (test.control == 1 || test.control == 2) { // PID/Imp/ParamID argument
 		if (iMPC > 0) { // remove conditional by changing initial conditions
 			return PIDImpControl(grampc_->sol->xnext[0], mpc.xdes[0], pidImp);
 		}
 	}
 	else if (test.control == 3) {
-		grampc_run(grampc_);
 		return *grampc_->sol->unext;
 	}
 	return 0.0;
@@ -279,10 +286,10 @@ void MPCThread::runInit() {
 }
 
 void MPCThread::control_loop() {
-	if (!loopSlept) {
-		this->usleep(test.uSleep); // Sleep once
-		loopSlept = true;
-	}
+	//if (!loopSlept) {
+	//	this->usleep(test.uSleep); // Sleep once
+	//	loopSlept = true;
+	//}
 	this_time = clock();
 	time_counter += ((double)this_time - (double)last_time);
 	last_time = this_time;
@@ -309,6 +316,7 @@ void MPCThread::control_loop() {
 		}
 
 		interactionFunctions();
+		grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 		print2Files();
 
 		t = t + mpc.dt;
@@ -375,7 +383,6 @@ void MPCThread::interactionFunctions() {
 	}
 	grampc_->sol->xnext[2] = humanTorqueEst;
 	grampc_->sol->xnext[3] = assistanceMode;
-	grampc_setparam_real_vector(grampc_, "x0", grampc_->sol->xnext);
 }
 
 void MPCThread::open_files() {
