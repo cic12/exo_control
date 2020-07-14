@@ -56,13 +56,14 @@ struct modelParams {
 };
 
 struct mpcParams {
-	double w_theta = 100000, w_tau = 0;
-	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
+	double w_theta = 100000, w_tau = 1;
+	double x1min = -1, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
+	typeUSERPARAM userparam;
 
 	double rwsReferenceIntegration[2 * NX];
-	const double x0[NX] = { 0.2 , 0.0 , 0.0 , 1.0 };
-	double xdes[NX] = { 0.2 , 0.0 , 0.0 , 1.0 };
+	const double x0[NX] = { -0.2 , 0.0 , 0.0 , 1.0 };
+	double xdes[NX] = { 0.0 , 0.0 , 0.0 , 1.0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
 	const double Thor = 0.2, dt = 0.002;
 	const int Nhor = 20, MaxGradIter = 4, MaxMultIter = 6;

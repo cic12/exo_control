@@ -61,7 +61,7 @@ double MPCThread::paramIDTraj(double t) {
 	return xdes;
 }
 
-void MPCThread::mpcInit(){//(typeGRAMPC** grampc_, mpcParams mpc) {
+void MPCThread::mpcInit(){
 	model.A += model.A_h[test.human];
 	model.B += model.B_h[test.human];
 	model.J += model.J_h[test.human];
@@ -70,7 +70,6 @@ void MPCThread::mpcInit(){//(typeGRAMPC** grampc_, mpcParams mpc) {
 	mpc.pSys[1] = model.B;
 	mpc.pSys[2] = model.J;
 	mpc.pSys[3] = model.tau_g;
-	
 	grampc_init(&grampc_, mpc.pSys);
 
 	// Set parameters
@@ -83,7 +82,6 @@ void MPCThread::mpcInit(){//(typeGRAMPC** grampc_, mpcParams mpc) {
 
 	grampc_setparam_real(grampc_, "Thor", mpc.Thor);
 	grampc_setparam_real(grampc_, "dt", mpc.dt);
-	grampc_setparam_real(grampc_, "t0", 0);
 
 	// Set Options
 	grampc_setopt_int(grampc_, "Nhor", mpc.Nhor);
@@ -301,9 +299,13 @@ void MPCThread::control_loop() {
 		xdes_previous = mpc.xdes[0];
 		
 		// Control
-		grampc_run(grampc_);
-		if (iMPC % 500 == 0) {
-			GUIComms("xdes: "+QString::number(grampc_->param->xdes[0])+"\n");
+		
+		if (iMPC % 500 == 0 && iMPC > 0) {
+			grampc_run(grampc_);
+			GUIComms("xdes: "+QString::number(grampc_->rws->cfct[0])+"\n");
+		}
+		else {
+			grampc_run(grampc_);
 		}
 		exoTorqueDemand = controlInput();
 
