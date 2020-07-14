@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[50]:
-
-
 import os
 import datetime
 from shutil import copyfile
@@ -31,10 +25,4 @@ def copy_test_file(test_path,file_path):
 for file in os.listdir('../res/'): # for all .txt files
     if file.endswith(".txt"):
         copy_test_file(test_path,file) # copy to test directory
-
-
-# In[ ]:
-
-
-
-
+        

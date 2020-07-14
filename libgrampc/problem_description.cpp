@@ -53,11 +53,11 @@ extern "C"
 
 		out[0] = x[1];
 
-		out[1] = (u[0] + x[2] - A * (-0.1e1 + 0.2e1 / (exp(-(15 * x[1])) + 0.1e1)) - (B * x[1]) - tau_g * sin(x[0])) / J;
+		out[1] = (u[0] + x[2] - A * tanh(10 * x[1]) - B * x[1] - tau_g * sin(x[0])) / J;
 
 		out[2] = 0;	// human torque estimate
 
-		out[3] = 0; // M
+		out[3] = 0; // m
 	}
 	void dfdx_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *adj, ctypeRNum *u, ctypeRNum *p, typeUSERPARAM* userparam)
 	{
@@ -69,9 +69,9 @@ extern "C"
 
 		out[0] = adj[1] * (-tau_g * cos(x[0]) / J);
 
-		out[1] = adj[0] + adj[1] * ((-0.30e2 * A * pow(exp(-(15 * x[1])) + 0.1e1, -0.2e1) * exp(-(15 * x[1])) - B) / J);
+		out[1] = adj[0] + adj[1] * ((A * (10 - 10 * tanh(10 * x[1]) * tanh(10 * x[1])) - B) / J);
 
-		out[2] = adj[1] * (0.1e1 / J);
+		out[2] = adj[1] * (1 / J);
 
 		out[3] = 0;
 	}
@@ -80,7 +80,7 @@ extern "C"
 		ctypeRNum* pSys = (ctypeRNum*)userparam;
 		ctypeRNum J = pSys[2];
 
-		out[0] = adj[1] * (0.1e1 / J);
+		out[0] = adj[1] * (1 / J);
 	}
 	void dfdp_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *adj, ctypeRNum *u, ctypeRNum *p, typeUSERPARAM* userparam)
 	{
@@ -88,7 +88,7 @@ extern "C"
 
 	void lfct(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *xdes, ctypeRNum *udes, typeUSERPARAM* userparam)
 	{
-		ctypeRNum *pCost = (ctypeRNum*)userparam;
+		ctypeRNum* pCost = (ctypeRNum*)userparam;
 		ctypeRNum w_theta = pCost[4];
 		ctypeRNum w_tau = pCost[5];
 		ctypeRNum m = x[3];
@@ -98,7 +98,7 @@ extern "C"
 	}
 	void dldx(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *xdes, ctypeRNum *udes, typeUSERPARAM* userparam)
 	{
-		ctypeRNum *pCost = (ctypeRNum*)userparam;
+		ctypeRNum* pCost = (ctypeRNum*)userparam;
 		ctypeRNum w_theta = pCost[4];
 		ctypeRNum m = x[3];
 
@@ -106,7 +106,7 @@ extern "C"
 	}
 	void dldu(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *xdes, ctypeRNum *udes, typeUSERPARAM* userparam)
 	{
-		ctypeRNum *pCost = (ctypeRNum*)userparam;
+		ctypeRNum* pCost = (ctypeRNum*)userparam;
 		ctypeRNum w_tau = pCost[5];
 
 		out[0] = 2 * w_tau * (u[0] - udes[0]);
@@ -155,12 +155,12 @@ extern "C"
 
 	void hfct(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, typeUSERPARAM* userparam)
 	{
-		ctypeRNum* hParam = (ctypeRNum*)userparam;
+		ctypeRNum* param = (ctypeRNum*)userparam;
 
-		out[0] = hParam[6] - x[0];
-		out[1] = -hParam[7] + x[0];
-		out[2] = hParam[8] - x[1];
-		out[3] = -hParam[9] + x[1];
+		out[0] = param[6] - x[0];
+		out[1] = -param[7] + x[0];
+		out[2] = param[8] - x[1];
+		out[3] = -param[9] + x[1];
 	}
 	void dhdx_vec(typeRNum *out, ctypeRNum t, ctypeRNum *x, ctypeRNum *u, ctypeRNum *p, ctypeRNum *vec, typeUSERPARAM* userparam)
 	{

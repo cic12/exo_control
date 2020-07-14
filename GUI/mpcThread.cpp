@@ -70,8 +70,7 @@ void MPCThread::mpcInit(){
 	mpc.pSys[1] = model.B;
 	mpc.pSys[2] = model.J;
 	mpc.pSys[3] = model.tau_g;
-	userparam = mpc.pSys;
-	grampc_init(&grampc_, userparam);
+	grampc_init(&grampc_, mpc.pSys);
 
 	// Set parameters
 	grampc_setparam_real_vector(grampc_, "x0", mpc.x0);
