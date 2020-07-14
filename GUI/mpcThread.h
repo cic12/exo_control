@@ -28,7 +28,7 @@ struct testParams {
 	int analogIn = 0;
 	int control = 3; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 4;
+	int traj = 2;
 
 	double T = 4.0;
 
@@ -56,7 +56,7 @@ struct modelParams {
 };
 
 struct mpcParams {
-	double w_theta = 10, w_tau = 0;
+	double w_theta = 100000, w_tau = 0;
 	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 

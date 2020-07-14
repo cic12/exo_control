@@ -161,7 +161,6 @@ double MPCThread::refTrajectory()
 
 double MPCThread::controlInput()
 {
-	grampc_run(grampc_);
 	if (test.control == 1 || test.control == 2) { // PID/Imp/ParamID argument
 		if (iMPC > 0) { // remove conditional by changing initial conditions
 			return PIDImpControl(grampc_->sol->xnext[0], mpc.xdes[0], pidImp);
@@ -302,6 +301,10 @@ void MPCThread::control_loop() {
 		xdes_previous = mpc.xdes[0];
 		
 		// Control
+		grampc_run(grampc_);
+		if (iMPC % 500 == 0) {
+			GUIComms("xdes: "+QString::number(grampc_->param->xdes[0])+"\n");
+		}
 		exoTorqueDemand = controlInput();
 
 		// Update
