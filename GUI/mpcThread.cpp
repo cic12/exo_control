@@ -9,8 +9,6 @@ MPCThread::MPCThread(QObject *parent)
 void MPCThread::run()
 {
 	runInit();
-	
-	Sleep(100);
 
 	last_time = clock();
 	start_time = last_time;
@@ -89,12 +87,6 @@ void MPCThread::mpcInit(){
 
 	grampc_setopt_string(grampc_, "IntegralCost", mpc.IntegralCost);
 	grampc_setopt_string(grampc_, "TerminalCost", mpc.TerminalCost);
-	grampc_setopt_string(grampc_, "ScaleProblem", mpc.ScaleProblem);
-
-	grampc_setopt_real_vector(grampc_, "xScale", mpc.xScale);
-	grampc_setopt_real_vector(grampc_, "uScale", mpc.uScale);
-	grampc_setopt_real(grampc_, "JScale", mpc.JScale);
-	grampc_setopt_real_vector(grampc_, "cScale", mpc.cScale);
 
 	grampc_printopt(grampc_);
 	grampc_printparam(grampc_);
@@ -293,18 +285,21 @@ void MPCThread::control_loop() {
 	this_time = clock();
 	time_counter += ((double)this_time - (double)last_time);
 	last_time = this_time;
-	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC))
+	if (time_counter > 1)
 	{
 		loop_timer->start();
 		// Trajectory
 		mpc.xdes[0] = refTrajectory();
 		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
+		if (iMPC == 0) {
+			mpc.xdes[1] = 0;
+		}
 		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
 		xdes_previous = mpc.xdes[0];
-		
+
 		// Control
 		if (iMPC % 500 == 0 && iMPC > 0) {
-			GUIComms("xdes: "+QString::number(grampc_->rws->cfct[0])+"\n");
+			GUIComms("xdes: " + QString::number(grampc_->rws->cfct[0]) + "\n");
 		}
 		exoTorqueDemand = controlInput();
 
@@ -329,7 +324,8 @@ void MPCThread::control_loop() {
 		}
 
 		iMPC++;
-		time_counter -= (double)(mpc.dt * CLOCKS_PER_SEC);
+		time_counter = 0;
+		this_thread::sleep_for(chrono::nanoseconds(200));
 		loop_time = loop_timer->nsecsElapsed() / 1e6;
 	}
 }

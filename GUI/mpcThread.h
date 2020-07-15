@@ -28,9 +28,9 @@ struct testParams {
 	int analogIn = 0;
 	int control = 3; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 2;
+	int traj = 7;
 
-	double T = 1;
+	double T = 2;
 
 	bool HTE = (config > 0), FLA = (config > 1); // set using config
 	double freq[3] = { 0.125 , 0.25 , 0.5 }; // selected using traj
@@ -54,7 +54,8 @@ struct modelParams {
 };
 
 struct mpcParams {
-	double w_theta = 100000, w_tau = 1;
+	double JScale = 10000;
+	double w_theta = 100000/JScale, w_tau = 1/JScale;
 	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 
@@ -64,11 +65,7 @@ struct mpcParams {
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
 	const double Thor = 0.2, dt = 0.002;
 	const int Nhor = 20, MaxGradIter = 4, MaxMultIter = 6;
-	const char * IntegralCost = "on", * TerminalCost = "off", * ScaleProblem = "on";
-	const double xScale[NX] = { 1.4 , 2.0 , 1.0 , 1.0 };
-	const double uScale[NU] = { umax[0] };
-	const double JScale = w_theta / 10;
-	const double cScale[NH] = { 1 , 1 , 1 , 1 };
+	const char * IntegralCost = "on", * TerminalCost = "off";
 };
 
 struct pidImpParams {
@@ -121,6 +118,7 @@ private:
 	double time_counter = 0;
 	double CPUtime = 0;
 	double loop_time = 0;
+	double sleep_time = 0;
 
 	// PID
 	double error_prior = 0;
