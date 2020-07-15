@@ -10,7 +10,6 @@ void MPCThread::run()
 {
 	runInit();
 	
-
 	Sleep(100);
 
 	last_time = clock();
@@ -168,6 +167,9 @@ double MPCThread::controlInput()
 		}
 	}
 	else if (test.control == 3) {
+		cpu_timer->start();
+		grampc_run(grampc_);
+		CPUtime = cpu_timer->nsecsElapsed()/1e6;
 		return *grampc_->sol->unext;
 	}
 	return 0.0;
@@ -253,6 +255,8 @@ void MPCThread::threadInit()
 	mpcInit();
 	PIDImpInit();
 	fuzzyLogic = new FIS(); // rename FIS class to fla
+	cpu_timer = new QElapsedTimer();
+	loop_timer = new QElapsedTimer();
 }
 
 void MPCThread::runInit() {
@@ -286,15 +290,12 @@ void MPCThread::runInit() {
 }
 
 void MPCThread::control_loop() {
-	//if (!loopSlept) {
-	//	this->usleep(test.uSleep); // Sleep once
-	//	loopSlept = true;
-	//}
 	this_time = clock();
 	time_counter += ((double)this_time - (double)last_time);
 	last_time = this_time;
-	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC)) // 1000 cps
+	if (time_counter > (double)(mpc.dt * CLOCKS_PER_SEC))
 	{
+		loop_timer->start();
 		// Trajectory
 		mpc.xdes[0] = refTrajectory();
 		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
@@ -302,14 +303,8 @@ void MPCThread::control_loop() {
 		xdes_previous = mpc.xdes[0];
 		
 		// Control
-		
-
 		if (iMPC % 500 == 0 && iMPC > 0) {
-			grampc_run(grampc_);
 			GUIComms("xdes: "+QString::number(grampc_->rws->cfct[0])+"\n");
-		}
-		else {
-			grampc_run(grampc_);
 		}
 		exoTorqueDemand = controlInput();
 
@@ -334,8 +329,8 @@ void MPCThread::control_loop() {
 		}
 
 		iMPC++;
-		loopSlept = false;
 		time_counter -= (double)(mpc.dt * CLOCKS_PER_SEC);
+		loop_time = loop_timer->nsecsElapsed() / 1e6;
 	}
 }
 
@@ -409,6 +404,9 @@ void MPCThread::open_files() {
 	err = fopen_s(&file_rule, "../res/rule.txt", "w");
 	err = fopen_s(&file_emg, "../res/emg.txt", "w");
 	err = fopen_s(&file_pid, "../res/pid.txt", "w");
+	err = fopen_s(&file_CPUtime, "../res/CPUtime.txt", "w");
+	err = fopen_s(&file_looptime, "../res/looptime.txt", "w");
+
 }
 
 void MPCThread::close_files()
@@ -426,6 +424,8 @@ void MPCThread::close_files()
 	fclose(file_rule);
 	fclose(file_emg);
 	fclose(file_pid);
+	fclose(file_CPUtime);
+	fclose(file_looptime);
 	files_closed = true;
 }
 
@@ -443,6 +443,8 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_rule, fuzzyLogic->rule, 4);
 	printNumVector2File(file_emg, evec, 4);
 	printNumVector2File(file_pid, pid, 3);
+	printNumVector2File(file_CPUtime, &CPUtime, 1);
+	printNumVector2File(file_looptime, &loop_time, 1);
 }
 
 void MPCThread::printNumVector2File(FILE *file, const double * val, const int size) {

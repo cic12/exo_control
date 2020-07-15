@@ -30,13 +30,11 @@ struct testParams {
 	int config = 0;
 	int traj = 2;
 
-	double T = 4;
+	double T = 1;
 
 	bool HTE = (config > 0), FLA = (config > 1); // set using config
 	double freq[3] = { 0.125 , 0.25 , 0.5 }; // selected using traj
 	double pos[5] = { 0.2 , 0.45 , 0.70 , 0.95 , 1.2 }; // selected using traj
-
-	int uSleep = 10;
 
 	string sim_cond = "M_EA.csv";
 	string e_path = string("../res/sim/e_") + sim_cond;
@@ -114,20 +112,25 @@ public:
 	typeGRAMPC* grampc_;
 
 private:
-	bool loopSlept = false;
 	double Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.01, xdes_previous = 0.2;
 	double Torque = 0;
 	double exoTorque = 0, exoTorqueDemand = 0;
 	double humanTorque = 0, humanTorqueEst = 0;
 	double assistanceMode = 1;
 	double t = 0.0, t_halt = 0.0;
-	double time_counter = 0.0;
+	double time_counter = 0;
+	double CPUtime = 0;
+	double loop_time = 0;
+
 	// PID
 	double error_prior = 0;
 	double integral_prior = 0;
 	double derivative_prior = 0;
 
+	QElapsedTimer *cpu_timer;
+	QElapsedTimer * loop_timer;
 	clock_t this_time, last_time, start_time, end_time;
+	
 	QVector<double> e1vec = { 0 }, e2vec = { 0 }, e3vec = { 0 }, e4vec = { 0 }, tauhvec = { 0 };
 
 	TMSiController *TMSi;
@@ -140,7 +143,7 @@ private:
 		* file_tauh, * file_tauhest, 
 		* file_t, * file_mode, * file_Ncfct,
 		* file_mf, * file_rule, * file_emg, 
-		*file_pid;
+		*file_pid, *file_CPUtime, *file_looptime;
 	ofstream file_config;
 
 	void simProcess(string e_path, string tau_h_path);
