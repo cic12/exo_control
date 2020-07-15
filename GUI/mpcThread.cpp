@@ -14,48 +14,9 @@ void MPCThread::run()
 	start_time = last_time;
 	while (!Stop && t < test.T) {
 		control_loop();
-		if (iMPC % 10 == 0)
-		{
-			mutex.lock();
-			vars.time = t;
-			vars.x1 = Position;
-			vars.x1des = mpc.xdes[0];
-			vars.x2 = Velocity;
-			vars.u = exoTorque; // Same as demand for sim
-			vars.udes = exoTorqueDemand;
-			vars.hTauEst = humanTorqueEst;
-			vars.mode = assistanceMode;
-			vars.e1 = evec[0];
-			vars.e2 = evec[1];
-			vars.e3 = evec[2];
-			vars.e4 = evec[3];
-			vars.muA = fuzzyLogic->muA;
-			vars.muR = fuzzyLogic->muR;
-			mutex.unlock();
-		}
 	}
 	control_stop();
 	quit();
-}
-
-double MPCThread::paramIDTraj(double t) {
-	double xdes;
-	if (t <= 20) {
-		xdes = (cos((0.1 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
-	}
-	else if (t <= 40) {
-		xdes = (cos((0.2 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
-	}
-	else if (t <= 60) {
-		xdes = (cos((0.25 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
-	}
-	else if (t <= 80) {
-		xdes = (cos((0.5 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
-	}
-	else {
-		xdes = (cos((1.0 * 2 * M_PI * (t)) - M_PI)) / 2 + 0.7;
-	}
-	return xdes;
 }
 
 void MPCThread::mpcInit(){
@@ -94,6 +55,7 @@ void MPCThread::mpcInit(){
 
 void MPCThread::PIDImpInit()
 {
+
 	if (test.control == 1) { // PID (w/ Human)
 		if (test.device) {
 			pidImp.Kp = 150;
@@ -115,6 +77,10 @@ void MPCThread::PIDImpInit()
 		pidImp.Kff_B = 0;
 		pidImp.Kff_J = 0;
 		pidImp.Kff_tau_g = 20; // derive from param ID
+	}
+	else {
+		pidImpParams temp;
+		pidImp = temp;
 	}
 }
 
@@ -299,7 +265,7 @@ void MPCThread::control_loop() {
 
 		// Control
 		if (iMPC % 500 == 0 && iMPC > 0) {
-			GUIComms("xdes: " + QString::number(grampc_->rws->cfct[0]) + "\n");
+			//GUIComms("xdes: " + QString::number(grampc_->rws->cfct[0]) + "\n");
 		}
 		exoTorqueDemand = controlInput();
 
@@ -324,8 +290,10 @@ void MPCThread::control_loop() {
 		}
 
 		iMPC++;
+		updatePlotVars();
+
 		time_counter = 0;
-		this_thread::sleep_for(chrono::nanoseconds(200));
+		this_thread::sleep_for(chrono::nanoseconds(100));
 		loop_time = loop_timer->nsecsElapsed() / 1e6;
 	}
 }
@@ -449,4 +417,27 @@ void MPCThread::printNumVector2File(FILE *file, const double * val, const int si
 		fprintf(file, "%.5f,", val[i]);
 	}
 	fprintf(file, "%.5f\n", val[size - 1]);
+}
+
+void MPCThread::updatePlotVars()
+{
+	if (iMPC % 20 == 0)
+	{
+		mutex.lock();
+		vars.time = t;
+		vars.x1 = Position;
+		vars.x1des = mpc.xdes[0];
+		vars.x2 = Velocity;
+		vars.u = exoTorque;
+		vars.udes = exoTorqueDemand;
+		vars.hTauEst = humanTorqueEst;
+		vars.mode = assistanceMode;
+		vars.e1 = evec[0];
+		vars.e2 = evec[1];
+		vars.e3 = evec[2];
+		vars.e4 = evec[3];
+		vars.muA = fuzzyLogic->muA;
+		vars.muR = fuzzyLogic->muR;
+		mutex.unlock();
+	}
 }

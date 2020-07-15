@@ -21,10 +21,12 @@ private:
 	bool gui_reset;
 	bool gui_done;
 	bool saved;
+	bool boxes_initialised;
 	double time;
 	plotVars plot_vars;
 
 	void initBoxes();
+	void setBoxValues();
 	void initPlots();
 	void addPoints(plotVars);
 	void updatePlots();
@@ -36,7 +38,7 @@ private slots:
 	void on_btn_stop_clicked();
 	void on_btn_reset_clicked();
 	void on_btn_save_clicked();
-
+	void on_controlBox_changed(int index);
 public slots:
 	void onGUIComms(QString);
 	void onTimeout();

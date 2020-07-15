@@ -41,6 +41,7 @@ void GUI::initBoxes()
 	ui.controlBox->addItem("Impedance");
 	ui.controlBox->addItem("MPC");
 	ui.controlBox->setCurrentIndex(mpcThread->test.control);
+	mpcThread->PIDImpInit();
 
 	ui.configBox->addItem("None");
 	ui.configBox->addItem("HTE");
@@ -70,6 +71,11 @@ void GUI::initBoxes()
 	// FLA
 	ui.pA_box->setValue(mpcThread->fuzzyLogic->fis.pA);
 
+	boxes_initialised = true;
+}
+
+void GUI::setBoxValues()
+{
 	// MPC
 	ui.w_theta_box->setValue(mpcThread->mpc.w_theta);
 	ui.w_tau_box->setValue(mpcThread->mpc.w_tau);
@@ -326,7 +332,7 @@ void GUI::on_btn_start_clicked()
 {
 	if (gui_reset) {
 		on_btn_set_params_clicked();
-		mpcThread->start(QThread::NormalPriority);
+		mpcThread->start(QThread::HighPriority);
 		timer->start(20); // Period in ms
 		gui_reset = false;
 	}
@@ -359,6 +365,15 @@ void GUI::on_btn_save_clicked()
 		onGUIComms("Executed save_data.py\n");
 		saved = true;
 	}
+}
+
+void GUI::on_controlBox_changed(int index)
+{
+	if (boxes_initialised) {
+		mpcThread->test.control = ui.controlBox->currentIndex();
+	}
+	mpcThread->PIDImpInit();
+	setBoxValues();
 }
 
 void GUI::onGUIComms(QString message)

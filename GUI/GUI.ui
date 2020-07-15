@@ -1322,6 +1322,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>controlBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_controlBox_changed(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>65</x>
+     <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_btn_start_clicked()</slot>
@@ -1329,5 +1345,6 @@
   <slot>on_btn_set_params_clicked()</slot>
   <slot>on_btn_reset_clicked()</slot>
   <slot>on_btn_save_clicked()</slot>
+  <slot>on_controlBox_changed(int)</slot>
  </slots>
 </ui>

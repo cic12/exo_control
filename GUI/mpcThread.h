@@ -28,15 +28,15 @@ struct testParams {
 	int analogIn = 0;
 	int control = 3; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 7;
+	int traj = 2;
 
-	double T = 2;
+	double T = 24;
 
 	bool HTE = (config > 0), FLA = (config > 1); // set using config
 	double freq[3] = { 0.125 , 0.25 , 0.5 }; // selected using traj
 	double pos[5] = { 0.2 , 0.45 , 0.70 , 0.95 , 1.2 }; // selected using traj
 
-	string sim_cond = "M_EA.csv";
+	string sim_cond = "M_EA.csv"; // automate/encode this as a configuration?
 	string e_path = string("../res/sim/e_") + sim_cond;
 	string tau_h_path = string("../res/sim/tau_h_") + sim_cond;
 };
@@ -89,6 +89,8 @@ public:
 	MPCThread(QObject *parent);
 
 	void run();
+	void PIDImpInit();
+
 	bool Stop = false;
 	bool mpc_initialised = false;
 	bool files_closed = false;
@@ -158,14 +160,13 @@ private:
 	void runInit();
 	void interactionFunctions();
 
-	double paramIDTraj(double time);
 	void mpcInit();
-	void PIDImpInit();
 	double PIDImpControl(double theta, double theta_r, pidImpParams pidImp);
 	void open_files();
 	void close_files();
 	void print2Files();
 	void printNumVector2File(FILE* file, const double* const val, const int size);
+	void updatePlotVars();
 signals:
 	void mpcIteration(plotVars);
 	void GUIComms(QString);
