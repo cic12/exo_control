@@ -362,7 +362,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Tau_e</string>
+     <string>Tau e</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_23">
@@ -375,7 +375,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Tau_h</string>
+     <string>Tau h</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_24">
@@ -720,8 +720,8 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>50</y>
-      <width>70</width>
+      <y>60</y>
+      <width>91</width>
       <height>17</height>
      </rect>
     </property>
@@ -1045,7 +1045,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>360</y>
+      <y>310</y>
       <width>71</width>
       <height>22</height>
      </rect>
@@ -1067,7 +1067,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>340</y>
+      <y>290</y>
       <width>47</width>
       <height>13</height>
      </rect>
@@ -1080,7 +1080,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>310</y>
+      <y>260</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -1227,6 +1227,58 @@
      <string>Condition</string>
     </property>
    </widget>
+   <widget class="QSpinBox" name="testBox">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>410</y>
+      <width>71</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_42">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>390</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Test</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btn_run_sims">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>410</y>
+      <width>71</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Run Sims</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="testConfigsBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>91</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Test Configs</string>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1329,11 +1381,43 @@
    <sender>controlBox</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>GUIClass</receiver>
-   <slot>on_controlBox_changed(int)</slot>
+   <slot>on_controlBox_changed()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>65</x>
      <y>253</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btn_run_sims</sender>
+   <signal>clicked()</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_btn_run_sims_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>295</x>
+     <y>454</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>testBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_testBox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>185</x>
+     <y>453</y>
     </hint>
     <hint type="destinationlabel">
      <x>500</x>
@@ -1347,6 +1431,8 @@
   <slot>on_btn_stop_clicked()</slot>
   <slot>on_btn_reset_clicked()</slot>
   <slot>on_btn_save_clicked()</slot>
-  <slot>on_controlBox_changed(int)</slot>
+  <slot>on_controlBox_changed()</slot>
+  <slot>on_btn_run_sims_clicked()</slot>
+  <slot>on_testBox_changed()</slot>
  </slots>
 </ui>

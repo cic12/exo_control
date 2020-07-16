@@ -28,9 +28,16 @@ void MotorThread::run() {
 		group_command.setEffort(efforts);
 		group->sendCommand(group_command);
 		auto pos = group_feedback.getPosition();
+		auto vel = group_feedback.getVelocity();
 		auto effort = group_feedback.getEffort();
+		auto accel = group_feedback.getAccelerometer();
 		currentPosition = -pos[0];
+		currentVelocity = -vel[0];
 		currentTorque = -effort[0];
+		accelerometer[0] = accel(0,0);
+		accelerometer[1] = accel(0,1);
+		accelerometer[2] = accel(0,2);
+		std::cout << accelerometer[0] << accelerometer[1] << accelerometer[2] << "\n";
 		motor_comms_count++;
 		mutex.unlock();
 	}

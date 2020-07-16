@@ -20,6 +20,7 @@
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QSpinBox>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
@@ -110,6 +111,10 @@ public:
     QPushButton *btn_save;
     QComboBox *condBox;
     QLabel *label_41;
+    QSpinBox *testBox;
+    QLabel *label_42;
+    QPushButton *btn_run_sims;
+    QCheckBox *testConfigsBox;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -310,7 +315,7 @@ public:
         trajBox->setEditable(false);
         deviceBox = new QCheckBox(centralWidget);
         deviceBox->setObjectName(QString::fromUtf8("deviceBox"));
-        deviceBox->setGeometry(QRect(20, 50, 70, 17));
+        deviceBox->setGeometry(QRect(20, 60, 91, 17));
         deviceBox->setChecked(false);
         label_28 = new QLabel(centralWidget);
         label_28->setObjectName(QString::fromUtf8("label_28"));
@@ -404,17 +409,17 @@ public:
         label_27->setGeometry(QRect(20, 390, 71, 16));
         pA_box = new QDoubleSpinBox(centralWidget);
         pA_box->setObjectName(QString::fromUtf8("pA_box"));
-        pA_box->setGeometry(QRect(150, 360, 71, 22));
+        pA_box->setGeometry(QRect(150, 310, 71, 22));
         pA_box->setDecimals(1);
         pA_box->setMaximum(1000.000000000000000);
         pA_box->setSingleStep(0.100000000000000);
         pA_box->setValue(0.000000000000000);
         label_15 = new QLabel(centralWidget);
         label_15->setObjectName(QString::fromUtf8("label_15"));
-        label_15->setGeometry(QRect(150, 340, 47, 13));
+        label_15->setGeometry(QRect(150, 290, 47, 13));
         label_37 = new QLabel(centralWidget);
         label_37->setObjectName(QString::fromUtf8("label_37"));
-        label_37->setGeometry(QRect(150, 310, 71, 16));
+        label_37->setGeometry(QRect(150, 260, 71, 16));
         humanBox = new QComboBox(centralWidget);
         humanBox->setObjectName(QString::fromUtf8("humanBox"));
         humanBox->setGeometry(QRect(20, 110, 91, 22));
@@ -447,6 +452,19 @@ public:
         label_41 = new QLabel(centralWidget);
         label_41->setObjectName(QString::fromUtf8("label_41"));
         label_41->setGeometry(QRect(20, 340, 71, 16));
+        testBox = new QSpinBox(centralWidget);
+        testBox->setObjectName(QString::fromUtf8("testBox"));
+        testBox->setGeometry(QRect(150, 410, 71, 22));
+        label_42 = new QLabel(centralWidget);
+        label_42->setObjectName(QString::fromUtf8("label_42"));
+        label_42->setGeometry(QRect(150, 390, 71, 16));
+        btn_run_sims = new QPushButton(centralWidget);
+        btn_run_sims->setObjectName(QString::fromUtf8("btn_run_sims"));
+        btn_run_sims->setGeometry(QRect(260, 410, 71, 23));
+        testConfigsBox = new QCheckBox(centralWidget);
+        testConfigsBox->setObjectName(QString::fromUtf8("testConfigsBox"));
+        testConfigsBox->setGeometry(QRect(20, 40, 91, 17));
+        testConfigsBox->setChecked(false);
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -464,7 +482,9 @@ public:
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
         QObject::connect(btn_reset, SIGNAL(clicked()), GUIClass, SLOT(on_btn_reset_clicked()));
         QObject::connect(btn_save, SIGNAL(clicked()), GUIClass, SLOT(on_btn_save_clicked()));
-        QObject::connect(controlBox, SIGNAL(currentIndexChanged(int)), GUIClass, SLOT(on_controlBox_changed(int)));
+        QObject::connect(controlBox, SIGNAL(currentIndexChanged(int)), GUIClass, SLOT(on_controlBox_changed()));
+        QObject::connect(btn_run_sims, SIGNAL(clicked()), GUIClass, SLOT(on_btn_run_sims_clicked()));
+        QObject::connect(testBox, SIGNAL(valueChanged(int)), GUIClass, SLOT(on_testBox_changed()));
 
         analogInBox->setCurrentIndex(-1);
         controlBox->setCurrentIndex(-1);
@@ -491,8 +511,8 @@ public:
         label_9->setText(QCoreApplication::translate("GUIClass", "w_theta", nullptr));
         label_10->setText(QCoreApplication::translate("GUIClass", "w_tau", nullptr));
         label_21->setText(QCoreApplication::translate("GUIClass", "Theta", nullptr));
-        label_22->setText(QCoreApplication::translate("GUIClass", "Tau_e", nullptr));
-        label_23->setText(QCoreApplication::translate("GUIClass", "Tau_h", nullptr));
+        label_22->setText(QCoreApplication::translate("GUIClass", "Tau e", nullptr));
+        label_23->setText(QCoreApplication::translate("GUIClass", "Tau h", nullptr));
         label_24->setText(QCoreApplication::translate("GUIClass", "EMG", nullptr));
         label_25->setText(QCoreApplication::translate("GUIClass", "mu A", nullptr));
         label_26->setText(QCoreApplication::translate("GUIClass", "mu R", nullptr));
@@ -530,6 +550,9 @@ public:
         btn_save->setText(QCoreApplication::translate("GUIClass", "Save", nullptr));
         condBox->setCurrentText(QString());
         label_41->setText(QCoreApplication::translate("GUIClass", "Condition", nullptr));
+        label_42->setText(QCoreApplication::translate("GUIClass", "Test", nullptr));
+        btn_run_sims->setText(QCoreApplication::translate("GUIClass", "Run Sims", nullptr));
+        testConfigsBox->setText(QCoreApplication::translate("GUIClass", "Test Configs", nullptr));
     } // retranslateUi
 
 };

@@ -50,7 +50,7 @@ void MPCThread::mpcInit(){
 	grampc_setopt_string(grampc_, "TerminalCost", mpc.TerminalCost);
 
 	grampc_printopt(grampc_);
-	grampc_printparam(grampc_);
+	grampc_printparam(grampc_); cout << "\n";
 }
 
 void MPCThread::PIDImpInit()
@@ -148,9 +148,14 @@ void MPCThread::deviceUpdate()
 		Velocity = 0; // Fix initial condition bug
 	}
 	else {
-		Velocity = (Position - motorThread->previousPosition) / mpc.dt;
+		//Velocity = (Position - motorThread->previousPosition) / mpc.dt;
+		Velocity = motorThread->currentVelocity;
 	}
-	Velocity = alpha_vel * Velocity + (1 - alpha_vel) * previousVelocity;
+	//Velocity = alpha_vel * Velocity + (1 - alpha_vel) * previousVelocity;
+
+	Accelerometer[0] = motorThread->accelerometer[0];
+	Accelerometer[1] = motorThread->accelerometer[1];
+	Accelerometer[2] = motorThread->accelerometer[2];
 
 	motorThread->previousPosition = Position;
 	previousVelocity = Velocity;
@@ -183,7 +188,6 @@ void MPCThread::simProcess() {
 		list2.append(line.split(',').at(2));
 		list3.append(line.split(',').at(3));
 	}
-	//int len_e = list0.length();
 	for (int i = 0; i < list0.length(); i++) {
 		e1vec.append(list0.at(i).toDouble());
 		e2vec.append(list1.at(i).toDouble());
@@ -206,8 +210,58 @@ void MPCThread::simProcess() {
 	}
 }
 
+void MPCThread::testConfigProcess()
+{
+	QFile configs_file(QString::fromStdString(test.test_configs_path));
+
+	if (!configs_file.open(QIODevice::ReadOnly)) {
+		return;
+	}
+	QStringList name_list, device_list, 
+		human_list, analogIn_list,
+		control_list, config_list,
+		traj_list, cond_list,
+		T_list;
+	QByteArray test = configs_file.readLine(); // first line
+	while (!configs_file.atEnd()) {
+		test = configs_file.readLine();
+		name_list.append(test.split(',').at(0));
+		device_list.append(test.split(',').at(1));
+		human_list.append(test.split(',').at(2));
+		analogIn_list.append(test.split(',').at(3));
+		control_list.append(test.split(',').at(4));
+		config_list.append(test.split(',').at(5));
+		traj_list.append(test.split(',').at(6));
+		cond_list.append(test.split(',').at(7));
+		T_list.append(test.split(',').at(8));
+	}
+	for (int i = 0; i < name_list.length(); i++) {
+		name.append(name_list.at(i).toStdString());
+		device.append(device_list.at(i).toDouble());
+		human.append(human_list.at(i).toDouble());
+		analogIn.append(analogIn_list.at(i).toDouble());
+		control.append(control_list.at(i).toDouble());
+		config.append(config_list.at(i).toDouble());
+		traj.append(traj_list.at(i).toDouble());
+		cond.append(cond_list.at(i).toDouble());
+		T.append(T_list.at(i).toDouble());
+	}
+	cout << name[0] << "\n";
+	cout << device[0] << "\n";
+	cout << human[0] << "\n";
+	cout << analogIn[0] << "\n";
+	cout << control[0] << "\n";
+	cout << config[0] << "\n";
+	cout << traj[0] << "\n";
+	cout << cond[0] << "\n";
+	cout << T[0] << "\n";
+}
+
 void MPCThread::threadInit()
 {
+	if (test.import_test_config) {
+		testConfigProcess();
+	}
 	open_files();
 	mpcInit();
 	PIDImpInit();
@@ -372,7 +426,7 @@ void MPCThread::open_files() {
 	err = fopen_s(&file_pid, "../res/pid.txt", "w");
 	err = fopen_s(&file_CPUtime, "../res/CPUtime.txt", "w");
 	err = fopen_s(&file_looptime, "../res/looptime.txt", "w");
-
+	err = fopen_s(&file_accel, "../res/accel.txt", "w");
 }
 
 void MPCThread::close_files()
@@ -392,6 +446,7 @@ void MPCThread::close_files()
 	fclose(file_pid);
 	fclose(file_CPUtime);
 	fclose(file_looptime);
+	fclose(file_accel);
 	files_closed = true;
 }
 
@@ -411,6 +466,7 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_pid, pid, 3);
 	printNumVector2File(file_CPUtime, &CPUtime, 1);
 	printNumVector2File(file_looptime, &loop_time, 1);
+	printNumVector2File(file_accel, Accelerometer, 3);
 }
 
 void MPCThread::printNumVector2File(FILE *file, const double * val, const int size) {

@@ -22,11 +22,12 @@ GUI::GUI(QWidget *parent)
 
 void GUI::initBoxes()
 {
+	ui.testConfigsBox->setCheckState(Qt::CheckState(mpcThread->test.import_test_config * 2));
 	ui.deviceBox->setCheckState(Qt::CheckState(mpcThread->test.device * 2));
 
 	ui.humanBox->addItem("None");
-	ui.humanBox->addItem("Chris ID");
 	ui.humanBox->addItem("Chris");
+	ui.humanBox->addItem("Chris ID");
 	ui.humanBox->addItem("Annika");
 	ui.humanBox->addItem("Felix");
 	ui.humanBox->setCurrentIndex(mpcThread->test.human);
@@ -47,6 +48,8 @@ void GUI::initBoxes()
 	ui.configBox->addItem("HTE");
 	ui.configBox->addItem("HTE w/ FLA");
 	ui.configBox->addItem("FLA w/ Halt");
+	ui.configBox->addItem("Disturbance");
+	ui.configBox->addItem("NDO");
 	ui.configBox->setCurrentIndex(mpcThread->test.config);
 
 	ui.trajBox->addItem("None");
@@ -288,6 +291,7 @@ void GUI::clearPlots()
 void GUI::setParams() // can update params mid-trial
 {
 	// Configuration
+	mpcThread->test.import_test_config = ui.testConfigsBox->isChecked();
 	mpcThread->test.device = ui.deviceBox->isChecked();
 
 	mpcThread->test.human = ui.humanBox->currentIndex();
@@ -381,7 +385,12 @@ void GUI::on_btn_save_clicked()
 	}
 }
 
-void GUI::on_controlBox_changed(int index)
+void GUI::on_btn_run_sims_clicked()
+{
+
+}
+
+void GUI::on_controlBox_changed()
 {
 	if (boxes_initialised) {
 		mpcThread->test.control = ui.controlBox->currentIndex();
@@ -389,6 +398,45 @@ void GUI::on_controlBox_changed(int index)
 	mpcThread->PIDImpInit();
 	setBoxValues();
 }
+
+void GUI::on_testBox_changed()
+{
+	int test = ui.testBox->value();
+	if (mpcThread->test.import_test_config && (test < mpcThread->name.length())) {
+		mpcThread->test.device = mpcThread->device[test];
+		mpcThread->test.human = mpcThread->human[test];
+		mpcThread->test.analogIn = mpcThread->analogIn[test];
+		mpcThread->test.control = mpcThread->control[test];
+		mpcThread->test.config = mpcThread->config[test];
+		mpcThread->test.traj = mpcThread->traj[test];
+		mpcThread->test.cond = mpcThread->cond[test];
+		mpcThread->test.T = mpcThread->T[test];
+
+		ui.deviceBox->setCheckState(Qt::CheckState(mpcThread->test.device * 2));
+		ui.humanBox->setCurrentIndex(mpcThread->test.human);
+		ui.analogInBox->setCurrentIndex(mpcThread->test.analogIn);
+		ui.controlBox->setCurrentIndex(mpcThread->test.control);
+		ui.configBox->setCurrentIndex(mpcThread->test.config);
+		ui.trajBox->setCurrentIndex(mpcThread->test.traj);
+		ui.condBox->setCurrentIndex(mpcThread->test.cond);
+		ui.timeBox->setValue(mpcThread->test.T);
+
+		mpcThread->test.sim_cond = (ui.trajBox->currentText() + "_" + ui.condBox->currentText() + ".csv").toStdString();
+
+		cout << mpcThread->name[test] << "\n";
+		cout << mpcThread->test.device << "_";
+		cout << mpcThread->test.human << "_";
+		cout << mpcThread->test.analogIn << "_";
+		cout << mpcThread->test.control << "_";
+		cout << mpcThread->test.config << "_";
+		cout << mpcThread->test.traj << "_";
+		cout << mpcThread->test.cond << "_";
+		cout << mpcThread->test.T << "_";
+		cout << mpcThread->test.sim_cond << "\n\n";
+	}
+}
+
+
 
 void GUI::onGUIComms(QString message)
 {

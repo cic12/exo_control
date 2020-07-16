@@ -23,12 +23,13 @@
 using namespace std;
 
 struct testParams {
-	bool device = 0;
-	int human = 2;
-	int analogIn = 2;
-	int control = 3; // None, PID, Imp, MPC
-	int config = 3;
-	int traj = 2;
+	bool import_test_config = true;
+	bool device = false;
+	int human = 0;
+	int analogIn = 0;
+	int control = 0; // None, PID, Imp, MPC
+	int config = 0;
+	int traj = 0;
 	int cond = 0;
 
 	double T = 4;
@@ -41,14 +42,15 @@ struct testParams {
 	string sim_cond = "M_EA.csv"; // automate/encode this as a configuration?
 	string e_path = string("../res/sim/e_");
 	string tau_h_path = string("../res/sim/tau_h_");
+	string test_configs_path = "../res/configs/seated_tests.csv";
 };
 
 struct modelParams {
 	// None, Chris ID, Chris, Annika, Felix
-	double J_h[5] =     { 0, 0.2383 , 0.4351, 0.1927 , 0.3060  };
-	double B_h[5] =     { 0, 0.1676 , 0.1676, 2      , 2       };
-	double A_h[5] =     { 0, 0      , 0     , 0      , 0       };
-	double tau_g_h[5] = { 0, 9.4162 , 14.256 , 7.5008 , 10.5946 };
+	double J_h[5] =     { 0, 0.4351 , 0.2383 , 0.1927 , 0.3060  };
+	double B_h[5] =     { 0, 0.1676 , 0.1676 , 2      , 2       };
+	double A_h[5] =     { 0, 0      , 0      , 0      , 0       };
+	double tau_g_h[5] = { 0, 14.256 , 9.4162 , 7.5008 , 10.5946 };
 	double J = 0.0377;
 	double B = 0.0207;
 	double A = 0.0000;
@@ -112,8 +114,12 @@ public:
 
 	typeGRAMPC* grampc_;
 
+	QVector<double> device = {}, human = {}, analogIn = {}, control = {}, config = {}, traj = {}, cond = {}, T = {};
+	QVector<string> name = {}, sim_cond = {};
+
 private:
 	double Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.01, xdes_previous = 0.2;
+	double Accelerometer[3] = { 0 , 0 , 0 };
 	double Torque = 0;
 	double exoTorque = 0, exoTorqueDemand = 0;
 	double humanTorque = 0, humanTorqueEst = 0;
@@ -145,10 +151,11 @@ private:
 		* file_tauh, * file_tauhest, 
 		* file_t, * file_mode, * file_Ncfct,
 		* file_mf, * file_rule, * file_emg, 
-		*file_pid, *file_CPUtime, *file_looptime;
+		*file_pid, *file_CPUtime, *file_looptime, *file_accel;
 	ofstream file_config;
 
 	void simProcess();
+	void testConfigProcess();
 	void control_loop();
 	void control_stop();
 

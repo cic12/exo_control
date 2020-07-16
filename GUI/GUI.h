@@ -38,7 +38,9 @@ private slots:
 	void on_btn_stop_clicked();
 	void on_btn_reset_clicked();
 	void on_btn_save_clicked();
-	void on_controlBox_changed(int index);
+	void on_btn_run_sims_clicked();
+	void on_controlBox_changed();
+	void on_testBox_changed();
 public slots:
 	void onGUIComms(QString);
 	void onTimeout();
