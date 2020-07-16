@@ -46,6 +46,7 @@ void GUI::initBoxes()
 	ui.configBox->addItem("None");
 	ui.configBox->addItem("HTE");
 	ui.configBox->addItem("HTE w/ FLA");
+	ui.configBox->addItem("FLA w/ Halt");
 	ui.configBox->setCurrentIndex(mpcThread->test.config);
 
 	ui.trajBox->addItem("None");
@@ -59,6 +60,17 @@ void GUI::initBoxes()
 	ui.trajBox->addItem("P5");
 	ui.trajBox->addItem("Param ID");
 	ui.trajBox->setCurrentIndex(mpcThread->test.traj);
+
+	ui.condBox->addItem("None");
+	ui.condBox->addItem("N");
+	ui.condBox->addItem("EA");
+	ui.condBox->addItem("ER");
+	ui.condBox->addItem("FA");
+	ui.condBox->addItem("FR");
+	ui.condBox->addItem("IN");
+	ui.condBox->addItem("IE");
+	ui.condBox->addItem("IF");
+	ui.condBox->setCurrentIndex(mpcThread->test.cond);
 
 	ui.timeBox->setValue(mpcThread->test.T);
 
@@ -138,19 +150,18 @@ void GUI::initPlots()
 
 	ui.plot1->addGraph();
 	ui.plot1->graph(0)->setPen(QPen(Qt::blue));
-	ui.plot1->addGraph();
-	ui.plot1->graph(1)->setPen(QPen(Qt::red));
-	ui.plot1->addGraph();
-	ui.plot1->graph(2)->setPen(QPen(Qt::green));
 
 	ui.plot2->addGraph();
-	ui.plot2->graph(0)->setPen(QPen(Qt::blue)); // e1
-	ui.plot2->addGraph();
-	ui.plot2->graph(1)->setPen(QPen(Qt::red)); // e2
-	ui.plot2->addGraph();
-	ui.plot2->graph(2)->setPen(QPen(Qt::yellow)); // e3
-	ui.plot2->addGraph();
-	ui.plot2->graph(3)->setPen(QPen(Qt::green)); // e4
+	ui.plot2->graph(0)->setPen(QPen(Qt::blue));
+
+	ui.plot3->addGraph();
+	ui.plot3->graph(0)->setPen(QPen(Qt::blue)); // e1
+	ui.plot3->addGraph();
+	ui.plot3->graph(1)->setPen(QPen(Qt::red)); // e2
+	ui.plot3->addGraph();
+	ui.plot3->graph(2)->setPen(QPen(Qt::yellow)); // e3
+	ui.plot3->addGraph();
+	ui.plot3->graph(3)->setPen(QPen(Qt::green)); // e4
 
 	ui.plot4->addGraph();
 	ui.plot4->graph(0)->setPen(QPen(Qt::black));
@@ -204,13 +215,13 @@ void GUI::addPoints(plotVars vars)
 	ui.plot->graph(1)->addData(vars.time, vars.x1des);
 
 	ui.plot1->graph(0)->addData(vars.time, vars.u);
-	ui.plot1->graph(1)->addData(vars.time, vars.hTauEst);
-	ui.plot1->graph(2)->addData(vars.time, vars.u + vars.hTauEst);
 
-	ui.plot2->graph(0)->addData(vars.time, vars.e1);
-	ui.plot2->graph(1)->addData(vars.time, vars.e2);
-	ui.plot2->graph(2)->addData(vars.time, vars.e3);
-	ui.plot2->graph(3)->addData(vars.time, vars.e4);
+	ui.plot2->graph(0)->addData(vars.time, vars.hTauEst);
+
+	ui.plot3->graph(0)->addData(vars.time, vars.e1);
+	ui.plot3->graph(1)->addData(vars.time, vars.e2);
+	ui.plot3->graph(2)->addData(vars.time, vars.e3);
+	ui.plot3->graph(3)->addData(vars.time, vars.e4);
 
 	ui.plot4->graph(0)->addData(vars.time, vars.muA);
 
@@ -221,13 +232,13 @@ void GUI::addPoints(plotVars vars)
 	ui.plot->graph(1)->removeDataBefore(vars.time - t_span);
 
 	ui.plot1->graph(0)->removeDataBefore(vars.time - t_span);
-	ui.plot1->graph(1)->removeDataBefore(vars.time - t_span);
-	ui.plot1->graph(2)->removeDataBefore(vars.time - t_span);
 
 	ui.plot2->graph(0)->removeDataBefore(vars.time - t_span);
-	ui.plot2->graph(1)->removeDataBefore(vars.time - t_span);
-	ui.plot2->graph(2)->removeDataBefore(vars.time - t_span);
-	ui.plot2->graph(3)->removeDataBefore(vars.time - t_span);
+
+	ui.plot3->graph(0)->removeDataBefore(vars.time - t_span);
+	ui.plot3->graph(1)->removeDataBefore(vars.time - t_span);
+	ui.plot3->graph(2)->removeDataBefore(vars.time - t_span);
+	ui.plot3->graph(3)->removeDataBefore(vars.time - t_span);
 
 	ui.plot4->graph(0)->removeDataBefore(vars.time - t_span);
 
@@ -259,13 +270,13 @@ void GUI::clearPlots()
 	ui.plot->graph(1)->data()->clear();
 
 	ui.plot1->graph(0)->data()->clear();
-	ui.plot1->graph(1)->data()->clear();
-	ui.plot1->graph(2)->data()->clear();
 
 	ui.plot2->graph(0)->data()->clear();
-	ui.plot2->graph(1)->data()->clear();
-	ui.plot2->graph(2)->data()->clear();
-	ui.plot2->graph(3)->data()->clear();
+
+	ui.plot3->graph(0)->data()->clear();
+	ui.plot3->graph(1)->data()->clear();
+	ui.plot3->graph(2)->data()->clear();
+	ui.plot3->graph(3)->data()->clear();
 
 	ui.plot4->graph(0)->data()->clear();
 
@@ -274,7 +285,7 @@ void GUI::clearPlots()
 	updatePlots();
 }
 
-void GUI::on_btn_set_params_clicked() // can update params mid-trial
+void GUI::setParams() // can update params mid-trial
 {
 	// Configuration
 	mpcThread->test.device = ui.deviceBox->isChecked();
@@ -285,8 +296,10 @@ void GUI::on_btn_set_params_clicked() // can update params mid-trial
 	mpcThread->test.config = ui.configBox->currentIndex();
 	mpcThread->test.traj = ui.trajBox->currentIndex();
 	mpcThread->test.T = ui.timeBox->value();
+	mpcThread->test.cond = ui.condBox->currentIndex();
 
 	mpcThread->test.HTE = (mpcThread->test.config > 0), mpcThread->test.FLA = (mpcThread->test.config > 1);
+	mpcThread->test.halt = (mpcThread->test.config == 3);
 
 	// Model Params
 	mpcThread->model.A = ui.A_box->value(); //+mpcThread->model.A_h[ui.humanBox->currentIndex()];
@@ -314,6 +327,8 @@ void GUI::on_btn_set_params_clicked() // can update params mid-trial
 	mpcThread->mpc.pSys[8] = mpcThread->mpc.x2min;
 	mpcThread->mpc.pSys[9] = mpcThread->mpc.x2max;
 
+	mpcThread->grampc_->userparam = mpcThread->mpc.pSys;
+
 	// PID Params
 	mpcThread->pidImp.Kp = ui.Kp_box->value();
 	mpcThread->pidImp.Ki = ui.Ki_box->value();
@@ -323,15 +338,14 @@ void GUI::on_btn_set_params_clicked() // can update params mid-trial
 	mpcThread->pidImp.Kff_B = ui.Kff_J_box->value();
 	mpcThread->pidImp.Kff_tau_g = ui.Kff_tau_g_box->value();
 
-	if (mpcThread->mpc_initialised) {
-		mpcThread->grampc_->userparam = mpcThread->mpc.pSys;
-	}
+	// Sim Condition
+	mpcThread->test.sim_cond = (ui.trajBox->currentText() + "_" + ui.condBox->currentText() + ".csv").toStdString();
 }
 
 void GUI::on_btn_start_clicked()
 {
 	if (gui_reset) {
-		on_btn_set_params_clicked();
+		setParams();
 		mpcThread->start(QThread::HighPriority);
 		timer->start(20); // Period in ms
 		gui_reset = false;

@@ -274,19 +274,6 @@
      <string>w_tau</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_set_params">
-    <property name="geometry">
-     <rect>
-      <x>190</x>
-      <y>400</y>
-      <width>81</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Set Params</string>
-    </property>
-   </widget>
    <widget class="QCustomPlot" name="plot2" native="true">
     <property name="enabled">
      <bool>false</bool>
@@ -375,7 +362,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Tau</string>
+     <string>Tau_e</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_23">
@@ -388,7 +375,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>EMG</string>
+     <string>Tau_h</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_24">
@@ -401,7 +388,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Free</string>
+     <string>EMG</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_25">
@@ -437,9 +424,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>440</y>
+      <y>450</y>
       <width>421</width>
-      <height>321</height>
+      <height>311</height>
      </rect>
     </property>
     <property name="readOnly">
@@ -733,7 +720,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>40</y>
+      <y>50</y>
       <width>70</width>
       <height>17</height>
      </rect>
@@ -1032,7 +1019,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>360</y>
+      <y>410</y>
       <width>91</width>
       <height>22</height>
      </rect>
@@ -1045,13 +1032,13 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>340</y>
+      <y>390</y>
       <width>71</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Time Period</string>
+     <string>T</string>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="pA_box">
@@ -1208,6 +1195,38 @@
      <string>Save</string>
     </property>
    </widget>
+   <widget class="QComboBox" name="condBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>360</y>
+      <width>91</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="editable">
+     <bool>false</bool>
+    </property>
+    <property name="currentText">
+     <string/>
+    </property>
+    <property name="currentIndex">
+     <number>-1</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_41">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>340</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Condition</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -1275,22 +1294,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>btn_set_params</sender>
-   <signal>clicked()</signal>
-   <receiver>GUIClass</receiver>
-   <slot>on_btn_set_params_clicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>57</x>
-     <y>64</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>300</x>
-     <y>269</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>btn_reset</sender>
    <signal>clicked()</signal>
    <receiver>GUIClass</receiver>
@@ -1342,7 +1345,6 @@
  <slots>
   <slot>on_btn_start_clicked()</slot>
   <slot>on_btn_stop_clicked()</slot>
-  <slot>on_btn_set_params_clicked()</slot>
   <slot>on_btn_reset_clicked()</slot>
   <slot>on_btn_save_clicked()</slot>
   <slot>on_controlBox_changed(int)</slot>

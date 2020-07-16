@@ -14,7 +14,8 @@ test = (ts_test + '_DEV' + str(cfg[0]) +
         '_AIN' + str(cfg[2]) + 
         '_CTL' + str(cfg[3]) + 
         '_CFG' + str(cfg[4]) + 
-        '_TRJ' + str(cfg[5]))
+        '_TRJ' + str(cfg[5]) +
+        '_CON' + str(cfg[6]))
 
 test_path = '../../exo_results/data/' + ts_day + '/' + test + '/'
 os.makedirs(os.path.dirname(test_path), exist_ok=True)

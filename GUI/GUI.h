@@ -21,19 +21,19 @@ private:
 	bool gui_reset;
 	bool gui_done;
 	bool saved;
-	bool boxes_initialised;
+	bool boxes_initialised = false;
 	double time;
 	plotVars plot_vars;
 
 	void initBoxes();
 	void setBoxValues();
+	void setParams();
 	void initPlots();
 	void addPoints(plotVars);
 	void updatePlots();
 	void clearPlots();
 
 private slots:
-	void on_btn_set_params_clicked();
 	void on_btn_start_clicked();
 	void on_btn_stop_clicked();
 	void on_btn_reset_clicked();

@@ -1,7 +1,7 @@
 #include "fis.h"
 
-FIS::FIS() {
-
+FIS::FIS(bool halt_on = 0) {
+	halt_on = halt_on;
 }
 
 double FIS::sigmf(double x, double a, double c) {
@@ -30,8 +30,8 @@ double FIS::assistanceMode(double Tau_h, double x_des, fisParams fis)
 	muR = rule[2] + rule[3];
 
 	// Halt
-	if (muR > fis.limR) {
-		//halt = 1;
+	if (muR > fis.limR && halt_on) {
+		halt = 1;
 	}
 	else {
 		halt = 0;

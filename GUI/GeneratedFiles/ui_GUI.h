@@ -48,7 +48,6 @@ public:
     QDoubleSpinBox *w_tau_box;
     QDoubleSpinBox *w_theta_box;
     QLabel *label_10;
-    QPushButton *btn_set_params;
     QCustomPlot *plot2;
     QCustomPlot *plot3;
     QCustomPlot *plot1;
@@ -109,6 +108,8 @@ public:
     QDoubleSpinBox *Kff_J_box;
     QLabel *label_40;
     QPushButton *btn_save;
+    QComboBox *condBox;
+    QLabel *label_41;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -191,9 +192,6 @@ public:
         label_10 = new QLabel(centralWidget);
         label_10->setObjectName(QString::fromUtf8("label_10"));
         label_10->setGeometry(QRect(260, 90, 61, 16));
-        btn_set_params = new QPushButton(centralWidget);
-        btn_set_params->setObjectName(QString::fromUtf8("btn_set_params"));
-        btn_set_params->setGeometry(QRect(190, 400, 81, 23));
         plot2 = new QCustomPlot(centralWidget);
         plot2->setObjectName(QString::fromUtf8("plot2"));
         plot2->setEnabled(false);
@@ -235,7 +233,7 @@ public:
         plainTextEdit = new QPlainTextEdit(centralWidget);
         plainTextEdit->setObjectName(QString::fromUtf8("plainTextEdit"));
         plainTextEdit->setEnabled(false);
-        plainTextEdit->setGeometry(QRect(20, 440, 421, 321));
+        plainTextEdit->setGeometry(QRect(20, 450, 421, 311));
         plainTextEdit->setReadOnly(true);
         plainTextEdit->setOverwriteMode(true);
         plainTextEdit->setCenterOnScroll(false);
@@ -312,7 +310,7 @@ public:
         trajBox->setEditable(false);
         deviceBox = new QCheckBox(centralWidget);
         deviceBox->setObjectName(QString::fromUtf8("deviceBox"));
-        deviceBox->setGeometry(QRect(20, 40, 70, 17));
+        deviceBox->setGeometry(QRect(20, 50, 70, 17));
         deviceBox->setChecked(false);
         label_28 = new QLabel(centralWidget);
         label_28->setObjectName(QString::fromUtf8("label_28"));
@@ -399,11 +397,11 @@ public:
         line_5->setFrameShadow(QFrame::Sunken);
         timeBox = new QDoubleSpinBox(centralWidget);
         timeBox->setObjectName(QString::fromUtf8("timeBox"));
-        timeBox->setGeometry(QRect(20, 360, 91, 22));
+        timeBox->setGeometry(QRect(20, 410, 91, 22));
         timeBox->setValue(0.000000000000000);
         label_27 = new QLabel(centralWidget);
         label_27->setObjectName(QString::fromUtf8("label_27"));
-        label_27->setGeometry(QRect(20, 340, 71, 16));
+        label_27->setGeometry(QRect(20, 390, 71, 16));
         pA_box = new QDoubleSpinBox(centralWidget);
         pA_box->setObjectName(QString::fromUtf8("pA_box"));
         pA_box->setGeometry(QRect(150, 360, 71, 22));
@@ -442,6 +440,13 @@ public:
         btn_save = new QPushButton(centralWidget);
         btn_save->setObjectName(QString::fromUtf8("btn_save"));
         btn_save->setGeometry(QRect(370, 800, 71, 23));
+        condBox = new QComboBox(centralWidget);
+        condBox->setObjectName(QString::fromUtf8("condBox"));
+        condBox->setGeometry(QRect(20, 360, 91, 22));
+        condBox->setEditable(false);
+        label_41 = new QLabel(centralWidget);
+        label_41->setObjectName(QString::fromUtf8("label_41"));
+        label_41->setGeometry(QRect(20, 340, 71, 16));
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -457,7 +462,6 @@ public:
         retranslateUi(GUIClass);
         QObject::connect(btn_start, SIGNAL(clicked()), GUIClass, SLOT(on_btn_start_clicked()));
         QObject::connect(btn_stop, SIGNAL(clicked()), GUIClass, SLOT(on_btn_stop_clicked()));
-        QObject::connect(btn_set_params, SIGNAL(clicked()), GUIClass, SLOT(on_btn_set_params_clicked()));
         QObject::connect(btn_reset, SIGNAL(clicked()), GUIClass, SLOT(on_btn_reset_clicked()));
         QObject::connect(btn_save, SIGNAL(clicked()), GUIClass, SLOT(on_btn_save_clicked()));
         QObject::connect(controlBox, SIGNAL(currentIndexChanged(int)), GUIClass, SLOT(on_controlBox_changed(int)));
@@ -467,6 +471,7 @@ public:
         trajBox->setCurrentIndex(-1);
         humanBox->setCurrentIndex(-1);
         configBox->setCurrentIndex(-1);
+        condBox->setCurrentIndex(-1);
 
 
         QMetaObject::connectSlotsByName(GUIClass);
@@ -485,11 +490,10 @@ public:
         label_7->setText(QCoreApplication::translate("GUIClass", "tau_g", nullptr));
         label_9->setText(QCoreApplication::translate("GUIClass", "w_theta", nullptr));
         label_10->setText(QCoreApplication::translate("GUIClass", "w_tau", nullptr));
-        btn_set_params->setText(QCoreApplication::translate("GUIClass", "Set Params", nullptr));
         label_21->setText(QCoreApplication::translate("GUIClass", "Theta", nullptr));
-        label_22->setText(QCoreApplication::translate("GUIClass", "Tau", nullptr));
-        label_23->setText(QCoreApplication::translate("GUIClass", "EMG", nullptr));
-        label_24->setText(QCoreApplication::translate("GUIClass", "Free", nullptr));
+        label_22->setText(QCoreApplication::translate("GUIClass", "Tau_e", nullptr));
+        label_23->setText(QCoreApplication::translate("GUIClass", "Tau_h", nullptr));
+        label_24->setText(QCoreApplication::translate("GUIClass", "EMG", nullptr));
         label_25->setText(QCoreApplication::translate("GUIClass", "mu A", nullptr));
         label_26->setText(QCoreApplication::translate("GUIClass", "mu R", nullptr));
         plainTextEdit->setPlainText(QString());
@@ -515,7 +519,7 @@ public:
         label_34->setText(QCoreApplication::translate("GUIClass", "PID/Impedance", nullptr));
         label_35->setText(QCoreApplication::translate("GUIClass", "Kff_B", nullptr));
         label_36->setText(QCoreApplication::translate("GUIClass", "Kff_A", nullptr));
-        label_27->setText(QCoreApplication::translate("GUIClass", "Time Period", nullptr));
+        label_27->setText(QCoreApplication::translate("GUIClass", "T", nullptr));
         label_15->setText(QCoreApplication::translate("GUIClass", "pA", nullptr));
         label_37->setText(QCoreApplication::translate("GUIClass", "FLA", nullptr));
         humanBox->setCurrentText(QString());
@@ -524,6 +528,8 @@ public:
         configBox->setCurrentText(QString());
         label_40->setText(QCoreApplication::translate("GUIClass", "Kff_J", nullptr));
         btn_save->setText(QCoreApplication::translate("GUIClass", "Save", nullptr));
+        condBox->setCurrentText(QString());
+        label_41->setText(QCoreApplication::translate("GUIClass", "Condition", nullptr));
     } // retranslateUi
 
 };

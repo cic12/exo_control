@@ -14,11 +14,12 @@ struct fisParams {
 
 class FIS {
 public:
-	FIS();
+	FIS(bool);
 
 	fisParams fis;
+	bool halt_on = false;
 	bool halt = false;
-	double mf[6] = {}, rule[4] = {}, muA, muR;
+	double mf[6] = {}, rule[4] = {}, muA = 0, muR = 0;
 
 	double hTorqueEst(double e1, double e2, double b1, double b2, double b3);
 	double assistanceMode(double Tau_h, double dtheta, fisParams fis);

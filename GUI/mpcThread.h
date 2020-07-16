@@ -25,20 +25,22 @@ using namespace std;
 struct testParams {
 	bool device = 0;
 	int human = 2;
-	int analogIn = 0;
+	int analogIn = 2;
 	int control = 3; // None, PID, Imp, MPC
-	int config = 0;
+	int config = 3;
 	int traj = 2;
+	int cond = 0;
 
-	double T = 24;
+	double T = 4;
 
 	bool HTE = (config > 0), FLA = (config > 1); // set using config
+	bool halt = (config == 3);
 	double freq[3] = { 0.125 , 0.25 , 0.5 }; // selected using traj
 	double pos[5] = { 0.2 , 0.45 , 0.70 , 0.95 , 1.2 }; // selected using traj
 
 	string sim_cond = "M_EA.csv"; // automate/encode this as a configuration?
-	string e_path = string("../res/sim/e_") + sim_cond;
-	string tau_h_path = string("../res/sim/tau_h_") + sim_cond;
+	string e_path = string("../res/sim/e_");
+	string tau_h_path = string("../res/sim/tau_h_");
 };
 
 struct modelParams {
@@ -146,7 +148,7 @@ private:
 		*file_pid, *file_CPUtime, *file_looptime;
 	ofstream file_config;
 
-	void simProcess(string e_path, string tau_h_path);
+	void simProcess();
 	void control_loop();
 	void control_stop();
 

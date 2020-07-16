@@ -55,7 +55,6 @@ void MPCThread::mpcInit(){
 
 void MPCThread::PIDImpInit()
 {
-
 	if (test.control == 1) { // PID (w/ Human)
 		if (test.device) {
 			pidImp.Kp = 150;
@@ -170,9 +169,9 @@ void MPCThread::plantSim(double tau) {
 	Velocity = grampc_->sol->xnext[1];
 }
 
-void MPCThread::simProcess(string e_path, string tau_h_path) {
+void MPCThread::simProcess() {
 	// e1, e2, e3, e4
-	QFile e_file(QString::fromStdString(e_path));
+	QFile e_file(QString::fromStdString(test.e_path + test.sim_cond));
 	if (!e_file.open(QIODevice::ReadOnly)) {
 		return;
 	}
@@ -193,7 +192,7 @@ void MPCThread::simProcess(string e_path, string tau_h_path) {
 	}
 
 	// tau_h
-	QFile tau_h_file(QString::fromStdString(tau_h_path));
+	QFile tau_h_file(QString::fromStdString(test.tau_h_path + test.sim_cond));
 	if (!tau_h_file.open(QIODevice::ReadOnly)) {
 		return;
 	}
@@ -212,12 +211,13 @@ void MPCThread::threadInit()
 	open_files();
 	mpcInit();
 	PIDImpInit();
-	fuzzyLogic = new FIS(); // rename FIS class to fla
+	fuzzyLogic = new FIS(test.halt); // rename FIS class to fla
 	cpu_timer = new QElapsedTimer();
 	loop_timer = new QElapsedTimer();
 }
 
 void MPCThread::runInit() {
+	fuzzyLogic->halt_on = test.halt;
 	if (test.device) {
 		motorThread = new MotorThread(this);
 	}
@@ -227,7 +227,8 @@ void MPCThread::runInit() {
 		<< test.analogIn << ","
 		<< test.control << ","
 		<< test.config << ","
-		<< test.traj << "\n";
+		<< test.traj << ","
+		<< test.cond << "\n";
 	file_config.close();
 	if (test.analogIn == 1) { // ai
 		TMSi = new TMSiController();
@@ -235,9 +236,10 @@ void MPCThread::runInit() {
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
 	}
-	else if (test.analogIn == 2) { // sim
-		simProcess(test.e_path, test.tau_h_path);
-		GUIComms(QString("EMG Simulation: ") + QString::fromStdString(test.e_path) + "\n\n");
+	else if ((test.analogIn == 2) && (test.cond > 0)) { // sim
+		simProcess();
+		GUIComms(QString("EMG Simulation: ") + QString::fromStdString(test.e_path + test.sim_cond) + "\n\n");
+		GUIComms(QString("Human Torque Simulation: ") + QString::fromStdString(test.tau_h_path + test.sim_cond) + "\n\n");
 	}
 	GUIComms("Init Complete\n\n");
 	if (test.device) {
@@ -329,7 +331,7 @@ void MPCThread::simParse() {
 		evec[2] = TMSi->daq->mgvec[2];
 		evec[3] = TMSi->daq->mgvec[3];
 		mutex.unlock();
-	} else if (test.analogIn == 2) { // Sim
+	} else if (test.analogIn == 2 && test.cond > 0) { // Sim
 		evec[0] = e1vec[iMPC * (iMPC <= 12000)];
 		evec[1] = e2vec[iMPC * (iMPC <= 12000)];
 		evec[2] = e3vec[iMPC * (iMPC <= 12000)];
