@@ -11,6 +11,7 @@ void MPCThread::run()
 	runInit();
 
 	last_time = clock();
+	last_t = chrono::system_clock::now();
 	start_time = last_time;
 	while (!Stop && t < test.T) {
 		control_loop();
@@ -20,10 +21,6 @@ void MPCThread::run()
 }
 
 void MPCThread::mpcInit(){
-	model.A += model.A_h[test.human];
-	model.B += model.B_h[test.human];
-	model.J += model.J_h[test.human];
-	model.tau_g += model.tau_g_h[test.human];
 	mpc.pSys[0] = model.A;
 	mpc.pSys[1] = model.B;
 	mpc.pSys[2] = model.J;
@@ -49,8 +46,10 @@ void MPCThread::mpcInit(){
 	grampc_setopt_string(grampc_, "IntegralCost", mpc.IntegralCost);
 	grampc_setopt_string(grampc_, "TerminalCost", mpc.TerminalCost);
 
-	grampc_printopt(grampc_);
-	grampc_printparam(grampc_); cout << "\n";
+	if (test.control == 3) {
+		grampc_printopt(grampc_);
+		grampc_printparam(grampc_); cout << "\n";
+	}
 }
 
 void MPCThread::PIDImpInit()
@@ -246,15 +245,6 @@ void MPCThread::testConfigProcess()
 		cond.append(cond_list.at(i).toDouble());
 		T.append(T_list.at(i).toDouble());
 	}
-	cout << name[0] << "\n";
-	cout << device[0] << "\n";
-	cout << human[0] << "\n";
-	cout << analogIn[0] << "\n";
-	cout << control[0] << "\n";
-	cout << config[0] << "\n";
-	cout << traj[0] << "\n";
-	cout << cond[0] << "\n";
-	cout << T[0] << "\n";
 }
 
 void MPCThread::threadInit()
@@ -262,12 +252,18 @@ void MPCThread::threadInit()
 	if (test.import_test_config) {
 		testConfigProcess();
 	}
-	open_files();
+	model.A += model.A_h[test.human];
+	model.B += model.B_h[test.human];
+	model.J += model.J_h[test.human];
+	model.tau_g += model.tau_g_h[test.human];
+	if (test.control == 1 || test.control == 2) {
+		PIDImpInit();
+	}
 	mpcInit();
-	PIDImpInit();
 	fuzzyLogic = new FIS(test.halt); // rename FIS class to fla
 	cpu_timer = new QElapsedTimer();
 	loop_timer = new QElapsedTimer();
+	open_files();
 }
 
 void MPCThread::runInit() {
@@ -284,16 +280,20 @@ void MPCThread::runInit() {
 		<< test.traj << ","
 		<< test.cond << "\n";
 	file_config.close();
-	if (test.analogIn == 1) { // ai
+	if (test.device && test.analogIn == 1) { // TMSi
 		TMSi = new TMSiController();
 		TMSi->daq->daq_aiFile.open("../res/aivec.txt"); // rename to aivec
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
 	}
-	else if ((test.analogIn == 2) && (test.cond > 0)) { // sim
+	else if (!test.device) {
 		simProcess();
-		GUIComms(QString("EMG Simulation: ") + QString::fromStdString(test.e_path + test.sim_cond) + "\n\n");
-		GUIComms(QString("Human Torque Simulation: ") + QString::fromStdString(test.tau_h_path + test.sim_cond) + "\n\n");
+		if (test.analogIn == 1) { // Sim EMG
+			GUIComms(QString("EMG Simulation: ") + QString::fromStdString(test.e_path + test.sim_cond) + "\n\n");
+		}
+		if (test.cond > 0) {
+			GUIComms(QString("Human Torque Simulation: ") + QString::fromStdString(test.tau_h_path + test.sim_cond) + "\n\n");
+		}
 	}
 	GUIComms("Init Complete\n\n");
 	if (test.device) {
@@ -304,10 +304,20 @@ void MPCThread::runInit() {
 }
 
 void MPCThread::control_loop() {
-	this_time = clock();
-	time_counter += ((double)this_time - (double)last_time);
-	last_time = this_time;
-	if (time_counter > 1)
+	// TOO MUCH TIMER OVERHEAD
+
+
+	//this_time = clock();
+	//this_t = chrono::system_clock::now();
+	//cout << t_counter_us.count();
+	//time_counter += ((double)this_t - (double)last_time);
+	//t_counter_us = chrono::duration_cast<chrono::microseconds>(this_t - last_t);
+	//last_time = this_time;
+	//last_t = this_t;
+	//if (time_counter > 1)
+	//if (t_counter_us.count() > 2000)
+	this->msleep(1);
+	if(1)
 	{
 		loop_timer->start();
 		// Trajectory
@@ -348,8 +358,9 @@ void MPCThread::control_loop() {
 		iMPC++;
 		updatePlotVars();
 
-		time_counter = 0;
-		this_thread::sleep_for(chrono::nanoseconds(100));
+		//time_counter = 0;
+		t_counter_us -= chrono::microseconds(2000);
+		//this_thread::sleep_for(chrono::nanoseconds(100));
 		loop_time = loop_timer->nsecsElapsed() / 1e6;
 	}
 }
@@ -357,17 +368,15 @@ void MPCThread::control_loop() {
 void MPCThread::control_stop() {
 	end_time = clock();
 	double duration = ((double)end_time - (double)start_time);
-	if (test.analogIn == 1) { // ai
+	if (test.device && test.analogIn == 1) { // ai
 		TMSi->endStream();
 		TMSi->reset();
+		TMSi->daq->daq_aiFile.close();
 	}
 	Stop = 1;
 	if (test.device) {
 		motorThread->demandedTorque = 0; // necessary?
 		motorThread->mpc_complete = 1;
-	}
-	if (test.analogIn == 1) {
-		TMSi->daq->daq_aiFile.close();
 	}
 	close_files();
 	grampc_free(&grampc_);
@@ -378,18 +387,21 @@ void MPCThread::control_stop() {
 }
 
 void MPCThread::simParse() {
-	if (test.analogIn == 1) { // TMSi
+	if (test.device && test.analogIn == 1) { // TMSi
 		mutex.lock();
 		evec[0] = TMSi->daq->mgvec[0];
 		evec[1] = TMSi->daq->mgvec[1];
 		evec[2] = TMSi->daq->mgvec[2];
 		evec[3] = TMSi->daq->mgvec[3];
 		mutex.unlock();
-	} else if (test.analogIn == 2 && test.cond > 0) { // Sim
+	} else if (!test.device && test.analogIn == 1) { // Sim EMG
 		evec[0] = e1vec[iMPC * (iMPC <= 12000)];
 		evec[1] = e2vec[iMPC * (iMPC <= 12000)];
 		evec[2] = e3vec[iMPC * (iMPC <= 12000)];
 		evec[3] = e4vec[iMPC * (iMPC <= 12000)];
+		
+	}
+	if (!test.device && test.cond > 0) { // Sim Tau h
 		humanTorque = tauhvec[iMPC * (iMPC <= 12000)];
 	}
 }
@@ -488,7 +500,8 @@ void MPCThread::updatePlotVars()
 		vars.x2 = Velocity;
 		vars.u = exoTorque;
 		vars.udes = exoTorqueDemand;
-		vars.hTauEst = humanTorqueEst;
+		vars.tau_h = humanTorque;
+		vars.tau_h_est = humanTorqueEst;
 		vars.mode = assistanceMode;
 		vars.e1 = evec[0];
 		vars.e2 = evec[1];

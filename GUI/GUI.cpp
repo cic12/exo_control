@@ -147,15 +147,17 @@ void GUI::initPlots()
 
 	// Add Plots
 	ui.plot->addGraph();
-	ui.plot->graph(0)->setPen(QPen(Qt::blue));
+	ui.plot->graph(0)->setPen(QPen(Qt::blue)); // x1
 	ui.plot->addGraph();
-	ui.plot->graph(1)->setPen(QPen(Qt::red));
+	ui.plot->graph(1)->setPen(QPen(Qt::red)); // x1des
 
 	ui.plot1->addGraph();
-	ui.plot1->graph(0)->setPen(QPen(Qt::blue));
+	ui.plot1->graph(0)->setPen(QPen(Qt::blue)); // tau_e
 
 	ui.plot2->addGraph();
-	ui.plot2->graph(0)->setPen(QPen(Qt::blue));
+	ui.plot2->graph(0)->setPen(QPen(Qt::blue)); // tau_h
+	ui.plot2->addGraph();
+	ui.plot2->graph(1)->setPen(QPen(Qt::red)); // tau_h_est
 
 	ui.plot3->addGraph();
 	ui.plot3->graph(0)->setPen(QPen(Qt::blue)); // e1
@@ -167,26 +169,26 @@ void GUI::initPlots()
 	ui.plot3->graph(3)->setPen(QPen(Qt::green)); // e4
 
 	ui.plot4->addGraph();
-	ui.plot4->graph(0)->setPen(QPen(Qt::black));
+	ui.plot4->graph(0)->setPen(QPen(Qt::black)); // muA
 
 	ui.plot5->addGraph();
-	ui.plot5->graph(0)->setPen(QPen(Qt::black));
+	ui.plot5->graph(0)->setPen(QPen(Qt::black)); // muR
 
 	// axes settings
 	ui.plot->xAxis->setAutoTickStep(false);
 	ui.plot->xAxis->setTickStep(1);
 	ui.plot->yAxis->setAutoTickStep(false);
-	ui.plot->yAxis->setTickStep(0.2);
+	ui.plot->yAxis->setTickStep(0.5);
 
 	ui.plot1->xAxis->setAutoTickStep(false);
 	ui.plot1->xAxis->setTickStep(1);
 	ui.plot1->yAxis->setAutoTickStep(false);
-	ui.plot1->yAxis->setTickStep(10);
+	ui.plot1->yAxis->setTickStep(25);
 
 	ui.plot2->xAxis->setAutoTickStep(false);
 	ui.plot2->xAxis->setTickStep(1);
 	ui.plot2->yAxis->setAutoTickStep(false);
-	ui.plot2->yAxis->setTickStep(0.05);
+	ui.plot2->yAxis->setTickStep(25);
 
 	ui.plot3->xAxis->setAutoTickStep(false);
 	ui.plot3->xAxis->setTickStep(1);
@@ -196,17 +198,24 @@ void GUI::initPlots()
 	ui.plot4->xAxis->setAutoTickStep(false);
 	ui.plot4->xAxis->setTickStep(1);
 	ui.plot4->yAxis->setAutoTickStep(false);
-	ui.plot4->yAxis->setTickStep(0.5);
+	ui.plot4->yAxis->setTickStep(1);
 
 	ui.plot5->xAxis->setAutoTickStep(false);
 	ui.plot5->xAxis->setTickStep(1);
 	ui.plot5->yAxis->setAutoTickStep(false);
-	ui.plot5->yAxis->setTickStep(0.5);
+	ui.plot5->yAxis->setTickStep(1);
 
-	ui.plot->yAxis->setRange(-0.4, 1.4);
+	ui.plot->xAxis->setRange(0, 4);
+	ui.plot1->xAxis->setRange(0, 4);
+	ui.plot2->xAxis->setRange(0, 4);
+	ui.plot3->xAxis->setRange(0, 4);
+	ui.plot4->xAxis->setRange(0, 4);
+	ui.plot5->xAxis->setRange(0, 4);
+
+	ui.plot->yAxis->setRange(0, 1.5);
 	ui.plot1->yAxis->setRange(-25, 25);
-	ui.plot2->yAxis->setRange(-0.1, 0.1);
-	ui.plot3->yAxis->setRange(-0.1, 0.1);
+	ui.plot2->yAxis->setRange(-25, 25);
+	ui.plot3->yAxis->setRange(0, 0.05);
 	ui.plot4->yAxis->setRange(0, 1);
 	ui.plot5->yAxis->setRange(0, 1);
 }
@@ -219,7 +228,8 @@ void GUI::addPoints(plotVars vars)
 
 	ui.plot1->graph(0)->addData(vars.time, vars.u);
 
-	ui.plot2->graph(0)->addData(vars.time, vars.hTauEst);
+	ui.plot2->graph(0)->addData(vars.time, vars.tau_h);
+	ui.plot2->graph(1)->addData(vars.time, vars.tau_h_est);
 
 	ui.plot3->graph(0)->addData(vars.time, vars.e1);
 	ui.plot3->graph(1)->addData(vars.time, vars.e2);
@@ -237,6 +247,7 @@ void GUI::addPoints(plotVars vars)
 	ui.plot1->graph(0)->removeDataBefore(vars.time - t_span);
 
 	ui.plot2->graph(0)->removeDataBefore(vars.time - t_span);
+	ui.plot2->graph(1)->removeDataBefore(vars.time - t_span);
 
 	ui.plot3->graph(0)->removeDataBefore(vars.time - t_span);
 	ui.plot3->graph(1)->removeDataBefore(vars.time - t_span);
@@ -275,6 +286,7 @@ void GUI::clearPlots()
 	ui.plot1->graph(0)->data()->clear();
 
 	ui.plot2->graph(0)->data()->clear();
+	ui.plot2->graph(1)->data()->clear();
 
 	ui.plot3->graph(0)->data()->clear();
 	ui.plot3->graph(1)->data()->clear();
@@ -354,6 +366,9 @@ void GUI::on_btn_start_clicked()
 		timer->start(20); // Period in ms
 		gui_reset = false;
 	}
+	else {
+		on_btn_reset_clicked();
+	}
 }
 
 void GUI::on_btn_stop_clicked()
@@ -424,12 +439,12 @@ void GUI::on_testBox_changed()
 		mpcThread->test.sim_cond = (ui.trajBox->currentText() + "_" + ui.condBox->currentText() + ".csv").toStdString();
 
 		cout << mpcThread->name[test] << "\n";
-		cout << mpcThread->test.device << "_";
-		cout << mpcThread->test.human << "_";
-		cout << mpcThread->test.analogIn << "_";
-		cout << mpcThread->test.control << "_";
-		cout << mpcThread->test.config << "_";
-		cout << mpcThread->test.traj << "_";
+		cout << mpcThread->test.device;
+		cout << mpcThread->test.human;
+		cout << mpcThread->test.analogIn;
+		cout << mpcThread->test.control;
+		cout << mpcThread->test.config;
+		cout << mpcThread->test.traj;
 		cout << mpcThread->test.cond << "_";
 		cout << mpcThread->test.T << "_";
 		cout << mpcThread->test.sim_cond << "\n\n";

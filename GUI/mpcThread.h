@@ -80,7 +80,7 @@ struct pidImpParams {
 struct plotVars {
 	double time = 0,
 		x1 = 0.2, x1des = 0.2, x2 = 0,
-		u = 0, udes = 0, hTauEst = 0, mode = 1,
+		u = 0, udes = 0, tau_h = 0, tau_h_est = 0, mode = 1,
 		e1 = 0, e2 = 0, e3 = 0, e4 = 0,
 		muA = 0, muR = 0;
 };
@@ -114,8 +114,8 @@ public:
 
 	typeGRAMPC* grampc_;
 
-	QVector<double> device = {}, human = {}, analogIn = {}, control = {}, config = {}, traj = {}, cond = {}, T = {};
-	QVector<string> name = {}, sim_cond = {};
+	QVector<double> device = { 0 }, human = { 0 }, analogIn = { 0 }, control = { 0 }, config = { 0 }, traj = { 0 }, cond = { 0 }, T = { 4.0 };
+	QVector<string> name = { "None" };
 
 private:
 	double Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.01, xdes_previous = 0.2;
@@ -138,6 +138,8 @@ private:
 	QElapsedTimer *cpu_timer;
 	QElapsedTimer * loop_timer;
 	clock_t this_time, last_time, start_time, end_time;
+	chrono::system_clock::time_point this_t, last_t;
+	chrono::microseconds t_counter_us = chrono::microseconds(0);
 	
 	QVector<double> e1vec = { 0 }, e2vec = { 0 }, e3vec = { 0 }, e4vec = { 0 }, tauhvec = { 0 };
 
