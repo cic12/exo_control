@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     freopen("CON", "w", stdout);
     freopen("CON", "w", stderr);
     freopen("CON", "r", stdin);
+
 	SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 	QApplication a(argc, argv);
 	GUI w;

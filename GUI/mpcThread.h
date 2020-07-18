@@ -125,22 +125,27 @@ private:
 	double humanTorque = 0, humanTorqueEst = 0;
 	double assistanceMode = 1;
 	double t = 0.0, t_halt = 0.0;
-	double time_counter = 0;
-	double CPUtime = 0;
-	double loop_time = 0;
-	double sleep_time = 0;
 
 	// PID
 	double error_prior = 0;
 	double integral_prior = 0;
 	double derivative_prior = 0;
 
+	double time_counter = 0;
+	//chrono::microseconds t_counter_us = chrono::microseconds(0);
+
+	double CPUtime = 0;
+	double loop_time = 0;
+
+	bool slept = false;
 	QElapsedTimer *cpu_timer;
 	QElapsedTimer * loop_timer;
-	clock_t this_time, last_time, start_time, end_time;
-	chrono::system_clock::time_point this_t, last_t;
-	chrono::microseconds t_counter_us = chrono::microseconds(0);
-	
+
+	clock_t start_time, end_time;
+
+	clock_t this_time, last_time;
+	//chrono::system_clock::time_point this_t, last_t;
+
 	QVector<double> e1vec = { 0 }, e2vec = { 0 }, e3vec = { 0 }, e4vec = { 0 }, tauhvec = { 0 };
 
 	TMSiController *TMSi;

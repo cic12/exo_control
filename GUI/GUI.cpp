@@ -178,7 +178,7 @@ void GUI::initPlots()
 	ui.plot->xAxis->setAutoTickStep(false);
 	ui.plot->xAxis->setTickStep(1);
 	ui.plot->yAxis->setAutoTickStep(false);
-	ui.plot->yAxis->setTickStep(0.5);
+	ui.plot->yAxis->setTickStep(1.5);
 
 	ui.plot1->xAxis->setAutoTickStep(false);
 	ui.plot1->xAxis->setTickStep(1);
@@ -362,7 +362,7 @@ void GUI::on_btn_start_clicked()
 {
 	if (gui_reset) {
 		setParams();
-		mpcThread->start(QThread::HighPriority);
+		mpcThread->start(QThread::TimeCriticalPriority);
 		timer->start(20); // Period in ms
 		gui_reset = false;
 	}
