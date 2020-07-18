@@ -1,12 +1,13 @@
-#include "mpcThread.h"
+#include "controlThread.h"
 
-MPCThread::MPCThread(QObject *parent)
+ControlThread::ControlThread(QObject *parent, bool run_sims)
 	:QThread(parent)
 {
+	sim_time = run_sims;
 	threadInit();
 }
 
-void MPCThread::run()
+void ControlThread::run()
 {
 	runInit();
 
@@ -21,7 +22,7 @@ void MPCThread::run()
 	quit();
 }
 
-void MPCThread::mpcInit(){
+void ControlThread::mpcInit(){
 	mpc.pSys[0] = model.A;
 	mpc.pSys[1] = model.B;
 	mpc.pSys[2] = model.J;
@@ -53,7 +54,7 @@ void MPCThread::mpcInit(){
 	}
 }
 
-void MPCThread::PIDImpInit()
+void ControlThread::PIDImpInit()
 {
 	if (test.control == 1) { // PID (w/ Human)
 		if (test.device) {
@@ -83,7 +84,7 @@ void MPCThread::PIDImpInit()
 	}
 }
 
-double MPCThread::PIDImpControl(double theta, double theta_r, pidImpParams pidImp)
+double ControlThread::PIDImpControl(double theta, double theta_r, pidImpParams pidImp)
 {
 	// pidImp.type: 1 - PID, 2 - Imp
 	double error = error_prior * (1 - pidImp.alpha_err) + (theta_r - theta) * pidImp.alpha_err;
@@ -102,7 +103,7 @@ double MPCThread::PIDImpControl(double theta, double theta_r, pidImpParams pidIm
 	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
 }
 
-double MPCThread::refTrajectory()
+double ControlThread::refTrajectory()
 {
 	if (test.traj == 0) {
 		return mpc.xdes[0];
@@ -116,7 +117,7 @@ double MPCThread::refTrajectory()
 	return 0.0;
 }
 
-double MPCThread::controlInput()
+double ControlThread::controlInput()
 {
 	if (test.control == 1 || test.control == 2) { // PID/Imp/ParamID argument
 		if (iMPC > 0) { // remove conditional by changing initial conditions
@@ -132,7 +133,7 @@ double MPCThread::controlInput()
 	return 0.0;
 }
 
-void MPCThread::deviceUpdate()
+void ControlThread::deviceUpdate()
 {
 	// Torque Command
 	motorThread->demandedTorque = exoTorqueDemand;
@@ -161,7 +162,7 @@ void MPCThread::deviceUpdate()
 	previousVelocity = Velocity;
 }
 
-void MPCThread::plantSim(double tau) {
+void ControlThread::plantSim(double tau) {
 	ffct(mpc.rwsReferenceIntegration, t, grampc_->param->x0, &tau, grampc_->sol->pnext, grampc_->userparam);
 	for (int i = 0; i < NX; i++) {
 		grampc_->sol->xnext[i] = grampc_->param->x0[i] + mpc.dt * mpc.rwsReferenceIntegration[i];
@@ -174,7 +175,7 @@ void MPCThread::plantSim(double tau) {
 	Velocity = grampc_->sol->xnext[1];
 }
 
-void MPCThread::simProcess() {
+void ControlThread::simProcess() {
 	// e1, e2, e3, e4
 	QFile e_file(QString::fromStdString(test.e_path + test.sim_cond));
 	if (!e_file.open(QIODevice::ReadOnly)) {
@@ -210,7 +211,7 @@ void MPCThread::simProcess() {
 	}
 }
 
-void MPCThread::testConfigProcess()
+void ControlThread::testConfigProcess()
 {
 	QFile configs_file(QString::fromStdString(test.test_configs_path));
 
@@ -248,11 +249,9 @@ void MPCThread::testConfigProcess()
 	}
 }
 
-void MPCThread::threadInit()
+void ControlThread::threadInit()
 {
-	if (test.import_test_config) {
-		testConfigProcess();
-	}
+	testConfigProcess();
 	model.A += model.A_h[test.human];
 	model.B += model.B_h[test.human];
 	model.J += model.J_h[test.human];
@@ -267,7 +266,7 @@ void MPCThread::threadInit()
 	open_files();
 }
 
-void MPCThread::runInit() {
+void ControlThread::runInit() {
 	fuzzyLogic->halt_on = test.halt;
 	if (test.device) {
 		motorThread = new MotorThread(this);
@@ -301,25 +300,27 @@ void MPCThread::runInit() {
 		motorThread->start();//QThread::LowPriority); // low priority necessary?
 		while (!motorThread->motor_initialised);
 	}
-	mpc_initialised = true;
+	control_initialised = true;
 }
 
-void MPCThread::control_loop() {
-	this_time = clock();
-	
-	if (!slept) {
-		if (loop_time < 0.4) { // fast loop execution
-			this_thread::sleep_for(std::chrono::milliseconds(1));
-		}
-		else if (loop_time < 0.6){ // medium loop execution
-			this_thread::sleep_for(std::chrono::microseconds(1));
-		}
-		slept = true;
+void ControlThread::control_loop() {
+	if (sim_time) { // Sim time
+		time_counter = 2;
 	}
-
-	time_counter += ((double)this_time - (double)last_time);
-
-	last_time = this_time;
+	else { // Realtime
+		this_time = clock();
+		if (!slept) {
+			if (loop_time < 0.4) { // fast loop execution
+				this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
+			else if (loop_time < 0.6) { // medium loop execution
+				this_thread::sleep_for(std::chrono::microseconds(1));
+			}
+			slept = true;
+		}
+		time_counter += ((double)this_time - (double)last_time);
+		last_time = this_time;
+	}
 
 	if (time_counter > 1)
 	{
@@ -359,15 +360,13 @@ void MPCThread::control_loop() {
 		iMPC++;
 		updatePlotVars();
 
-
 		time_counter = 0;
-		
 		slept = false;
 		loop_time = loop_timer->nsecsElapsed() / 1e6;
 	}
 }
 
-void MPCThread::control_stop() {
+void ControlThread::control_stop() {
 	end_time = clock();
 	double duration = ((double)end_time - (double)start_time);
 	if (test.device && test.analogIn == 1) { // ai
@@ -388,7 +387,7 @@ void MPCThread::control_stop() {
 	GUIComms("DONE");
 }
 
-void MPCThread::simParse() {
+void ControlThread::simParse() {
 	if (test.device && test.analogIn == 1) { // TMSi
 		mutex.lock();
 		evec[0] = TMSi->daq->mgvec[0];
@@ -408,7 +407,7 @@ void MPCThread::simParse() {
 	}
 }
 
-void MPCThread::interactionFunctions() {
+void ControlThread::interactionFunctions() {
 	if (test.device) {
 		grampc_->sol->xnext[0] = Position;
 		grampc_->sol->xnext[1] = Velocity;
@@ -423,7 +422,7 @@ void MPCThread::interactionFunctions() {
 	grampc_->sol->xnext[3] = assistanceMode;
 }
 
-void MPCThread::open_files() {
+void ControlThread::open_files() {
 	errno_t err;
 	err = fopen_s(&file_x, "../res/xvec.txt", "w");
 	err = fopen_s(&file_xdes, "../res/xdesvec.txt", "w");
@@ -443,7 +442,7 @@ void MPCThread::open_files() {
 	err = fopen_s(&file_accel, "../res/accel.txt", "w");
 }
 
-void MPCThread::close_files()
+void ControlThread::close_files()
 {
 	fclose(file_x);
 	fclose(file_xdes);
@@ -464,7 +463,7 @@ void MPCThread::close_files()
 	files_closed = true;
 }
 
-void MPCThread::print2Files() {
+void ControlThread::print2Files() {
 	printNumVector2File(file_x, grampc_->sol->xnext, NX);
 	printNumVector2File(file_xdes, grampc_->param->xdes, NX);
 	printNumVector2File(file_u, &exoTorque, NU);
@@ -483,7 +482,7 @@ void MPCThread::print2Files() {
 	printNumVector2File(file_accel, Accelerometer, 3);
 }
 
-void MPCThread::printNumVector2File(FILE *file, const double * val, const int size) {
+void ControlThread::printNumVector2File(FILE *file, const double * val, const int size) {
 	typeInt i;
 	for (i = 0; i < size - 1; i++) {
 		fprintf(file, "%.5f,", val[i]);
@@ -491,7 +490,7 @@ void MPCThread::printNumVector2File(FILE *file, const double * val, const int si
 	fprintf(file, "%.5f\n", val[size - 1]);
 }
 
-void MPCThread::updatePlotVars()
+void ControlThread::updatePlotVars()
 {
 	if (iMPC % 20 == 0)
 	{

@@ -1,9 +1,11 @@
 #pragma once
 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <QtWidgets/QMainWindow>
 
 #include "ui_GUI.h"
-#include "mpcThread.h"
+#include "controlThread.h"
 #include "qcustomplot.h"
 
 class GUI : public QMainWindow
@@ -12,7 +14,7 @@ class GUI : public QMainWindow
 
 public:
 	GUI(QWidget *parent = Q_NULLPTR);
-	MPCThread *mpcThread;
+	ControlThread *controlThread;
 	QTimer *timer;
 private:
 	Ui::GUIClass ui;
@@ -22,6 +24,7 @@ private:
 	bool gui_done;
 	bool saved;
 	bool boxes_initialised = false;
+	bool run_sims = false;
 	double time;
 	plotVars plot_vars;
 
@@ -44,4 +47,6 @@ private slots:
 public slots:
 	void onGUIComms(QString);
 	void onTimeout();
+signals:
+	void GUIDone();
 };

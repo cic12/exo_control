@@ -23,7 +23,6 @@
 using namespace std;
 
 struct testParams {
-	bool import_test_config = true;
 	bool device = false;
 	int human = 0;
 	int analogIn = 0;
@@ -85,18 +84,18 @@ struct plotVars {
 		muA = 0, muR = 0;
 };
 	
-class MPCThread : public QThread
+class ControlThread : public QThread
 {
 	Q_OBJECT
 
 public:
-	MPCThread(QObject *parent);
+	ControlThread(QObject *parent, bool run_sims);
 
 	void run();
 	void PIDImpInit();
 
 	bool Stop = false;
-	bool mpc_initialised = false;
+	bool control_initialised = false;
 	bool files_closed = false;
 	int iMPC = 0;
 
@@ -118,6 +117,8 @@ public:
 	QVector<string> name = { "None" };
 
 private:
+	bool sim_time;
+
 	double Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.01, xdes_previous = 0.2;
 	double Accelerometer[3] = { 0 , 0 , 0 };
 	double Torque = 0;
@@ -131,8 +132,7 @@ private:
 	double integral_prior = 0;
 	double derivative_prior = 0;
 
-	double time_counter = 0;
-	//chrono::microseconds t_counter_us = chrono::microseconds(0);
+	int time_counter = 0;
 
 	double CPUtime = 0;
 	double loop_time = 0;
@@ -144,7 +144,6 @@ private:
 	clock_t start_time, end_time;
 
 	clock_t this_time, last_time;
-	//chrono::system_clock::time_point this_t, last_t;
 
 	QVector<double> e1vec = { 0 }, e2vec = { 0 }, e3vec = { 0 }, e4vec = { 0 }, tauhvec = { 0 };
 

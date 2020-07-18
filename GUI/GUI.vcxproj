@@ -221,7 +221,7 @@ xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
     <ClCompile Include="GUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="motorThread.cpp" />
-    <ClCompile Include="mpcThread.cpp" />
+    <ClCompile Include="controlThread.cpp" />
     <ClCompile Include="qcustomplot.cpp" />
     <ClCompile Include="tmsicontroller.cpp" />
   </ItemGroup>
@@ -248,7 +248,12 @@ xcopy /i /y "..\EposCmd\lib\EposCmd64.dll" "$(OutDir)"</Command>
     <QtMoc Include="qcustomplot.h" />
     <ClInclude Include="tmsicontroller.h" />
     <QtMoc Include="motorThread.h" />
-    <QtMoc Include="mpcThread.h" />
+    <QtMoc Include="controlThread.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\..\hebicpp;.\..\hebicpp\hebi-cpp\src;.\..\hebicpp\hebi-cpp\hebi\include;.\..\hebicpp\hebi-cpp\Eigen;.\..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtPrintSupport</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\..\TMSi\include;.\..\EposCmd\include;.\..\Debug;.\..\hebicpp\hebi-cpp\Eigen;.\..\hebicpp\hebi-cpp\src;.\..\NIDAQmx\include;.\..\hebicpp\hebi-cpp\hebi\include;.\..\libgrampc;.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtPrintSupport</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtPrintSupport</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtPrintSupport</IncludePath>
+    </QtMoc>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

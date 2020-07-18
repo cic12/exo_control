@@ -42,9 +42,6 @@
     <ClCompile Include="fis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mpcThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="motorThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,18 +51,21 @@
     <ClCompile Include="qcustomplot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="controlThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="GUI.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="mpcThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="motorThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="qcustomplot.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="controlThread.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
