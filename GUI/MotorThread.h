@@ -29,7 +29,6 @@ public:
 	double previousPosition = 0;
 	double currentVelocity = 0;
 	double accelerometer[3] = { 0 , 0 , 0 };
-	double orientation[4] = { 0 , 0 , 0 , 0 };
 
 private:
 	Lookup lookup;

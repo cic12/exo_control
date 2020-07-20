@@ -123,7 +123,6 @@ private:
 
 	double hebiTime = 0, Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.01, xdes_previous = 0.2;
 	double Accelerometer[3] = { 0 , 0 , 0 };
-	double Orientation[4] = { 0 , 0 , 0 , 0 };
 	double Torque = 0;
 	double exoTorque = 0, exoTorqueDemand = 0;
 	double humanTorque = 0, humanTorqueEst = 0;
@@ -161,7 +160,7 @@ private:
 		* file_t, * file_mode, * file_Ncfct,
 		* file_mf, * file_rule, * file_emg, 
 		*file_pid, *file_CPUtime, *file_looptime,
-		* file_hebitime, *file_accel, *file_orient;
+		* file_hebitime, *file_accel;
 	ofstream file_config;
 	ofstream test_name;
 
