@@ -33,6 +33,8 @@ struct testParams {
 
 	double T = 4;
 
+	string name = "None";
+
 	bool HTE = (config > 0), FLA = (config > 1); // set using config
 	bool halt = (config == 3);
 	double freq[3] = { 0.125 , 0.25 , 0.5 }; // selected using traj
@@ -113,8 +115,8 @@ public:
 
 	typeGRAMPC* grampc_;
 
-	QVector<double> device = { 0 }, human = { 0 }, analogIn = { 0 }, control = { 0 }, config = { 0 }, traj = { 0 }, cond = { 0 }, T = { 4.0 };
-	QVector<string> name = { "None" };
+	QVector<int> device = { 0 }, human = { 0 }, analogIn = { 0 }, control = { 0 }, config = { 0 }, traj = { 0 }, cond = { 0 }, T = { 4 };
+	QVector<string> name = { test.name };
 
 private:
 	bool sim_time;
@@ -159,6 +161,7 @@ private:
 		* file_mf, * file_rule, * file_emg, 
 		*file_pid, *file_CPUtime, *file_looptime, *file_accel;
 	ofstream file_config;
+	ofstream test_name;
 
 	void simProcess();
 	void testConfigProcess();

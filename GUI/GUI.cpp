@@ -404,7 +404,9 @@ void GUI::on_btn_run_sims_clicked()
 		run_sims = true;
 		QEventLoop loop;
 		connect(this, &GUI::GUIDone, &loop, &QEventLoop::quit);
-		for (int i = 35; i < controlThread->name.length(); i++) {
+		int start = 1;
+		int finish = controlThread->name.length();
+		for (int i = start; i < finish; i++) {
 			ui.testBox->setValue(i);
 			on_btn_start_clicked();
 			loop.exec();
@@ -435,6 +437,8 @@ void GUI::on_testBox_changed()
 		controlThread->test.traj = controlThread->traj[test];
 		controlThread->test.cond = controlThread->cond[test];
 		controlThread->test.T = controlThread->T[test];
+
+		controlThread->test.name = controlThread->name[test];
 
 		ui.deviceBox->setCheckState(Qt::CheckState(controlThread->test.device * 2));
 		ui.humanBox->setCurrentIndex(controlThread->test.human);

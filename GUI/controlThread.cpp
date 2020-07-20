@@ -271,6 +271,7 @@ void ControlThread::runInit() {
 	if (test.device) {
 		motorThread = new MotorThread(this);
 	}
+	// Write test config
 	file_config.open("../res/config.txt");
 	file_config << test.device << ","
 		<< test.human << ","
@@ -280,6 +281,10 @@ void ControlThread::runInit() {
 		<< test.traj << ","
 		<< test.cond << "\n";
 	file_config.close();
+	// Write test name
+	test_name.open("../res/name.txt"); 
+	test_name << test.name;
+	test_name.close();
 	if (test.device && test.analogIn == 1) { // TMSi
 		TMSi = new TMSiController();
 		TMSi->daq->daq_aiFile.open("../res/aivec.txt"); // rename to aivec

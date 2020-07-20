@@ -114,7 +114,6 @@ public:
     QSpinBox *testBox;
     QLabel *label_42;
     QPushButton *btn_run_sims;
-    QCheckBox *testConfigsBox;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -461,10 +460,6 @@ public:
         btn_run_sims = new QPushButton(centralWidget);
         btn_run_sims->setObjectName(QString::fromUtf8("btn_run_sims"));
         btn_run_sims->setGeometry(QRect(260, 410, 71, 23));
-        testConfigsBox = new QCheckBox(centralWidget);
-        testConfigsBox->setObjectName(QString::fromUtf8("testConfigsBox"));
-        testConfigsBox->setGeometry(QRect(20, 40, 91, 17));
-        testConfigsBox->setChecked(false);
         GUIClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(GUIClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -552,7 +547,6 @@ public:
         label_41->setText(QCoreApplication::translate("GUIClass", "Condition", nullptr));
         label_42->setText(QCoreApplication::translate("GUIClass", "Test", nullptr));
         btn_run_sims->setText(QCoreApplication::translate("GUIClass", "Run Sims", nullptr));
-        testConfigsBox->setText(QCoreApplication::translate("GUIClass", "Test Configs", nullptr));
     } // retranslateUi
 
 };
