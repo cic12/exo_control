@@ -135,6 +135,9 @@ double ControlThread::controlInput()
 
 void ControlThread::deviceUpdate()
 {
+	// Time
+	hebiTime = motorThread->time;
+
 	// Torque Command
 	motorThread->demandedTorque = exoTorqueDemand;
 
@@ -152,11 +155,16 @@ void ControlThread::deviceUpdate()
 		//Velocity = (Position - motorThread->previousPosition) / mpc.dt;
 		Velocity = motorThread->currentVelocity;
 	}
-	//Velocity = alpha_vel * Velocity + (1 - alpha_vel) * previousVelocity;
+	Velocity = alpha_vel * Velocity + (1 - alpha_vel) * previousVelocity;
 
 	Accelerometer[0] = motorThread->accelerometer[0];
 	Accelerometer[1] = motorThread->accelerometer[1];
 	Accelerometer[2] = motorThread->accelerometer[2];
+
+	Orientation[0] = motorThread->orientation[0]; // W
+	Orientation[1] = motorThread->orientation[1]; // X
+	Orientation[2] = motorThread->orientation[2]; // Y
+	Orientation[3] = motorThread->orientation[3]; // Z
 
 	motorThread->previousPosition = Position;
 	previousVelocity = Velocity;
@@ -445,7 +453,9 @@ void ControlThread::open_files() {
 	err = fopen_s(&file_pid, "../res/pid.txt", "w");
 	err = fopen_s(&file_CPUtime, "../res/CPUtime.txt", "w");
 	err = fopen_s(&file_looptime, "../res/looptime.txt", "w");
+	err = fopen_s(&file_hebitime, "../res/hebitime.txt", "w");
 	err = fopen_s(&file_accel, "../res/accel.txt", "w");
+	err = fopen_s(&file_orient, "../res/orient.txt", "w");
 }
 
 void ControlThread::close_files()
@@ -465,7 +475,9 @@ void ControlThread::close_files()
 	fclose(file_pid);
 	fclose(file_CPUtime);
 	fclose(file_looptime);
+	fclose(file_hebitime);
 	fclose(file_accel);
+	fclose(file_orient);
 	files_closed = true;
 }
 
@@ -485,7 +497,9 @@ void ControlThread::print2Files() {
 	printNumVector2File(file_pid, pid, 3);
 	printNumVector2File(file_CPUtime, &CPUtime, 1);
 	printNumVector2File(file_looptime, &loop_time, 1);
+	printNumVector2File(file_hebitime, &hebiTime, 1);
 	printNumVector2File(file_accel, Accelerometer, 3);
+	printNumVector2File(file_orient, Orientation, 4);
 }
 
 void ControlThread::printNumVector2File(FILE *file, const double * val, const int size) {

@@ -27,16 +27,23 @@ void MotorThread::run() {
 		efforts[0] = -demandedTorque;
 		group_command.setEffort(efforts);
 		group->sendCommand(group_command);
+		auto t = group_feedback.getTime();
 		auto pos = group_feedback.getPosition();
 		auto vel = group_feedback.getVelocity();
 		auto effort = group_feedback.getEffort();
 		auto accel = group_feedback.getAccelerometer();
+		auto orient = group_feedback[0].mobile().arOrientation().get();
+		time = t;
 		currentPosition = -pos[0];
 		currentVelocity = -vel[0];
 		currentTorque = -effort[0];
 		accelerometer[0] = accel(0,0);
 		accelerometer[1] = accel(0,1);
 		accelerometer[2] = accel(0,2);
+		orientation[0] = orient.getW();
+		orientation[1] = orient.getX();
+		orientation[2] = orient.getY();
+		orientation[3] = orient.getZ();
 		motor_comms_count++;
 		mutex.unlock();
 	}
