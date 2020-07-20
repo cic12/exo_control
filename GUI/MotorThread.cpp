@@ -37,7 +37,6 @@ void MotorThread::run() {
 		accelerometer[0] = accel(0,0);
 		accelerometer[1] = accel(0,1);
 		accelerometer[2] = accel(0,2);
-		std::cout << accelerometer[0] << accelerometer[1] << accelerometer[2] << "\n";
 		motor_comms_count++;
 		mutex.unlock();
 	}

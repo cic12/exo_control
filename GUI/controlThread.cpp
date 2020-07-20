@@ -270,6 +270,7 @@ void ControlThread::runInit() {
 	fuzzyLogic->halt_on = test.halt;
 	if (test.device) {
 		motorThread = new MotorThread(this);
+
 	}
 	// Write test config
 	file_config.open("../res/config.txt");
@@ -302,7 +303,7 @@ void ControlThread::runInit() {
 	}
 	GUIComms("Init Complete\n\n");
 	if (test.device) {
-		motorThread->start();//QThread::LowPriority); // low priority necessary?
+		motorThread->start(QThread::TimeCriticalPriority);//QThread::LowPriority); // low priority necessary?
 		while (!motorThread->motor_initialised);
 	}
 	control_initialised = true;
