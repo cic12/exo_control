@@ -23,7 +23,7 @@
 using namespace std;
 
 struct testParams {
-	bool device = 1;
+	bool device = 0;
 	int human = 0;
 	int analogIn = 0;
 	int control = 0; // None, PID, Imp, MPC
@@ -52,15 +52,15 @@ struct modelParams {
 	double B_h[5] =     { 0, 0.1676 , 0.1676 , 2      , 2       };
 	double A_h[5] =     { 0, 0      , 0      , 0      , 0       };
 	double tau_g_h[5] = { 0, 14.256 , 9.4162 , 7.5008 , 10.5946 };
-	double J = 0.0377;
-	double B = 0.0207;
-	double A = 0.0000;
-	double tau_g = 1.7536;
+	double J_e = 0.0377, J = 0;
+	double B_e = 0.0207, B = 0;
+	double A_e = 0.0000, A = 0;
+	double tau_g_e = 1.7536, tau_g = 0;
 };
 
 struct mpcParams {
 	double JScale = 10000;
-	double w_theta = 100000/JScale, w_tau = 1/JScale;
+	double w_theta = 10000/JScale, w_tau = 10/JScale;
 	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 
@@ -74,7 +74,6 @@ struct mpcParams {
 };
 
 struct pidImpParams {
-	int type = 0;
 	double Kp = 0, Ki = 0, Kd = 0, Kff_A = 0, Kff_B = 0, Kff_J = 0, Kff_tau_g = 0, alpha_err = 0.05, lim = 20;
 };
 
@@ -95,6 +94,8 @@ public:
 
 	void run();
 	void PIDImpInit();
+	void mpcInit();
+	void modelParamSet();
 
 	bool Stop = false;
 	bool control_initialised = false;
@@ -133,6 +134,8 @@ private:
 	double error_prior = 0;
 	double integral_prior = 0;
 	double derivative_prior = 0;
+	double vel_error_prior = 0;
+	double vel_ref_prior = 0;
 
 	int time_counter = 0;
 
@@ -153,13 +156,14 @@ private:
 
 	double evec[4] = {};
 	double pid[3] = {};
+	double imp[5] = {};
 
 	FILE * file_x, * file_xdes, 
 		* file_u, * file_udes,
 		* file_tauh, * file_tauhest, 
 		* file_t, * file_mode, * file_Ncfct,
 		* file_mf, * file_rule, * file_emg, 
-		*file_pid, *file_CPUtime, *file_looptime,
+		*file_pid, *file_imp, *file_CPUtime, *file_looptime,
 		* file_hebitime, *file_accel;
 	ofstream file_config;
 	ofstream test_name;
@@ -179,8 +183,8 @@ private:
 	void runInit();
 	void interactionFunctions();
 
-	void mpcInit();
-	double PIDImpControl(double theta, double theta_r, pidImpParams pidImp);
+	double PIDControl(double theta, double theta_r, pidImpParams pidImp);
+	double ImpControl(double theta, double theta_r, double dtheta, double dtheta_r, pidImpParams pidImp);
 	void open_files();
 	void close_files();
 	void print2Files();

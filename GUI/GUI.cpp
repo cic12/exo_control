@@ -316,10 +316,14 @@ void GUI::setParams() // can update params mid-trial
 	controlThread->test.halt = (controlThread->test.config == 3);
 
 	// Model Params
+
 	controlThread->model.A = ui.A_box->value(); //+controlThread->model.A_h[ui.humanBox->currentIndex()];
 	controlThread->model.B = ui.B_box->value(); //+controlThread->model.B_h[ui.humanBox->currentIndex()];
 	controlThread->model.J = ui.J_box->value(); // +controlThread->model.J_h[ui.humanBox->currentIndex()];
 	controlThread->model.tau_g = ui.tau_g_box->value(); // +controlThread->model.tau_g_h[ui.humanBox->currentIndex()];
+
+	// FLA
+	controlThread->fuzzyLogic->fis.pA = ui.pA_box->value();
 
 	controlThread->mpc.pSys[0] = controlThread->model.A;
 	controlThread->mpc.pSys[1] = controlThread->model.B;
@@ -404,10 +408,12 @@ void GUI::on_btn_run_sims_clicked()
 		run_sims = true;
 		QEventLoop loop;
 		connect(this, &GUI::GUIDone, &loop, &QEventLoop::quit);
-		int start = 1;
-		int finish = controlThread->name.length();
-		for (int i = start; i < finish; i++) {
-			ui.testBox->setValue(i);
+		//int start = 1;
+		//int finish = controlThread->name.length();
+		//for (int i = start; i < finish; i++) {
+		int rapid_response[5] = { 2 , 7 , 12 , 17 , 22 };
+		for (int i = 0; i < 5; i++){
+			ui.testBox->setValue(rapid_response[i]);
 			on_btn_start_clicked();
 			loop.exec();
 			on_btn_save_clicked();
@@ -440,6 +446,7 @@ void GUI::on_testBox_changed()
 
 		controlThread->test.name = controlThread->name[test];
 
+		// Configs
 		ui.deviceBox->setCheckState(Qt::CheckState(controlThread->test.device * 2));
 		ui.humanBox->setCurrentIndex(controlThread->test.human);
 		ui.analogInBox->setCurrentIndex(controlThread->test.analogIn);
@@ -449,7 +456,22 @@ void GUI::on_testBox_changed()
 		ui.condBox->setCurrentIndex(controlThread->test.cond);
 		ui.timeBox->setValue(controlThread->test.T);
 
+		// Model
+		ui.A_box->setValue(controlThread->model.A_e + controlThread->model.A_h[ui.humanBox->currentIndex()]);
+		ui.B_box->setValue(controlThread->model.B_e + controlThread->model.B_h[ui.humanBox->currentIndex()]);
+		ui.J_box->setValue(controlThread->model.J_e + controlThread->model.J_h[ui.humanBox->currentIndex()]);
+		ui.tau_g_box->setValue(controlThread->model.tau_g_e + controlThread->model.tau_g_h[ui.humanBox->currentIndex()]);
+
+		// FLA
+		ui.pA_box->setValue(controlThread->fuzzyLogic->fis.pA);
+
 		controlThread->test.sim_cond = (ui.trajBox->currentText() + "_" + ui.condBox->currentText() + ".csv").toStdString();
+
+		controlThread->modelParamSet();
+		controlThread->PIDImpInit();
+		controlThread->mpcInit();
+
+		setBoxValues();
 
 		cout << controlThread->name[test] << "\n";
 		cout << controlThread->test.device;

@@ -8,8 +8,8 @@ double FIS::sigmf(double x, double a, double c) {
 	return 1 / (1 + exp(-a * (x - c)));
 }
 
-double FIS::hTorqueEst(double e1, double e2, double b1, double b2, double b3) {
-	return (b1 + b2 * e1 + b3 * e2);
+double FIS::hTorqueEst(double * e, double * b) {
+	return (b[0] + b[1] * e[0] + b[2] * e[1] + b[3] * e[2] + b[4] * e[3]);
 }
 
 double FIS::assistanceMode(double Tau_h, double x_des, fisParams fis)

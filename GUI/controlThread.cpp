@@ -10,11 +10,8 @@ ControlThread::ControlThread(QObject *parent, bool run_sims)
 void ControlThread::run()
 {
 	runInit();
-
 	last_time = clock();
-
 	start_time = last_time;
-
 	while (!Stop && t < test.T - mpc.dt) {
 		control_loop();
 	}
@@ -22,7 +19,7 @@ void ControlThread::run()
 	quit();
 }
 
-void ControlThread::mpcInit(){
+void ControlThread::mpcInit(){	
 	mpc.pSys[0] = model.A;
 	mpc.pSys[1] = model.B;
 	mpc.pSys[2] = model.J;
@@ -56,50 +53,65 @@ void ControlThread::mpcInit(){
 
 void ControlThread::PIDImpInit()
 {
+	pidImpParams temp;
+	pidImp = temp;
 	if (test.control == 1) { // PID (w/ Human)
 		if (test.device) {
 			pidImp.Kp = 150;
 			pidImp.Ki = 200;
 			pidImp.Kd = 3.5;
+			pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
 		}
 		else {
 			pidImp.Kp = 100;
 			pidImp.Ki = 50;
 			pidImp.Kd = 10;
+			pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
 		}
 	}
 	else if (test.control == 2) { // Imp
-		pidImp.type = 1;
-		pidImp.Kp = 150;
-		pidImp.Ki = 200;
-		pidImp.Kd = 3.5;
-		pidImp.Kff_A = 0;
-		pidImp.Kff_B = 0;
-		pidImp.Kff_J = 0;
-		pidImp.Kff_tau_g = 20; // derive from param ID
-	}
-	else {
-		pidImpParams temp;
-		pidImp = temp;
+		pidImp.Kp = 100;
+		pidImp.Kd = 10;
+		pidImp.Kff_J = model.J;// +model.J_h[test.human];
+		pidImp.Kff_B = model.B;// +model.B_h[test.human];
+		pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
 	}
 }
 
-double ControlThread::PIDImpControl(double theta, double theta_r, pidImpParams pidImp)
+double ControlThread::PIDControl(double theta, double theta_r, pidImpParams pidImp)
 {
-	// pidImp.type: 1 - PID, 2 - Imp
 	double error = error_prior * (1 - pidImp.alpha_err) + (theta_r - theta) * pidImp.alpha_err;
 	if (iMPC == 1) {
 		error_prior = error;
 	}
-	double integral = integral_prior + error * 0.002;
-	double derivative = (error - error_prior) / 0.002;
-	double u = pidImp.Kp * error + pidImp.Ki * integral + pidImp.Kd * derivative + pidImp.Kff_tau_g * sin(theta); // for PID use linear ff, use sin() for impedance
+	double integral = integral_prior + error * mpc.dt;
+	double derivative = (error - error_prior) / mpc.dt;
+	double u = pidImp.Kp * error + pidImp.Ki * integral + pidImp.Kd * derivative + pidImp.Kff_tau_g * theta_r;
+	pid[0] = error;
+	pid[1] = integral;
+	pid[2] = derivative; 
 	error_prior = error;
 	integral_prior = integral;
 	derivative_prior = derivative;
-	pid[0] = error_prior;
-	pid[1] = integral_prior;
-	pid[2] = derivative_prior;
+	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
+}
+
+double ControlThread::ImpControl(double theta, double theta_r, double dtheta, double dtheta_r, pidImpParams pidImp)
+{
+	double pos_error = error_prior * (1 - pidImp.alpha_err) + (theta_r - theta) * pidImp.alpha_err;
+	double vel_error = vel_error_prior * (1 - pidImp.alpha_err) + (dtheta_r - dtheta) * pidImp.alpha_err;
+	double ff_J = (dtheta_r - vel_ref_prior) / mpc.dt;
+	double ff_B = dtheta_r;
+	double ff_tau_g = sin(theta_r);
+	double u = pidImp.Kp * pos_error + pidImp.Kd * vel_error + pidImp.Kff_J * ff_J + pidImp.Kff_B * ff_B + pidImp.Kff_tau_g * ff_tau_g;
+	imp[0] = pos_error;
+	imp[1] = vel_error;
+	imp[2] = ff_J;
+	imp[3] = ff_B;
+	imp[4] = ff_tau_g;
+	error_prior = pos_error;
+	vel_error_prior = vel_error;
+	vel_ref_prior = dtheta_r;
 	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
 }
 
@@ -119,15 +131,17 @@ double ControlThread::refTrajectory()
 
 double ControlThread::controlInput()
 {
-	if (test.control == 1 || test.control == 2) { // PID/Imp/ParamID argument
-		if (iMPC > 0) { // remove conditional by changing initial conditions
-			return PIDImpControl(grampc_->sol->xnext[0], mpc.xdes[0], pidImp);
-		}
+	//if (iMPC > 0) { // remove conditional by changing initial conditions
+	if (test.control == 1) { // PID/Imp/ParamID argument
+		return PIDControl(Position, mpc.xdes[0], pidImp);
+	}
+	else if (test.control == 2) {
+		return ImpControl(Position, mpc.xdes[0], Velocity, mpc.xdes[1], pidImp);
 	}
 	else if (test.control == 3) {
 		cpu_timer->start();
 		grampc_run(grampc_);
-		CPUtime = cpu_timer->nsecsElapsed()/1e6;
+		CPUtime = cpu_timer->nsecsElapsed() / 1e6;
 		return *grampc_->sol->unext;
 	}
 	return 0.0;
@@ -255,10 +269,7 @@ void ControlThread::testConfigProcess()
 void ControlThread::threadInit()
 {
 	testConfigProcess();
-	model.A += model.A_h[test.human];
-	model.B += model.B_h[test.human];
-	model.J += model.J_h[test.human];
-	model.tau_g += model.tau_g_h[test.human];
+	modelParams();
 	if (test.control == 1 || test.control == 2) {
 		PIDImpInit();
 	}
@@ -273,7 +284,6 @@ void ControlThread::runInit() {
 	fuzzyLogic->halt_on = test.halt;
 	if (test.device) {
 		motorThread = new MotorThread(this);
-
 	}
 	// Write test config
 	file_config.open("../res/config.txt");
@@ -353,7 +363,7 @@ void ControlThread::control_loop() {
 		}
 		else { // Sim
 			exoTorque = exoTorqueDemand;
-			Torque = exoTorque + humanTorque; // tau_h from sim
+			Torque = exoTorque;// +humanTorque; // tau_h from sim
 			plantSim(Torque);
 		}
 
@@ -422,7 +432,7 @@ void ControlThread::interactionFunctions() {
 		grampc_->sol->xnext[1] = Velocity;
 	}
 	if (test.HTE) {
-		humanTorqueEst = fuzzyLogic->hTorqueEst(evec[0], evec[1], fuzzyLogic->fis.b1, fuzzyLogic->fis.b2, fuzzyLogic->fis.b3);
+		humanTorqueEst = fuzzyLogic->hTorqueEst(evec, fuzzyLogic->fis.b);
 	}
 	if (test.FLA) {
 		assistanceMode = fuzzyLogic->assistanceMode(humanTorqueEst, mpc.xdes[1], fuzzyLogic->fis);
@@ -446,6 +456,7 @@ void ControlThread::open_files() {
 	err = fopen_s(&file_rule, "../res/rule.txt", "w");
 	err = fopen_s(&file_emg, "../res/emg.txt", "w");
 	err = fopen_s(&file_pid, "../res/pid.txt", "w");
+	err = fopen_s(&file_imp, "../res/imp.txt", "w");
 	err = fopen_s(&file_CPUtime, "../res/CPUtime.txt", "w");
 	err = fopen_s(&file_looptime, "../res/looptime.txt", "w");
 	err = fopen_s(&file_hebitime, "../res/hebitime.txt", "w");
@@ -467,6 +478,7 @@ void ControlThread::close_files()
 	fclose(file_rule);
 	fclose(file_emg);
 	fclose(file_pid);
+	fclose(file_imp);
 	fclose(file_CPUtime);
 	fclose(file_looptime);
 	fclose(file_hebitime);
@@ -488,6 +500,7 @@ void ControlThread::print2Files() {
 	printNumVector2File(file_rule, fuzzyLogic->rule, 4);
 	printNumVector2File(file_emg, evec, 4);
 	printNumVector2File(file_pid, pid, 3);
+	printNumVector2File(file_imp, imp, 5);
 	printNumVector2File(file_CPUtime, &CPUtime, 1);
 	printNumVector2File(file_looptime, &loop_time, 1);
 	printNumVector2File(file_hebitime, &hebiTime, 1);
@@ -524,4 +537,12 @@ void ControlThread::updatePlotVars()
 		vars.muR = fuzzyLogic->muR;
 		mutex.unlock();
 	}
+}
+
+void ControlThread::modelParamSet()
+{
+	model.A = model.A_e + model.A_h[test.human];
+	model.B = model.B_e + model.B_h[test.human];
+	model.J = model.J_e + model.J_h[test.human];
+	model.tau_g = model.tau_g_e + model.tau_g_h[test.human];
 }

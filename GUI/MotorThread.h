@@ -34,6 +34,4 @@ private:
 	Lookup lookup;
 	std::shared_ptr<hebi::Group> group;
 	QMutex mutex;
-//signals:
-//	void motor_run();
 };
