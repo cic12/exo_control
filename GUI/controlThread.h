@@ -60,8 +60,8 @@ struct modelParams {
 
 struct mpcParams {
 	double JScale = 10000;
-	double w_theta = 10000/JScale, w_tau = 10/JScale;
-	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
+	double w_theta = 500000/JScale, w_tau = 100/JScale;
+	double x1min = 0, x1max = 0.8, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 
 	double rwsReferenceIntegration[2 * NX] = {};
