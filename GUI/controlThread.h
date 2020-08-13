@@ -23,12 +23,12 @@
 using namespace std;
 
 struct testParams {
-	bool device = 1;
+	bool device = 0;
 	int human = 0;
 	int analogIn = 0;
-	int control = 3; // None, PID, Imp, MPC
+	int control = 0; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 2;
+	int traj = 0;
 	int cond = 0;
 
 	double T = 24;

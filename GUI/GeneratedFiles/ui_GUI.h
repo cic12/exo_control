@@ -480,6 +480,7 @@ public:
         QObject::connect(controlBox, SIGNAL(currentIndexChanged(int)), GUIClass, SLOT(on_controlBox_changed()));
         QObject::connect(btn_run_sims, SIGNAL(clicked()), GUIClass, SLOT(on_btn_run_sims_clicked()));
         QObject::connect(testBox, SIGNAL(valueChanged(int)), GUIClass, SLOT(on_testBox_changed()));
+        QObject::connect(humanBox, SIGNAL(currentIndexChanged(QString)), GUIClass, SLOT(on_humanBox_changed()));
 
         analogInBox->setCurrentIndex(-1);
         controlBox->setCurrentIndex(-1);

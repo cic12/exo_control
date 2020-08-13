@@ -488,7 +488,19 @@ void GUI::on_testBox_changed()
 	}
 }
 
+void GUI::on_humanBox_changed()
+{
+	// Human
+	controlThread->test.human = ui.humanBox->currentIndex();
+	
+	controlThread->modelParamSet();
 
+	// Model
+	ui.A_box->setValue(controlThread->model.A);
+	ui.B_box->setValue(controlThread->model.B);
+	ui.J_box->setValue(controlThread->model.J);
+	ui.tau_g_box->setValue(controlThread->model.tau_g);
+}
 
 void GUI::onGUIComms(QString message)
 {

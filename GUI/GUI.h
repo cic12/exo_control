@@ -44,6 +44,7 @@ private slots:
 	void on_btn_run_sims_clicked();
 	void on_controlBox_changed();
 	void on_testBox_changed();
+	void on_humanBox_changed();
 public slots:
 	void onGUIComms(QString);
 	void onTimeout();

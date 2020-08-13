@@ -1409,6 +1409,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>humanBox</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>GUIClass</receiver>
+   <slot>on_humanBox_changed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>65</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>500</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_btn_start_clicked()</slot>
@@ -1418,5 +1434,6 @@
   <slot>on_controlBox_changed()</slot>
   <slot>on_btn_run_sims_clicked()</slot>
   <slot>on_testBox_changed()</slot>
+  <slot>on_humanBox_changed()</slot>
  </slots>
 </ui>
