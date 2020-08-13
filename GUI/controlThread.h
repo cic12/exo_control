@@ -135,7 +135,7 @@ private:
 	double integral_prior = 0;
 	double derivative_prior = 0;
 	double vel_error_prior = 0;
-	double vel_ref_prior = 0;
+	double vel_prior = 0;
 
 	int time_counter = 0;
 

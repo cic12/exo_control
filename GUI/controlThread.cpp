@@ -100,9 +100,9 @@ double ControlThread::ImpControl(double theta, double theta_r, double dtheta, do
 {
 	double pos_error = error_prior * (1 - pidImp.alpha_err) + (theta_r - theta) * pidImp.alpha_err;
 	double vel_error = vel_error_prior * (1 - pidImp.alpha_err) + (dtheta_r - dtheta) * pidImp.alpha_err;
-	double ff_J = (dtheta_r - vel_ref_prior) / mpc.dt;
-	double ff_B = dtheta_r;
-	double ff_tau_g = sin(theta_r);
+	double ff_J = 0;// (dtheta - vel_prior) / mpc.dt;
+	double ff_B = dtheta;
+	double ff_tau_g = sin(theta);
 	double u = pidImp.Kp * pos_error + pidImp.Kd * vel_error + pidImp.Kff_J * ff_J + pidImp.Kff_B * ff_B + pidImp.Kff_tau_g * ff_tau_g;
 	imp[0] = pos_error;
 	imp[1] = vel_error;
@@ -111,7 +111,7 @@ double ControlThread::ImpControl(double theta, double theta_r, double dtheta, do
 	imp[4] = ff_tau_g;
 	error_prior = pos_error;
 	vel_error_prior = vel_error;
-	vel_ref_prior = dtheta_r;
+	vel_prior = dtheta;
 	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
 }
 
