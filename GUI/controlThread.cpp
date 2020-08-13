@@ -55,17 +55,26 @@ void ControlThread::PIDImpInit()
 {
 	pidImpParams temp;
 	pidImp = temp;
-	if (test.control == 1) { // PID // (w/ Human)
-		pidImp.Kp = 20; // 150
-		pidImp.Ki = 10; // 200
-		pidImp.Kd = 2; // 3.5
-		pidImp.Kff_tau_g = model.tau_g;
-	} else if (test.control == 2) { // Imp
+	if (test.control == 1) { // PID (w/ Human)
+		//if (test.device) {
+			pidImp.Kp = 20; // 150
+			pidImp.Ki = 10; // 200
+			pidImp.Kd = 2; // 3.5
+			pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
+		//}
+		//else {
+		//	pidImp.Kp = 100;
+		//	pidImp.Ki = 50;
+		//	pidImp.Kd = 10;
+		//	pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
+		//}
+	}
+	else if (test.control == 2) { // Imp
 		pidImp.Kp = 5;
 		pidImp.Kd = 1;
-		pidImp.Kff_J = model.J;
-		pidImp.Kff_B = model.B;
-		pidImp.Kff_tau_g = model.tau_g;
+		pidImp.Kff_J = model.J;// +model.J_h[test.human];
+		pidImp.Kff_B = model.B;// +model.B_h[test.human];
+		pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
 	}
 }
 
@@ -296,8 +305,12 @@ void ControlThread::runInit() {
 		TMSi->daq->daq_aiFile.open("../res/aivec.txt"); // rename to aivec
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
-	}
-	else if (!test.device) {
+	} else if (test.device && test.analogIn == 2) {
+		//AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, 1000);
+		//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
+		//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
+		//AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
+	} else if (!test.device) {
 		simProcess();
 		if (test.analogIn == 1) { // Sim EMG
 			GUIComms(QString("EMG Simulation: ") + QString::fromStdString(test.e_path + test.sim_cond) + "\n\n");
@@ -389,6 +402,16 @@ void ControlThread::control_stop() {
 		TMSi->endStream();
 		TMSi->reset();
 		TMSi->daq->daq_aiFile.close();
+	}
+	else if (test.device && test.analogIn == 2) {
+		//if (AItaskHandle != 0) {
+		//	DAQmxStopTask(AItaskHandle);
+		//	DAQmxClearTask(AItaskHandle);
+		//}
+		//if (AOtaskHandle != 0) {
+		//	DAQmxStopTask(AOtaskHandle);
+		//	DAQmxClearTask(AOtaskHandle);
+		//}
 	}
 	Stop = 1;
 	if (test.device) {

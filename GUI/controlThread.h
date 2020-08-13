@@ -169,6 +169,9 @@ private:
 	ofstream file_config;
 	ofstream test_name;
 
+	//TaskHandle AItaskHandle;
+	//TaskHandle AOtaskHandle;
+
 	void simProcess();
 	void testConfigProcess();
 	void control_loop();
