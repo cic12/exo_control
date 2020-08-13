@@ -85,6 +85,8 @@ void GUI::initBoxes()
 	// FLA
 	ui.pA_box->setValue(controlThread->fuzzyLogic->fis.pA);
 
+	// 
+
 	boxes_initialised = true;
 }
 

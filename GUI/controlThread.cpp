@@ -57,9 +57,9 @@ void ControlThread::PIDImpInit()
 	pidImp = temp;
 	if (test.control == 1) { // PID (w/ Human)
 		if (test.device) {
-			pidImp.Kp = 150;
-			pidImp.Ki = 200;
-			pidImp.Kd = 3.5;
+			pidImp.Kp = 20; // 150
+			pidImp.Ki = 10; // 200
+			pidImp.Kd = 2; // 3.5
 			pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
 		}
 		else {
@@ -70,8 +70,8 @@ void ControlThread::PIDImpInit()
 		}
 	}
 	else if (test.control == 2) { // Imp
-		pidImp.Kp = 100;
-		pidImp.Kd = 10;
+		pidImp.Kp = 5;
+		pidImp.Kd = 1;
 		pidImp.Kff_J = model.J;// +model.J_h[test.human];
 		pidImp.Kff_B = model.B;// +model.B_h[test.human];
 		pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
