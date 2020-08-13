@@ -23,15 +23,15 @@
 using namespace std;
 
 struct testParams {
-	bool device = 0;
+	bool device = 1;
 	int human = 0;
 	int analogIn = 0;
-	int control = 0; // None, PID, Imp, MPC
+	int control = 3; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 0;
+	int traj = 2;
 	int cond = 0;
 
-	double T = 4;
+	double T = 24;
 
 	string name = "None";
 
@@ -60,13 +60,14 @@ struct modelParams {
 
 struct mpcParams {
 	double JScale = 10000;
-	double w_theta = 500000/JScale/100, w_tau = 100/JScale;
+	double w_theta = 50000/JScale, w_tau = 100/JScale;
 	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 
 	double rwsReferenceIntegration[2 * NX] = {};
 	const double x0[NX] = { 0.2 , 0.0 , 0.0 , 1.0 };
 	double xdes[NX] = { 0.2 , 0.0 , 0.0 , 1.0 };
+	double xdes_shifted[NX] = { 0.0, 0.0, 0.0, 1.0 };
 	const double u0[NU] = { 0.0 }, udes[NU] = { 0.0 }, umin[NU] = { -20.0 }, umax[NU] = { 20.0 }; // set in inequality constraints
 	const double Thor = 0.2, dt = 0.002;
 	const int Nhor = 20, MaxGradIter = 4, MaxMultIter = 6;
@@ -122,7 +123,7 @@ public:
 private:
 	bool sim_time;
 
-	double hebiTime = 0, Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.1, xdes_previous = 0.2;
+	double hebiTime = 0, Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.1, xdes_previous = 0.2, xdes_shifted_previous = 0.2;
 	double Accelerometer[3] = { 0 , 0 , 0 };
 	double Torque = 0;
 	double exoTorque = 0, exoTorqueDemand = 0;
@@ -174,7 +175,7 @@ private:
 	void control_stop();
 
 	void simParse();
-	double refTrajectory();
+	double refTrajectory(double t);
 	double controlInput();
 	void deviceUpdate();
 	void plantSim(double tau);

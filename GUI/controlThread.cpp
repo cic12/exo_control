@@ -115,13 +115,13 @@ double ControlThread::ImpControl(double theta, double theta_r, double dtheta, do
 	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
 }
 
-double ControlThread::refTrajectory()
+double ControlThread::refTrajectory(double time)
 {
 	if (test.traj == 0) {
 		return mpc.xdes[0];
 	}
 	else if (test.traj < 4) { // L, M, H
-		return (cos((test.freq[test.traj - 1] * 2 * M_PI * (t - t_halt)) - M_PI)) / 2 + 0.7;
+		return (cos((test.freq[test.traj - 1] * 2 * M_PI * (time - t_halt)) - M_PI)) / 2 + 0.7;
 	}
 	else if (test.traj < 9) { // P1, P2, P3, P4, P5
 		return test.pos[test.traj - 4];
@@ -273,6 +273,7 @@ void ControlThread::threadInit()
 	if (test.control == 1 || test.control == 2) {
 		PIDImpInit();
 	}
+	modelParamSet();
 	mpcInit();
 	fuzzyLogic = new FIS(test.halt); // rename FIS class to fla
 	cpu_timer = new QElapsedTimer();
@@ -345,13 +346,18 @@ void ControlThread::control_loop() {
 	{
 		loop_timer->start();
 		// Trajectory
-		mpc.xdes[0] = refTrajectory();
+		mpc.xdes[0] = refTrajectory(t);
+		mpc.xdes_shifted[0] = refTrajectory(t + 0.05);
 		mpc.xdes[1] = (mpc.xdes[0] - xdes_previous) / mpc.dt;
+		mpc.xdes_shifted[1] = (mpc.xdes_shifted[0] - xdes_shifted_previous) / mpc.dt;
+
 		if (iMPC == 0) {
 			mpc.xdes[1] = 0;
+			mpc.xdes_shifted[1] = 0;
 		}
-		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes);
+		grampc_setparam_real_vector(grampc_, "xdes", mpc.xdes_shifted); // MPC reference shifted (shift not displayed in GUI)
 		xdes_previous = mpc.xdes[0];
+		xdes_shifted_previous = mpc.xdes_shifted[0];
 
 		// Control
 		exoTorqueDemand = controlInput();
