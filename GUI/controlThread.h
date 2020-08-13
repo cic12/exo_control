@@ -60,8 +60,8 @@ struct modelParams {
 
 struct mpcParams {
 	double JScale = 10000;
-	double w_theta = 500000/JScale, w_tau = 100/JScale;
-	double x1min = 0, x1max = 0.8, x2min = -2, x2max = 2;
+	double w_theta = 500000/JScale/100, w_tau = 100/JScale;
+	double x1min = 0, x1max = 1.4, x2min = -2, x2max = 2;
 	double pSys[10] = { 0, 0, 0, 0, w_theta, w_tau, x1min, x1max, x2min, x2max };
 
 	double rwsReferenceIntegration[2 * NX] = {};
@@ -122,7 +122,7 @@ public:
 private:
 	bool sim_time;
 
-	double hebiTime = 0, Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.01, xdes_previous = 0.2;
+	double hebiTime = 0, Position = 0, Velocity = 0, previousVelocity = 0, alpha_vel = 0.1, xdes_previous = 0.2;
 	double Accelerometer[3] = { 0 , 0 , 0 };
 	double Torque = 0;
 	double exoTorque = 0, exoTorqueDemand = 0;
