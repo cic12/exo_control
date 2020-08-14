@@ -4,7 +4,7 @@
 char errBuff[2048] = { '\0' };
 int32 error = 0;
 ofstream aiFile;
-float64 AIdata[2] = { 0 , 0 }, AIm[2] = { 0 , 0 }, AOdata[2] = { 3.3 , 3.3 }, offset[2] = { -0 , -0 };
+float64 AIdata[4] = { 0 , 0 , 0, 0 }, AIm[4] = { 0 , 0 , 0 , 0 }, AOdata[4] = { 3.3 , 3.3 , 3.3 , 3.3 }, offset[4] = { 0 , 0 , 0 , 0 };
 #endif // DAQmx
 
 DAQ::DAQ() {
@@ -91,10 +91,14 @@ double DAQ::noiseLimEMG(double emg, double lim) {
 TaskHandle DAQmxAIinit(int32 error, char& errBuff, TaskHandle AItaskHandle, int AIsamplingRate) {
 
 	DAQmxErrChk(DAQmxCreateTask("MMG in", &AItaskHandle));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "ai0diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "ai1diff", DAQmx_Val_Diff, -0.2, 0.2, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai0", "ai0diff", DAQmx_Val_Diff, 0, 1.5, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai1", "ai1diff", DAQmx_Val_Diff, 0, 1.5, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai2", "ai2diff", DAQmx_Val_Diff, 0, 1.5, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAIVoltageChan(AItaskHandle, "Dev1/ai3", "ai3diff", DAQmx_Val_Diff, 0, 1.5, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxCfgSampClkTiming(AItaskHandle, "", AIsamplingRate, DAQmx_Val_Rising, DAQmx_Val_ContSamps, 1));
 	DAQmxErrChk(DAQmxRegisterEveryNSamplesEvent(AItaskHandle, DAQmx_Val_Acquired_Into_Buffer, 1, 0, EveryNCallback, NULL));
+
+	aiFile.open("../res/aivec.txt");
 
 Error:
 	if (DAQmxFailed(error)) {
@@ -109,8 +113,7 @@ Error:
 TaskHandle DAQmxAOinit(float64& AOdata, int32 error, char& errBuff, TaskHandle AOtaskHandle) {
 
 	DAQmxErrChk(DAQmxCreateTask("3V3 Out", &AOtaskHandle));
-	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
-	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao1", "", -10.0, 10.0, DAQmx_Val_Volts, NULL));
+	DAQmxErrChk(DAQmxCreateAOVoltageChan(AOtaskHandle, "Dev1/ao0", "", 3, 4, DAQmx_Val_Volts, NULL));
 	DAQmxErrChk(DAQmxWriteAnalogF64(AOtaskHandle, 1, 1, 10.0, DAQmx_Val_GroupByChannel, &AOdata, NULL, NULL));
 
 Error:
@@ -143,13 +146,15 @@ int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEvent
 	char    errBuff[2048] = { '\0' };
 	int32   read = 0;
 
-	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 2, &read, NULL));
+	DAQmxErrChk(DAQmxReadAnalogF64(taskHandle, 1, 10.0, DAQmx_Val_GroupByScanNumber, AIdata, 4, &read, NULL));
 
 	//AIm[0] = emgProcess(AIdata[0], 0);
 	//AIm[1] = emgProcess(AIdata[1], 1);
+	//AIm[2] = emgProcess(AIdata[2], 2);
+	//AIm[3] = emgProcess(AIdata[3], 3);
 
 	if (read > 0) {
-		aiFile << AIdata[0] << "," << AIdata[1] << "," << AIm[0] << "," << AIm[1] << "\n";
+		aiFile << AIdata[0] << "," << AIdata[1] << "," << AIdata[2] << "," << AIdata[3] << "\n";
 	}
 
 Error:
@@ -160,5 +165,10 @@ Error:
 		throw errBuff;
 	}
 	return 0;
+}
+
+void DAQmxCloseStream()
+{
+	aiFile.close();
 }
 #endif // DAQmx

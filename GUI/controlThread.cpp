@@ -302,10 +302,10 @@ void ControlThread::runInit() {
 	test_name.close();
 	if (test.device && test.analogIn == 1) { // TMSi
 		TMSi = new TMSiController();
-		TMSi->daq->daq_aiFile.open("../res/aivec.txt"); // rename to aivec
+		TMSi->daq->daq_aiFile.open("../res/aivec.txt");
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
-	} else if (test.device && test.analogIn == 2) {
+	} else if (test.analogIn == 2) { // DAQmx
 #ifdef DAQmx
 		AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, 1000);
 		AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
@@ -400,16 +400,17 @@ void ControlThread::control_loop() {
 void ControlThread::control_stop() {
 	end_time = clock();
 	double duration = ((double)end_time - (double)start_time);
-	if (test.device && test.analogIn == 1) { // ai
+	if (test.device && test.analogIn == 1) { // TMSi
 		TMSi->endStream();
 		TMSi->reset();
 		TMSi->daq->daq_aiFile.close();
 	}
-	else if (test.device && test.analogIn == 2) {
+	else if (test.analogIn == 2) {
 #ifdef DAQmx
 		if (AItaskHandle != 0) {
 			DAQmxStopTask(AItaskHandle);
 			DAQmxClearTask(AItaskHandle);
+			DAQmxCloseStream();
 		}
 		if (AOtaskHandle != 0) {
 			DAQmxStopTask(AOtaskHandle);

@@ -1,7 +1,7 @@
 #ifndef DAQ_H_
 #define DAQ_H_
 
-//#define DAQmx
+#define DAQmx
 
 #ifdef DAQmx
 #include "NIDAQmx.h"
@@ -10,10 +10,11 @@ TaskHandle DAQmxAIinit(int32 error, char& errBuff, TaskHandle AItaskHandle, int 
 TaskHandle DAQmxAOinit(float64 & AOdata, int32 error, char& errBuff, TaskHandle AOtaskHandle);
 TaskHandle DAQmxAstart(int32 error, char& errBuff, TaskHandle taskHandle);
 int32 CVICALLBACK EveryNCallback(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void* callbackData);
-extern float64 AIdata[2], AIm[2];
+void DAQmxCloseStream();
+extern float64 AIdata[4], AIm[4];
 extern int32 error;
 extern char errBuff[2048];
-extern float64 AOdata[2];
+extern float64 AOdata[4];
 #endif // DAQmx
 
 #include <fstream>

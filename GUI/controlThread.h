@@ -20,6 +20,8 @@
 #define NU  	1
 #define NH      4
 
+#define DAQmx
+
 using namespace std;
 
 struct testParams {

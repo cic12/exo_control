@@ -33,7 +33,7 @@ void GUI::initBoxes()
 
 	ui.analogInBox->addItem("None");
 	ui.analogInBox->addItem("TMSi");
-	ui.analogInBox->addItem("Simulated");
+	ui.analogInBox->addItem("DAQmx");
 	ui.analogInBox->setCurrentIndex(controlThread->test.analogIn);
 
 	ui.controlBox->addItem("None");
