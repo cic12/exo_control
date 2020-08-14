@@ -306,10 +306,12 @@ void ControlThread::runInit() {
 		TMSi->startStream();
 		TMSi->setRefCalculation(1);
 	} else if (test.device && test.analogIn == 2) {
-		//AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, 1000);
-		//AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
-		//AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
-		//AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
+#ifdef DAQmx
+		AItaskHandle = DAQmxAIinit(error, *errBuff, AItaskHandle, 1000);
+		AOtaskHandle = DAQmxAOinit(*AOdata, error, *errBuff, AOtaskHandle);
+		AOtaskHandle = DAQmxAstart(error, *errBuff, AOtaskHandle);
+		AItaskHandle = DAQmxAstart(error, *errBuff, AItaskHandle);
+#endif
 	} else if (!test.device) {
 		simProcess();
 		if (test.analogIn == 1) { // Sim EMG
@@ -404,14 +406,16 @@ void ControlThread::control_stop() {
 		TMSi->daq->daq_aiFile.close();
 	}
 	else if (test.device && test.analogIn == 2) {
-		//if (AItaskHandle != 0) {
-		//	DAQmxStopTask(AItaskHandle);
-		//	DAQmxClearTask(AItaskHandle);
-		//}
-		//if (AOtaskHandle != 0) {
-		//	DAQmxStopTask(AOtaskHandle);
-		//	DAQmxClearTask(AOtaskHandle);
-		//}
+#ifdef DAQmx
+		if (AItaskHandle != 0) {
+			DAQmxStopTask(AItaskHandle);
+			DAQmxClearTask(AItaskHandle);
+		}
+		if (AOtaskHandle != 0) {
+			DAQmxStopTask(AOtaskHandle);
+			DAQmxClearTask(AOtaskHandle);
+		}
+#endif
 	}
 	Stop = 1;
 	if (test.device) {

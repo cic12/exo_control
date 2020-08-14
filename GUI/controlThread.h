@@ -169,8 +169,10 @@ private:
 	ofstream file_config;
 	ofstream test_name;
 
-	//TaskHandle AItaskHandle;
-	//TaskHandle AOtaskHandle;
+#ifdef DAQmx
+	TaskHandle AItaskHandle;
+	TaskHandle AOtaskHandle;
+#endif
 
 	void simProcess();
 	void testConfigProcess();
