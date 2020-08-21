@@ -500,6 +500,8 @@ void GUI::on_humanBox_changed()
 	ui.B_box->setValue(controlThread->model.B);
 	ui.J_box->setValue(controlThread->model.J);
 	ui.tau_g_box->setValue(controlThread->model.tau_g);
+
+	controlThread->PIDImpInit();
 }
 
 void GUI::onGUIComms(QString message)

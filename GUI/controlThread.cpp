@@ -12,7 +12,7 @@ void ControlThread::run()
 	runInit();
 	last_time = clock();
 	start_time = last_time;
-	while (!Stop && t < test.T - mpc.dt) {
+	while (!Stop && t < test.T - mpc.dt*0) {
 		control_loop();
 	}
 	control_stop();
@@ -56,18 +56,17 @@ void ControlThread::PIDImpInit()
 	pidImpParams temp;
 	pidImp = temp;
 	if (test.control == 1) { // PID (w/ Human)
-		//if (test.device) {
+		if (test.human == 0) {
 			pidImp.Kp = 20; // 150
 			pidImp.Ki = 10; // 200
 			pidImp.Kd = 2; // 3.5
-			pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
-		//}
-		//else {
-		//	pidImp.Kp = 100;
-		//	pidImp.Ki = 50;
-		//	pidImp.Kd = 10;
-		//	pidImp.Kff_tau_g = model.tau_g;// +model.tau_g_h[test.human];
-		//}
+			pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
+		} else {
+			pidImp.Kp = 150;//100;
+			pidImp.Ki = 200;//50;
+			pidImp.Kd = 3.5;//10;
+			pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
+		}
 	}
 	else if (test.control == 2) { // Imp
 		pidImp.Kp = 5;
