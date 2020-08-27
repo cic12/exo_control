@@ -64,7 +64,7 @@ void ControlThread::PIDImpInit()
 		} else {
 			pidImp.Kp = 150;//100;
 			pidImp.Ki = 200;//50;
-			pidImp.Kd = 3.5;//10;
+			pidImp.Kd = 4;//10; // 3.5
 			pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
 		}
 	}
@@ -85,7 +85,7 @@ double ControlThread::PIDControl(double theta, double theta_r, pidImpParams pidI
 	}
 	double integral = integral_prior + error * mpc.dt;
 	double derivative = (error - error_prior) / mpc.dt;
-	double u = pidImp.Kp * error + pidImp.Ki * integral + pidImp.Kd * derivative + pidImp.Kff_tau_g * theta_r;
+	double u = pidImp.Kp * error + pidImp.Ki * integral + pidImp.Kd * derivative + pidImp.Kff_tau_g * theta_r; // ref is correct
 	pid[0] = error;
 	pid[1] = integral;
 	pid[2] = derivative; 
@@ -99,18 +99,15 @@ double ControlThread::ImpControl(double theta, double theta_r, double dtheta, do
 {
 	double pos_error = error_prior * (1 - pidImp.alpha_err) + (theta_r - theta) * pidImp.alpha_err;
 	double vel_error = vel_error_prior * (1 - pidImp.alpha_err) + (dtheta_r - dtheta) * pidImp.alpha_err;
-	double ff_J = 0;// (dtheta - vel_prior) / mpc.dt;
-	double ff_B = dtheta;
-	double ff_tau_g = sin(theta);
-	double u = pidImp.Kp * pos_error + pidImp.Kd * vel_error + pidImp.Kff_J * ff_J + pidImp.Kff_B * ff_B + pidImp.Kff_tau_g * ff_tau_g;
+	double ff_B = dtheta_r; // should be ref
+	double ff_tau_g = sin(theta_r); // should be ref
+	double u = pidImp.Kp * pos_error + pidImp.Kd * vel_error + pidImp.Kff_B * ff_B + pidImp.Kff_tau_g * ff_tau_g;
 	imp[0] = pos_error;
 	imp[1] = vel_error;
-	imp[2] = ff_J;
 	imp[3] = ff_B;
 	imp[4] = ff_tau_g;
 	error_prior = pos_error;
 	vel_error_prior = vel_error;
-	vel_prior = dtheta;
 	return fmin(fmax(u, -pidImp.lim), pidImp.lim);
 }
 

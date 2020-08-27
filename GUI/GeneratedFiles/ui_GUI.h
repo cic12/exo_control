@@ -509,7 +509,7 @@ public:
         label_21->setText(QCoreApplication::translate("GUIClass", "Theta", nullptr));
         label_22->setText(QCoreApplication::translate("GUIClass", "Tau e", nullptr));
         label_23->setText(QCoreApplication::translate("GUIClass", "Tau h", nullptr));
-        label_24->setText(QCoreApplication::translate("GUIClass", "EMG", nullptr));
+        label_24->setText(QCoreApplication::translate("GUIClass", "MMG / EMG", nullptr));
         label_25->setText(QCoreApplication::translate("GUIClass", "mu A", nullptr));
         label_26->setText(QCoreApplication::translate("GUIClass", "mu R", nullptr));
         plainTextEdit->setPlainText(QString());

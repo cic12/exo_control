@@ -388,7 +388,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>EMG</string>
+     <string>MMG / EMG</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_25">

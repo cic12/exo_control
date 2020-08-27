@@ -20,7 +20,7 @@
 #define NU  	1
 #define NH      4
 
-#define DAQmx
+//#define DAQmx
 
 using namespace std;
 
@@ -28,9 +28,9 @@ struct testParams {
 	bool device = 0;
 	int human = 0;
 	int analogIn = 0;
-	int control = 0; // None, PID, Imp, MPC
+	int control = 1; // None, PID, Imp, MPC
 	int config = 0;
-	int traj = 0;
+	int traj = 2;
 	int cond = 0;
 
 	double T = 24;
