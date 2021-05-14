@@ -56,17 +56,21 @@ void ControlThread::PIDImpInit()
 	pidImpParams temp;
 	pidImp = temp;
 	if (test.control == 1) { // PID (w/ Human)
-		if (test.human == 0) {
-			pidImp.Kp = 20; // 150
-			pidImp.Ki = 10; // 200
-			pidImp.Kd = 2; // 3.5
-			pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
-		} else {
-			pidImp.Kp = 150;//100;
-			pidImp.Ki = 200;//50;
-			pidImp.Kd = 4;//10; // 3.5
-			pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
-		}
+		//if (test.human == 0) {
+		//	pidImp.Kp = 20; // 150
+		//	pidImp.Ki = 10; // 200
+		//	pidImp.Kd = 2; // 3.5
+		//	pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
+		//} else {
+		//	pidImp.Kp = 150;//100;
+		//	pidImp.Ki = 200;//50;
+		//	pidImp.Kd = 4;//10; // 3.5
+		//	pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
+		//}
+		pidImp.Kp = 150;//100;
+		pidImp.Ki = 200;//50;
+		pidImp.Kd = 4;//10; // 3.5
+		pidImp.Kff_tau_g = 5;// + model.tau_g_h[test.human];
 	}
 	else if (test.control == 2) { // Imp
 		pidImp.Kp = 5;

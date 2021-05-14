@@ -25,9 +25,9 @@
 using namespace std;
 
 struct testParams {
-	bool device = 0;
+	bool device = 1;
 	int human = 0;
-	int analogIn = 0;
+	int analogIn = 1; // None, TMSi, MMG
 	int control = 1; // None, PID, Imp, MPC
 	int config = 0;
 	int traj = 2;

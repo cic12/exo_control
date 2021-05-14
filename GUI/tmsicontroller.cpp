@@ -235,25 +235,14 @@ void TMSiController::streamProcess()
 
 				daq->daq_aiFile << daq->aivec[0] << "," << daq->aivec[1] << "," << daq->aivec[2] << "," << daq->aivec[3] << "\n";
 				m_mutex.unlock();
-				//---------------------------------------------------------------------
-
-				//std::this_thread::sleep_for(std::chrono::microseconds(500));
-
-				//Sleep(1);
-				//recording.load() ? fileManager->writeLine(currentReadTime.load(), currentSample) : 0;
-				//if (createdRecording) {
-					//addRecordingLine(currentReadTime, currentSample);
-				//}
 			}
 		}
-		//std::this_thread::sleep_for(std::chrono::nanoseconds(200));
 	}
 
 	safeStart = true;
 
 	// End of Streaming
 	qDebug() << "ENDED";
-	//endRecordingFile();
 }
 
 bool TMSiController::endStream()
