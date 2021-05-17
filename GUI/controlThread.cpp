@@ -67,10 +67,10 @@ void ControlThread::PIDImpInit()
 		//	pidImp.Kd = 4;//10; // 3.5
 		//	pidImp.Kff_tau_g = model.tau_g;// + model.tau_g_h[test.human];
 		//}
-		pidImp.Kp = 150;//100;
-		pidImp.Ki = 200;//50;
-		pidImp.Kd = 4;//10; // 3.5
-		pidImp.Kff_tau_g = 5;// + model.tau_g_h[test.human];
+		pidImp.Kp = 50;// 150;//100;
+		pidImp.Ki = 60;//50;
+		pidImp.Kd = 2;//10; // 3.5
+		pidImp.Kff_tau_g = 4;// + model.tau_g_h[test.human];
 	}
 	else if (test.control == 2) { // Imp
 		pidImp.Kp = 5;

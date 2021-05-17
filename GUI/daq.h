@@ -1,7 +1,7 @@
 #ifndef DAQ_H_
 #define DAQ_H_
 
-//#define DAQmx
+#define DAQmx
 
 #ifdef DAQmx
 #include "NIDAQmx.h"
